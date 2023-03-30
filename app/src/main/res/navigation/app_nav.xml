@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/app_nav"
+    app:startDestination="@id/walletFragment">
+    <fragment
+        android:id="@+id/walletFragment"
+        android:name="com.loginid.cryptodid.WalletFragment"
+        android:label="wallet_fragment"
+        tools:layout="@layout/wallet_fragment" >
+        <action
+            android:id="@+id/show_transaction_menu"
+            app:destination="@id/transactionMenuFragment" />
+    </fragment>
+    <dialog
+        android:id="@+id/transactionMenuFragment"
+        android:name="com.loginid.cryptodid.TransactionMenuFragment"
+        android:label="transaction_menu_fragment"
+        tools:layout="@layout/transaction_menu_fragment" >
+    </dialog>
+
+
+
+</navigation>

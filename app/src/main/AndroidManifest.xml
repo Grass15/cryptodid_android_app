@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera.autofocus"
+        android:required="false" />
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="false" />
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true"
+        tools:targetApi="31">
+        <activity
+            android:name=".LoginActivity"
+            android:exported="true"
+            android:noHistory="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".scanner.ScanActivity"
+            android:noHistory="true"
+            android:screenOrientation="portrait"
+            android:stateNotNeeded="true"
+            android:theme="@style/zxing_CaptureTheme" />
+        <activity
+            android:name=".claimFetcher.plaid.PlaidActivity"
+            android:exported="true" />
+        <activity
+        android:name=".claimFetcher.blinkid.BlinkActivity"
+        android:label="@string/app_name"
+        android:theme="@style/Theme.AppCompat"
+        android:screenOrientation="sensor"
+        android:exported="true">
+        </activity>
+        <activity
+            android:name=".claimFetcher.creditscore.EqFormActivity"
+            android:exported="false" />
+        <activity
+            android:name=".claimFetcher.creditscore.TransFormActivity"
+            android:exported="false" />
+        <activity
+            android:name=".claimFetcher.creditscore.CreditScoreActivity"
+            android:exported="true">
+        </activity>
+
+        <!-- You can provide custom theme for scan activity -->
+        <activity android:name="com.microblink.activity.DocumentScanActivity" android:theme="@style/FullScreen"/>
+        <activity
+            android:name=".RegistreActivity"
+            android:exported="false"
+            android:noHistory="true"/>
+        <activity
+            android:name=".MainActivity"
+            android:exported="true" />
+
+
+    </application>
+
+</manifest>

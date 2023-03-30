@@ -1,0 +1,88 @@
+plugins {
+    id 'com.android.application'
+    id 'androidx.navigation.safeargs'
+    id  'kotlin-android'
+}
+
+android {
+    namespace 'com.loginid.cryptodid'
+    compileSdk 33
+
+    defaultConfig {
+        applicationId "com.loginid.cryptodid"
+        minSdk 24
+        targetSdk 33
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    def nav_version = "2.5.3"
+    def lifecycle_version = "2.5.1"
+    def core_version = "1.6.0"
+    implementation "org.java-websocket:Java-WebSocket:1.5.1"
+    implementation 'org.apache.tomcat.embed:tomcat-embed-websocket:8.0.28'
+    implementation "org.slf4j:slf4j-api:2.0.6"
+    implementation "org.slf4j:slf4j-simple:2.0.6"
+
+
+
+    implementation "androidx.core:core:$core_version"
+
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation "androidx.biometric:biometric:1.1.0"
+    implementation 'com.google.android.material:material:1.8.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.navigation:navigation-fragment:2.5.3'
+
+    implementation 'com.google.android.material:material:1.8.0'
+    implementation 'com.journeyapps:zxing-android-embedded:4.3.0'
+    implementation "androidx.recyclerview:recyclerview:1.2.1"
+    // For control over item selection of both touch and mouse driven selection
+    implementation "androidx.recyclerview:recyclerview-selection:1.1.0"
+
+    // ViewModel
+    implementation "androidx.lifecycle:lifecycle-viewmodel:$lifecycle_version"
+    // LiveData
+    implementation "androidx.lifecycle:lifecycle-livedata:$lifecycle_version"
+    // Lifecycles only (without ViewModel or LiveData)
+    implementation "androidx.lifecycle:lifecycle-runtime:$lifecycle_version"
+    // Saved state module for ViewModel
+    implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycle_version"
+    // Annotation processor
+    annotationProcessor "androidx.lifecycle:lifecycle-compiler:$lifecycle_version"
+    implementation "androidx.navigation:navigation-fragment:$nav_version"
+    implementation "androidx.navigation:navigation-ui:$nav_version"
+    implementation "androidx.navigation:navigation-dynamic-features-fragment:$nav_version"
+    // Testing Navigation
+    androidTestImplementation "androidx.navigation:navigation-testing:$nav_version"
+    // Jetpack Compose Integration
+    implementation "androidx.navigation:navigation-compose:$nav_version"
+    implementation "androidx.core:core-ktx:1.7.0"
+    implementation "io.reactivex.rxjava3:rxandroid:3.0.0"
+    implementation 'com.squareup.retrofit2:adapter-rxjava3:2.9.0'
+    implementation "com.squareup.retrofit2:retrofit:2.9.0"
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+    implementation 'com.google.code.gson:gson:2.9.0'
+    implementation "com.plaid.link:sdk-core:3.10.1"
+    implementation("com.microblink:blinkid:5.19.0@aar") {
+        transitive = true
+    }
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+}
