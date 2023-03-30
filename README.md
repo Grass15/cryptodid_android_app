@@ -45,4 +45,6 @@ Setup
   ### ` git clone https://github.com/Grass15/cryptodid_android_app.git`
   
   Open the project folder in Android Studio and run the project
+
+An apk to install the app on your android device is available in app/release
   
