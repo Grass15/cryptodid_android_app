@@ -51,7 +51,7 @@ public class Fetcher {
                 QrDecoder decodedData = new QrDecoder(result.getContents());
                 this.issuerUrl = decodedData.getUrl();
                 this.issuerPort = decodedData.getPort();
-                //this.launchTrustedSource();
+                this.launchTrustedSource();
             }
         });
         this.plaidActivityLauncher = callerFragment.registerForActivityResult(
@@ -119,7 +119,7 @@ public class Fetcher {
         scan.join();
         this.barLauncher.launch(scanner.options);
     }
-    public void launchTrustedSource(int issuerPort){
+    public void launchTrustedSource(){
 
         if(issuerPort == bankIssuerPort){
             Intent plaidActivity = new Intent(callerFragment.getActivity(), PlaidActivity.class);

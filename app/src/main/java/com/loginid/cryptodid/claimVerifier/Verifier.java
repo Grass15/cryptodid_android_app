@@ -43,7 +43,7 @@ import com.google.gson.Gson;
 public class Verifier {
     private int verifierPort;
     //private String verifierUrl = "192.168.11.102:8080";
-    private String verifierUrl = "cryptodid.herokuapp.com";
+    private String verifierUrl = "";
     private ClientEndpoint finalResponseEndpoint = new ClientEndpoint();
 
     private Gson gson = new Gson();
