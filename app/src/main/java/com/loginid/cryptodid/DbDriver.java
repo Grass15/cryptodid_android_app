@@ -31,6 +31,8 @@ public class DbDriver extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         sqLiteDatabase.execSQL("create table users(user_id TEXT primary key,username TEXT unique, password TEXT, firstname TEXT, lastname TEXT, phone TEXT, address TEXT)");
+        sqLiteDatabase.execSQL("insert into users(user_id ,username , password , firstname , lastname , phone , address ) " +
+                "values(0 , 'demo' , 'demo' , '' , '' , '' , '' )");
         sqLiteDatabase.execSQL("create table claims(claim_id INTEGER PRIMARY KEY, title TEXT, type TEXT, issuerName TEXT, content TEXT,  issuingDate TEXT, expirationDate TEXT, hash INTEGER, ciphers BLOB, PK BLOB, fhe BLOB )");
     }
 
