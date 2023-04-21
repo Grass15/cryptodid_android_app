@@ -3,18 +3,18 @@ package com.learning.walletv21.presentation.home.main_home.components
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.learning.walletv21.presentation.home.vc.VCCard
 import com.learning.walletv21.presentation.navigation.bottom_navigation.BottomSheetNavBodyItems
 import com.learning.walletv21.presentation.navigation.bottom_navigation.BottomSheetNavigation
@@ -74,13 +74,6 @@ Scaffold(
                      }
                  }
                  )
-            /* AppBar (
-                 onNavigationIconClick = {
-                     scope.launch {
-                         scaffoldState.drawerState.open()
-                     }
-                 },{}
-             )*/
     },
     drawerContent = {
         DrawerHeader()
@@ -106,10 +99,11 @@ Scaffold(
         VCCard()
     }
 
-    ModalBottomSheetLayout(sheetState = modalSheetState, sheetContent = {
+    ModalBottomSheetLayout(modifier = Modifier.clip(RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)), sheetState = modalSheetState, sheetContent = {
         BottomSheetNavigation(navitems = listOf(BottomSheetNavBodyItems.BankVC,BottomSheetNavBodyItems.CreditScoreVC,
-        BottomSheetNavBodyItems.DriverLicenceVC,BottomSheetNavBodyItems.PersenalVC,BottomSheetNavBodyItems.TelecomVC
-            ), onItemClick = {})
+        BottomSheetNavBodyItems.DriverLicenceVC,BottomSheetNavBodyItems.PersenalVC,BottomSheetNavBodyItems.TelecomVC,
+            BottomSheetNavBodyItems.BlinkVC
+            ), onItemClick = {Log.d("BI",it.route)})
     }) {
 
     }

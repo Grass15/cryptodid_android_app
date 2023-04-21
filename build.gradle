@@ -6,8 +6,9 @@ buildscript {
         accompanist_version = '0.24.2-alpha'
     }
     repositories {
-        mavenCentral()
         google()
+        maven { url 'https://maven.microblink.com' }
+        mavenCentral()
     }
 
 

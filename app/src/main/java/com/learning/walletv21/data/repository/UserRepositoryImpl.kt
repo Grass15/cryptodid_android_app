@@ -31,8 +31,8 @@ class UserRepositoryImpl @Inject constructor(
      * @param vc
      */
 
-    override suspend fun insertClaim(vc: VCEntity) {
-        return vcDao.insertClaim(vc)
+    override suspend fun insertVC(vc: VCEntity) {
+        return vcDao.insertVC(vc)
     }
 
     /**
@@ -40,8 +40,8 @@ class UserRepositoryImpl @Inject constructor(
      * @param vcID
      */
 
-    override suspend fun deleteClaimById(claimId: Int) {
-        TODO("Not yet implemented")
+    override suspend fun deleteVCById(claimId: Int) {
+         vcDao.deleteVCById(claimId)
     }
 
     /**
@@ -49,11 +49,11 @@ class UserRepositoryImpl @Inject constructor(
      * @param userId
      * @return Flow<UserAndVC> which contains the VC list
      */
-    override  fun getUserWithClaims(userId: String): Flow<UserAndVC>{
-        return vcDao.getUserWithClaims(userId)
+    override  fun getUserWithVCs(userId: String): Flow<UserAndVC>{
+        return vcDao.getUserWithVCs(userId)
     }
 
-    override fun getUsersWithClaims(): Flow<List<UserAndVC>> {
+    override fun getUsersWithVCs(): Flow<List<UserAndVC>> {
         TODO("Not yet implemented")
     }
 

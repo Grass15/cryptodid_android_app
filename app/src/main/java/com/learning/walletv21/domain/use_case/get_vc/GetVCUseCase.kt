@@ -14,7 +14,7 @@ class GetVCUseCase @Inject constructor(
     operator fun invoke(userId: String): Flow<Resource<UserAndVC>> = flow {
         try {
             emit(Resource.Loading<UserAndVC>())
-            repository.getUserWithClaims(userId).collect{
+            repository.getUserWithVCs(userId).collect{
                 emit(Resource.Success<UserAndVC>(data = it))
             }
         }catch (e: SQLiteException){

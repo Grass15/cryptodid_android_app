@@ -10,14 +10,14 @@ interface UserRepository {
 
     suspend fun insertUser(user: UserEntity)
 
-    suspend fun insertClaim(vc: VCEntity)
+    suspend fun insertVC(vc: VCEntity)
 
-    suspend fun deleteClaimById(claimId: Int)
+    suspend fun deleteVCById(claimId: Int)
 
-    fun getUserWithClaims(userId: String): Flow<UserAndVC>
+    fun getUserWithVCs(userId: String): Flow<UserAndVC>
     //suspend fun getUserWithClaims(userId: String): UserAndVC
 
-    fun getUsersWithClaims(): Flow<List<UserAndVC>>
+    fun getUsersWithVCs(): Flow<List<UserAndVC>>
 
     suspend  fun checkUserCreds(username: String, pass: String): Boolean
 }

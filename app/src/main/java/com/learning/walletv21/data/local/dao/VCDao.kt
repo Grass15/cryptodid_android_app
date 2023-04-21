@@ -21,19 +21,19 @@ interface VCDao {
     suspend fun insertUser(user: UserEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertClaim(vc: VCEntity)
+    suspend fun insertVC(vc: VCEntity)
 
     @Query("DELETE FROM $VC_TABLE_NAME WHERE id = :claimId")
-    suspend fun deleteClaimById(claimId: Int)
+    suspend fun deleteVCById(claimId: Int)
 
     @Transaction
     @Query("SELECT * FROM $USER_TABLE_NAME WHERE userId = :userId")
    // suspend fun getUserWithClaims(userId: String): UserAndVC
-    fun getUserWithClaims(userId: String): Flow<UserAndVC>
+    fun getUserWithVCs(userId: String): Flow<UserAndVC>
 
     @Transaction
     @Query("SELECT * FROM $USER_TABLE_NAME")
-    fun getUsersWithClaims(): Flow<List<UserAndVC>>
+    fun getUsersWithVCs(): Flow<List<UserAndVC>>
 
     @Query("SELECT EXISTS(SELECT 1 FROM $USER_TABLE_NAME WHERE username = :username AND password = :pass)")
     suspend fun checkUserCreds(username: String, pass: String): Boolean

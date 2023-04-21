@@ -15,12 +15,16 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.learning.walletv21.presentation.TempNav.Screen
 import com.learning.walletv21.presentation.claim_details.components.ClaimDetailScreen
 import com.learning.walletv21.presentation.claim_list.components.ClaimListScreen
+import com.learning.walletv21.presentation.home.scanner.QrScanner
+import com.learning.walletv21.presentation.home.scanner.ScannerScreen
 import com.learning.walletv21.presentation.loginid_welcome.SplashViewModel
 import com.learning.walletv21.presentation.navigation.graphs.SetupNavGraph
 import com.learning.walletv21.presentation.theme.WalletV21Theme
 import com.learning.walletv21.utils.Constants.AUTH_GRAPH
+import com.learning.walletv21.utils.Constants.BLINK_ID_LICENCE
 import com.learning.walletv21.utils.Constants.HOME_ROOT_GRAPH
 import com.learning.walletv21.utils.Constants.PARAM_CLAIM_ID
+import com.microblink.MicroblinkSDK
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -30,12 +34,12 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     lateinit var navController: NavHostController
-
     @Inject
     lateinit var splashViewModel: SplashViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+      //  MicroblinkSDK.setLicenseKey(BLINK_ID_LICENCE,this)
         installSplashScreen().setKeepOnScreenCondition{
             !splashViewModel.isLoading.value
         }

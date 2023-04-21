@@ -23,7 +23,7 @@ sealed class BottomSheetNavBodyItems(
         contentDescription = "Presonal infos"
     )
     object DriverLicenceVC: BottomSheetNavBodyItems(
-        icon = Icons.Filled.TireRepair,
+        icon = Icons.Filled.CardMembership,
         title = "Driver Licence VC",
         route = "",
         contentDescription = "Cleann"
@@ -35,9 +35,16 @@ sealed class BottomSheetNavBodyItems(
         contentDescription = "Cleann"
     )
     object TelecomVC: BottomSheetNavBodyItems(
-        icon = Icons.Filled.NetworkCell,
+        icon = Icons.Filled.SimCard,
         title = "Telecom VC",
         route = "",
         contentDescription = "Cleann"
     )
+    object BlinkVC: BottomSheetNavBodyItems(
+        icon = Icons.Filled.Camera,
+        title = "Blink VC",
+        route = "",
+        contentDescription = "Cleann"
+    )
+
 }

@@ -86,6 +86,9 @@ dependencies {
 
     // Dagger Hilt
     implementation "com.google.dagger:hilt-android:2.43.2"
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.4.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     kapt "com.google.dagger:hilt-android-compiler:2.43.2"
     //implementation "androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03"
     kapt "androidx.hilt:hilt-compiler:1.0.0"
@@ -144,5 +147,25 @@ dependencies {
 
     //Swiper
    // implementation "me.saket.swipe:swipe:1.1.1"
+
+    //microblink
+    implementation("com.microblink:blinkid:5.19.0@aar") {
+        transitive = true
+    }
+
+    // CameraX
+    implementation "androidx.camera:camera-camera2:1.0.2"
+    implementation "androidx.camera:camera-lifecycle:1.0.2"
+    implementation "androidx.camera:camera-view:1.0.0-alpha31"
+
+    // Zxing
+    implementation 'com.google.zxing:core:3.3.3'
+
+    //bar code scanner
+    implementation 'com.google.android.gms:play-services-code-scanner:16.0.0-beta3'
+
+    //permission requester
+    implementation "com.google.accompanist:accompanist-permissions:0.21.1-beta"
+
 
 }

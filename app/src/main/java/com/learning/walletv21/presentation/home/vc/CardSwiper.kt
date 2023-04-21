@@ -10,7 +10,6 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Send
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,20 +19,19 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import com.learning.walletv21.presentation.home.vc.VCViewModel.VCState
 import kotlin.math.roundToInt
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.sp
-import com.learning.walletv21.presentation.home.vc.VCViewModel.VCDataState
+import com.learning.walletv21.presentation.home.vc.VCViewModel.VCDataDisplayState
 import com.learning.walletv21.presentation.theme.*
 
 
 @ExperimentalMaterialApi
 @Composable
 fun CardSwiper(
-    VCState: VCDataState,
-    onDeleteButtonClicked: (VCDataState) -> Unit,
-    onVerifyButtonClicked: (VCDataState) -> Unit,
+    VCState: VCDataDisplayState,
+    onDeleteButtonClicked: (VCDataDisplayState) -> Unit,
+    onVerifyButtonClicked: (VCDataDisplayState) -> Unit,
 ) {
     var bgColor by remember {
       mutableStateOf(Color.Gray)
