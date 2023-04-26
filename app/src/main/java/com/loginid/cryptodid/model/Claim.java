@@ -20,9 +20,9 @@ public class Claim implements Serializable {
     String type;
     String issuerName;
     String content;
-    Date expirationDate;
+    String expirationDate;
     public MG_FHE.MG_Cipher [] ciphers;
-    Date issuingDate;
+    String issuingDate;
     MG_FHE.MG_Cipher [] PK;
     MG_FHE fhe;
     int hash; //plays the role of a signature
@@ -59,18 +59,18 @@ public class Claim implements Serializable {
     public void setFhe(MG_FHE fhe) {
         this.fhe = fhe;
     }
-    public Date getIssuingDate() {
+    public String getIssuingDate() {
         return issuingDate;
     }
-    public Date getExpirationDate() {
+    public String getExpirationDate() {
         return expirationDate;
     }
 
-    public void setExpirationDate(Date date) {
+    public void setExpirationDate(String date) {
         this.expirationDate = date;
     }
 
-    public void setIssuingDate(Date date) {
+    public void setIssuingDate(String date) {
         this.issuingDate = date;
     }
     public MG_FHE.MG_Cipher[] getCiphers() {

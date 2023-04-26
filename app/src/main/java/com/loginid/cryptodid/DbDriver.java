@@ -82,9 +82,8 @@ public class DbDriver extends SQLiteOpenHelper {
         content.put("type", claim.getType());
         content.put("issuerName", claim.getIssuerName());
         content.put("content", claim.getContent());
-        SimpleDateFormat sdf = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", Locale.CANADA);
-        content.put("issuingDate", sdf.format(claim.getIssuingDate()));
-        content.put("expirationDate", sdf.format(claim.getExpirationDate()));
+        content.put("issuingDate", claim.getIssuingDate());
+        content.put("expirationDate", claim.getExpirationDate());
         content.put("hash", claim.getHash());
         content.put("ciphers", claim.ciphersToByteArray(claim.getCiphers()));
         content.put("PK", claim.PKToByteArray(claim.getPK()));
@@ -105,8 +104,8 @@ public class DbDriver extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 Claim claim = new Claim(cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4) );
-                claim.setIssuingDate(sdf.parse(cursor.getString(5)));
-                claim.setExpirationDate(sdf.parse(cursor.getString(6)));
+                claim.setIssuingDate(cursor.getString(5));
+                claim.setExpirationDate(cursor.getString(6));
                 claim.setHash(cursor.getInt(7));
                 claim.setId(cursor.getInt(0));
                 claim.setCiphers(claim.byteArrayToCiphers(cursor.getBlob(8)));
@@ -129,8 +128,8 @@ public class DbDriver extends SQLiteOpenHelper {
         if (cursor != null){
             cursor.moveToFirst();
             Claim claim = new Claim(cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4) );
-            claim.setIssuingDate(sdf.parse(cursor.getString(5)));
-            claim.setExpirationDate(sdf.parse(cursor.getString(6)));
+            claim.setIssuingDate(cursor.getString(5));
+            claim.setExpirationDate(cursor.getString(6));
             claim.setHash(cursor.getInt(7));
             claim.setId(cursor.getInt(0));
             claim.setCiphers(claim.byteArrayToCiphers(cursor.getBlob(8)));
@@ -159,8 +158,8 @@ public class DbDriver extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 Claim claim = new Claim(cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4) );
-                claim.setIssuingDate(sdf.parse(cursor.getString(5)));
-                claim.setExpirationDate(sdf.parse(cursor.getString(6)));
+                claim.setIssuingDate(cursor.getString(5));
+                claim.setExpirationDate(cursor.getString(6));
                 claim.setHash(cursor.getInt(7));
                 claim.setId(cursor.getInt(0));
                 claim.setCiphers(claim.byteArrayToCiphers(cursor.getBlob(8)));

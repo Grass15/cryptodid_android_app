@@ -26,10 +26,10 @@ public class Issuer implements Serializable {
 		SimpleDateFormat sdf = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
 		Calendar cal = Calendar.getInstance();
 		claim.setCiphers(claimCiphers);
-		claim.setIssuingDate(new Date());
-		cal.setTime(claim.getIssuingDate());
+		cal.setTime(new Date());
+		claim.setIssuingDate(sdf.format(cal.getTime()));
 		cal.add(Calendar.DAY_OF_MONTH, 30);
-		claim.setExpirationDate(sdf.parse(sdf.format(cal.getTime())));
+		claim.setExpirationDate(sdf.format(cal.getTime()));
 		claim.setPK(fhe.PK);
 		claim.setHash(Arrays.hashCode(claim.getCiphers()) + claim.getIssuingDate().hashCode() + Arrays.hashCode(claim.getPK()));
 		return claim;
