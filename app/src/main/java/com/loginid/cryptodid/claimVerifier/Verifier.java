@@ -119,10 +119,10 @@ public class Verifier {
             finalResponseEndpoint.createWebSocketClient("ws://" + verifierUrl + "/finalResponse");
 
             KeyStore keystore = KeyStore.getInstance("JKS");
-            keystore.load(new FileInputStream("keystore.jks"), "keystore_password".toCharArray());
+            keystore.load(new FileInputStream("keystore.jks"), "loginid_pass".toCharArray());
 
             String alias = "myalias";
-            String keyPass = "keystore_password";
+            String keyPass = "loginid_pass";
             PrivateKey privateKey = (PrivateKey) keystore.getKey(alias, keyPass.toCharArray());
             X509Certificate x509certificate = (X509Certificate) keystore.getCertificate(alias);
 
