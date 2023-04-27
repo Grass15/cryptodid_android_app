@@ -25,6 +25,8 @@ import android.widget.ProgressBar;
 
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
@@ -32,6 +34,14 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.Signature;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -78,6 +88,14 @@ public class Verifier {
                         } catch (InterruptedException | ParseException | IOException |
                                  ClassNotFoundException e) {
                             throw new RuntimeException(e);
+                        } catch (UnrecoverableKeyException e) {
+                            throw new RuntimeException(e);
+                        } catch (CertificateException e) {
+                            throw new RuntimeException(e);
+                        } catch (KeyStoreException e) {
+                            throw new RuntimeException(e);
+                        } catch (NoSuchAlgorithmException e) {
+                            throw new RuntimeException(e);
                         }
                     }
                 }).show();
@@ -96,19 +114,29 @@ public class Verifier {
     }
 
 
-    public void verify() throws InterruptedException, ParseException, IOException, ClassNotFoundException {
+    public void verify() throws InterruptedException, ParseException, IOException, ClassNotFoundException, KeyStoreException, CertificateException, NoSuchAlgorithmException, UnrecoverableKeyException {
         if (!Objects.equals(verifierUrl, "")) {
             finalResponseEndpoint.createWebSocketClient("ws://" + verifierUrl + "/finalResponse");
+
+            KeyStore keystore = KeyStore.getInstance("JKS");
+            keystore.load(new FileInputStream("keystore.jks"), "keystore_password".toCharArray());
+
+            String alias = "myalias";
+            String keyPass = "keystore_password";
+            PrivateKey privateKey = (PrivateKey) keystore.getKey(alias, keyPass.toCharArray());
+            X509Certificate x509certificate = (X509Certificate) keystore.getCertificate(alias);
+
             Claim balanceClaim;
             Claim creditScoreClaim;
             Claim ageClaim;
+
             try {
                 balanceClaim = MainActivity.driver.getClaimsFromACertainType("Balance").get(0);
                 creditScoreClaim = MainActivity.driver.getClaimsFromACertainType("Credit Score").get(0);
                 ageClaim = MainActivity.driver.getClaimsFromACertainType("Age").get(0);
-                ProverThread balanceProverThread = new ProverThread(verifierUrl, balanceClaim, balanceClaim.getFhe(), "balance");
-                ProverThread ageProverThread = new ProverThread(verifierUrl, ageClaim, ageClaim.getFhe(), "age");
-                ProverThread creditScoreProverThread = new ProverThread(verifierUrl, creditScoreClaim, creditScoreClaim.getFhe(), "creditScore");
+                ProverThread balanceProverThread = new ProverThread(verifierUrl, balanceClaim, balanceClaim.getFhe(), "balance", signClaim(balanceClaim, privateKey),x509certificate);
+                ProverThread ageProverThread = new ProverThread(verifierUrl, ageClaim, ageClaim.getFhe(), "age",signClaim(ageClaim, privateKey),x509certificate);
+                ProverThread creditScoreProverThread = new ProverThread(verifierUrl, creditScoreClaim, creditScoreClaim.getFhe(), "creditScore",signClaim(creditScoreClaim, privateKey),x509certificate);
                 Thread balanceVerification = new Thread(balanceProverThread);
                 Thread ageVerification = new Thread(ageProverThread);
                 Thread creditScoreVerification = new Thread(creditScoreProverThread);
@@ -162,6 +190,20 @@ public class Verifier {
             }).show();
         }
     }
+
+    public static byte[] signClaim(Claim claim, PrivateKey privateKey) throws Exception {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(baos);
+        oos.writeObject(claim);
+        byte[] claimBytes = baos.toByteArray();
+        Signature signature = Signature.getInstance("SHA256withRSA");
+        signature.initSign(privateKey);
+
+        signature.update(claimBytes);
+
+        return signature.sign();
+    }
+
 
 
 
