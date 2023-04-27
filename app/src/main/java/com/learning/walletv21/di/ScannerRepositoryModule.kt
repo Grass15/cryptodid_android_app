@@ -9,7 +9,9 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.scopes.ViewModelScoped
 
-
+/**
+ * Provides the QR Scanner feature in our application
+ */
 @InstallIn(ViewModelComponent::class)
 @Module
 abstract class ScannerRepositoryModule {

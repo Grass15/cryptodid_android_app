@@ -14,6 +14,10 @@ import java.io.IOException
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "on_boarding_pref")
 
+/**
+ * This datastore repository helps us to manipulates the datastore feature in android.
+ * we can a pair of key-value is this case we use it to handle a boarding screen, (a screen that can be shown only one time)
+ */
 class DataStoreRepository(context: Context) {
 
     private object PreferencesKey {

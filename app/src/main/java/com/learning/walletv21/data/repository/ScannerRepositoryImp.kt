@@ -9,9 +9,17 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * this scanner repository implementation provide us with
+ * the necessary methods to scan a barcode/qrcode
+ */
 class ScannerRepositoryImp @Inject constructor(
     private val scanner : GmsBarcodeScanner
 ): ScannerRepository {
+    /**
+     * the start scanning function launches our camera
+     * @return Flow<String?>
+     */
     override fun startScanning(): Flow<String?> {
         return callbackFlow {
             scanner.startScan()
@@ -27,6 +35,11 @@ class ScannerRepositoryImp @Inject constructor(
             awaitClose {  }
         }
     }
+
+    /**
+     * get the result of the startScanning() function
+     * @return String
+     */
 
     private fun getDetails(barcode: Barcode): String{
         return when (barcode.valueType) {

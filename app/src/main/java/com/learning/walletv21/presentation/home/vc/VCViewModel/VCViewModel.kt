@@ -94,15 +94,13 @@ class VCViewModel @Inject constructor(
     fun resetStatus(){
         _status.value = Status.NO_ACTION
     }
-    init {
-        storeClaim(VCEnteryState(VCId = 15))
-    }
 
-    fun storeClaim(newVC: VCEnteryState){
+
+    /*fun storeClaim(newVC: VCEnteryState){
         _VCEnteryState.update { newVC }
         val VC = Claim(_VCEnteryState.value.VCTitle,_VCEnteryState.value.VCType,_VCEnteryState.value.issuerName,_VCEnteryState.value.VCContentOverview)
         viewModelScope.launch {
             repository.insertVC(VCEntity(13,VC,"945826e3-baaa-44c1-8aba-230b37426df3"))
         }
-    }
+    }*/
 }

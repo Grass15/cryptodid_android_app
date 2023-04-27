@@ -10,7 +10,7 @@ class ClaimRepositoryImpl @Inject constructor(
     private val api: IssuerApi
 ) : ClaimRepository{
     override suspend fun getClaims(): List<ClaimDto> {
-        return api.getClaims()
+        return api.getVCs()
     }
 
     override suspend fun getClaimById(coinId: String): ClaimDetailDto {

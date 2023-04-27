@@ -1,30 +1,21 @@
 package com.learning.walletv21.presentation
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.getValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.pager.ExperimentalPagerApi
-import com.learning.walletv21.presentation.TempNav.Screen
-import com.learning.walletv21.presentation.claim_details.components.ClaimDetailScreen
-import com.learning.walletv21.presentation.claim_list.components.ClaimListScreen
-import com.learning.walletv21.presentation.home.scanner.QrScanner
-import com.learning.walletv21.presentation.home.scanner.ScannerScreen
+import com.learning.walletv21.presentation.home.biometrics.BiometricPromptScreen
 import com.learning.walletv21.presentation.loginid_welcome.SplashViewModel
 import com.learning.walletv21.presentation.navigation.graphs.SetupNavGraph
 import com.learning.walletv21.presentation.theme.WalletV21Theme
 import com.learning.walletv21.utils.Constants.AUTH_GRAPH
-import com.learning.walletv21.utils.Constants.BLINK_ID_LICENCE
-import com.learning.walletv21.utils.Constants.HOME_ROOT_GRAPH
-import com.learning.walletv21.utils.Constants.PARAM_CLAIM_ID
-import com.microblink.MicroblinkSDK
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -37,6 +28,8 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var splashViewModel: SplashViewModel
 
+
+    @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
       //  MicroblinkSDK.setLicenseKey(BLINK_ID_LICENCE,this)
@@ -63,8 +56,11 @@ class MainActivity : ComponentActivity() {
                 }
                 */
                 SetupNavGraph(navController = navController, startDestination = AUTH_GRAPH/*HOME_ROOT_GRAPH*//*screen*/)
+                //BiometricScreen(onClick = {launchBiometric()})
+                //BiometricPromptScreen()
             }
         }
     }
+
 }
 

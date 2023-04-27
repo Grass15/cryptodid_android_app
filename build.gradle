@@ -7,8 +7,8 @@ buildscript {
     }
     repositories {
         google()
-        maven { url 'https://maven.microblink.com' }
         mavenCentral()
+        maven { url 'https://maven.microblink.com' }
     }
 
 

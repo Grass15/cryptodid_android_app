@@ -18,9 +18,9 @@ class ClaimListViewModel @Inject constructor(
      private val _state = mutableStateOf(ClaimListState())
     val state: State<ClaimListState> = _state
 
-    init {
+  /*  init {
         getClaims()
-    }
+    }*/
 
     private fun getClaims(){
         getClaimsUseCase().onEach { result ->
