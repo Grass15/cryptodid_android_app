@@ -19,7 +19,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.learning.walletv21.presentation.theme.secondBackGroundColor
-import com.microblink.activity.result.ScanResult
 
 @Composable
 fun BottomSheetNavigation(

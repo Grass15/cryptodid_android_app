@@ -12,10 +12,13 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.learning.walletv21.presentation.home.biometrics.BiometricPromptScreen
+import com.learning.walletv21.presentation.home.microblink.MyScreen
 import com.learning.walletv21.presentation.loginid_welcome.SplashViewModel
 import com.learning.walletv21.presentation.navigation.graphs.SetupNavGraph
 import com.learning.walletv21.presentation.theme.WalletV21Theme
 import com.learning.walletv21.utils.Constants.AUTH_GRAPH
+import com.learning.walletv21.utils.Constants.BLINK_ID_LICENCE
+import com.microblink.blinkid.MicroblinkSDK
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -32,7 +35,7 @@ class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-      //  MicroblinkSDK.setLicenseKey(BLINK_ID_LICENCE,this)
+        MicroblinkSDK.setLicenseKey(BLINK_ID_LICENCE,this)
         installSplashScreen().setKeepOnScreenCondition{
             !splashViewModel.isLoading.value
         }
@@ -55,9 +58,10 @@ class MainActivity : ComponentActivity() {
                     }
                 }
                 */
-                SetupNavGraph(navController = navController, startDestination = AUTH_GRAPH/*HOME_ROOT_GRAPH*//*screen*/)
-                //BiometricScreen(onClick = {launchBiometric()})
+                //SetupNavGraph(navController = navController, startDestination = AUTH_GRAPH/*HOME_ROOT_GRAPH*//*screen*/)
                 //BiometricPromptScreen()
+               // DemoScan()
+                MyScreen()
             }
         }
     }
