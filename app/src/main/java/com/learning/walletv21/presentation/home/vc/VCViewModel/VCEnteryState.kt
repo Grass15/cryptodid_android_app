@@ -9,6 +9,7 @@ data class VCEnteryState(
     val VCType: String = "Persenal document",
     val VCTitle: String = "Age",
     val VCContentOverview: String="Age > 18",
+    val VCAttribute: Int = 0,
     //val VCId: String,
     val status: Status=Status.NO_ACTION
 ) {

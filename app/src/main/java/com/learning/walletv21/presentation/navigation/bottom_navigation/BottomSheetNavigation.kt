@@ -68,7 +68,8 @@ fun BottomSheetNavigation(
                              issuerName = "MicroBlink",
                              VCType = "Personal data",
                              VCTitle = "Age",
-                             VCContentOverview = it.toString()
+                             VCContentOverview = "+18",
+                             VCAttribute = it
                          )
                      )
                  },

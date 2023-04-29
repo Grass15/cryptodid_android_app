@@ -124,7 +124,7 @@ class VCViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-
+/*
     fun storeClaim(newVC: VCEnteryState){
         _VCEnteryState.update { newVC }
         val VC = Claim(_VCEnteryState.value.VCTitle,_VCEnteryState.value.VCType,_VCEnteryState.value.issuerName,_VCEnteryState.value.VCContentOverview)
@@ -132,4 +132,6 @@ class VCViewModel @Inject constructor(
             repository.insertVC(VCEntity("13",VC,"5b111b90-a07a-4c91-ae96-9e71d188cd10"))
         }
     }
+    */
+
 }
