@@ -58,7 +58,7 @@ class MainActivity : ComponentActivity() {
                     }
                 }
                 */
-                SetupNavGraph(navController = navController, startDestination = /*AUTH_GRAPH*/HOME_ROOT_GRAPH/*screen*/)
+                SetupNavGraph(navController = navController, startDestination = AUTH_GRAPH/*HOME_ROOT_GRAPH*//*screen*/)
                 //BiometricPromptScreen()
                // DemoScan()
                // LaunchScannerScreen()
