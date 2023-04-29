@@ -111,6 +111,7 @@ Scaffold(
         .background(MaterialTheme.colors.HomeBackGround)
         .padding(it)) {
        // Text(text = "Hello", fontSize = MaterialTheme.typography.h3.fontSize)
+        ExpandableSearchCard()
         VCCard()
     }
 

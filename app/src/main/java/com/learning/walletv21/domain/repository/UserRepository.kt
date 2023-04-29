@@ -12,7 +12,7 @@ interface UserRepository {
 
     suspend fun insertVC(vc: VCEntity)
 
-    suspend fun deleteVCById(claimId: Int)
+    suspend fun deleteVCById(claimId: String)
 
     fun getUserWithVCs(userId: String): Flow<UserAndVC>
     //suspend fun getUserWithClaims(userId: String): UserAndVC

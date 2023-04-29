@@ -38,7 +38,7 @@ interface VCDao {
      * @param vcId
      */
     @Query("DELETE FROM $VC_TABLE_NAME WHERE id = :vcId")
-    suspend fun deleteVCById(vcId: Int)
+    suspend fun deleteVCById(vcId: String)
 
     /**
      * In order to display a user VC in our homescreen we use a flow of data so whenever we delete a vc or

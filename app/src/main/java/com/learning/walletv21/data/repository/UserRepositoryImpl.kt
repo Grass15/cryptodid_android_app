@@ -40,7 +40,7 @@ class UserRepositoryImpl @Inject constructor(
      * @param vcID
      */
 
-    override suspend fun deleteVCById(claimId: Int) {
+    override suspend fun deleteVCById(claimId: String) {
          vcDao.deleteVCById(claimId)
     }
 

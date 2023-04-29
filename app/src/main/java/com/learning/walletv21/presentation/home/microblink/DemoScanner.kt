@@ -1,17 +1,29 @@
 package com.learning.walletv21.presentation.home.microblink
 
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.util.Log
+import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.compose.foundation.layout.padding
+import androidx.activity.result.ActivityResultLauncher
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
+import androidx.compose.material.Icon
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CardMembership
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.learning.walletv21.utils.Constants.BLINK_ID_LICENCE
+
 import com.microblink.blinkid.MicroblinkSDK
 import com.microblink.blinkid.activity.result.ResultStatus
 import com.microblink.blinkid.activity.result.ScanResult
@@ -24,9 +36,10 @@ import com.microblink.blinkid.fragment.overlay.blinkid.BlinkIdOverlaySettings
 
 @Composable
 fun ScanIDCard(
-    context: Context,
-    onScanResult: (ScanResult) -> Unit
+    onScanResult: (Int) -> Unit,
+    launchCamera: (ManagedActivityResultLauncher<Void?,TwoSideScanResult>) -> Unit
 ) {
+
     // Set the Microblink SDK license file
    // MicroblinkSDK.setLicenseKey(BLINK_ID_LICENCE, context)
 
@@ -36,8 +49,9 @@ fun ScanIDCard(
             ResultStatus.FINISHED -> {
                 // code after a successful scan
                 // use twoSideScanResult.result for fetching results, for example:
-                val firstName = twoSideScanResult.result?.firstName?.value()
-                Log.d("Extracted info", firstName.toString())
+                val ageVC = twoSideScanResult.result?.age
+                ageVC?.let { onScanResult(it) }
+                //Log.d("Extracted info", ageVC.toString())
             }
             ResultStatus.CANCELLED -> {
                 // code after a cancelled scan
@@ -52,14 +66,24 @@ fun ScanIDCard(
 
     // Call the result launcher to start the scan process
     val buttonClickHandler = {
-        resultLauncher.launch(null)
+        //launchCamera(resultLauncher)
+        launchCamera(resultLauncher)
+        //resultLauncher.launch(null)
     }
 
-    Button(
-        onClick = { buttonClickHandler.invoke() },
-        modifier = Modifier.padding(16.dp)
-    ) {
-        Text(text = "Scan ID Card")
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable {
+                buttonClickHandler.invoke()
+            }
+            .padding(16.dp)
+    ){
+        Icon(imageVector = Icons.Filled.CardMembership, contentDescription = "get age credentials using microblink")
+        Spacer(modifier = Modifier.width(16.dp))
+        Text(text = "Get Age VC",modifier = Modifier.weight(1f), style = TextStyle(fontSize = 18.sp))
     }
+
 
 }
+

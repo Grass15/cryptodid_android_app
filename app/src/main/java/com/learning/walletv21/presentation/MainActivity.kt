@@ -11,13 +11,13 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.pager.ExperimentalPagerApi
-import com.learning.walletv21.presentation.home.biometrics.BiometricPromptScreen
-import com.learning.walletv21.presentation.home.microblink.MyScreen
+import com.learning.walletv21.presentation.home.microblink.LaunchScannerScreen
 import com.learning.walletv21.presentation.loginid_welcome.SplashViewModel
 import com.learning.walletv21.presentation.navigation.graphs.SetupNavGraph
 import com.learning.walletv21.presentation.theme.WalletV21Theme
 import com.learning.walletv21.utils.Constants.AUTH_GRAPH
 import com.learning.walletv21.utils.Constants.BLINK_ID_LICENCE
+import com.learning.walletv21.utils.Constants.HOME_ROOT_GRAPH
 import com.microblink.blinkid.MicroblinkSDK
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -58,10 +58,10 @@ class MainActivity : ComponentActivity() {
                     }
                 }
                 */
-                //SetupNavGraph(navController = navController, startDestination = AUTH_GRAPH/*HOME_ROOT_GRAPH*//*screen*/)
+                SetupNavGraph(navController = navController, startDestination = /*AUTH_GRAPH*/HOME_ROOT_GRAPH/*screen*/)
                 //BiometricPromptScreen()
                // DemoScan()
-                MyScreen()
+               // LaunchScannerScreen()
             }
         }
     }

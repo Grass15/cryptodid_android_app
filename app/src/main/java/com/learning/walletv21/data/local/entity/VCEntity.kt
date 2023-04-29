@@ -18,7 +18,7 @@ import java.time.LocalDateTime
 @Entity(tableName = VC_TABLE_NAME)
 data class VCEntity(
     @PrimaryKey
-    val id: Int,
+    val id: String,
     val vc: Claim? = null,
     val claimOwner: String
 )

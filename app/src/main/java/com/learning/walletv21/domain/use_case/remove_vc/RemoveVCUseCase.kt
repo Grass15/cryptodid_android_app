@@ -11,7 +11,7 @@ import javax.inject.Inject
 class RemoveVCUseCase @Inject constructor(
     private val repository: UserRepository
 ){
-    operator fun invoke(VCId: Int): Flow<Resource<Boolean>> = flow {
+    operator fun invoke(VCId: String): Flow<Resource<Boolean>> = flow {
         try {
             emit(Resource.Loading<Boolean>())
             repository.deleteVCById(VCId)

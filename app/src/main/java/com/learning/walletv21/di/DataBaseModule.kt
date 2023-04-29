@@ -37,7 +37,7 @@ class DataBaseModule {
             context,
             VCDataBase::class.java,
             VC_DATA_BASE
-        ).build() //.fallbackToDestructiveMigration()
+        )./*fallbackToDestructiveMigration().*/build()
     }
 
     @Provides

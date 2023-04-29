@@ -172,7 +172,7 @@ dependencies {
     implementation("androidx.biometric:biometric:1.2.0-alpha05")
 
     //MicroBlink
-    implementation('com.microblink:blinkid:6.1.2@aar') {
+  implementation('com.microblink:blinkid:6.1.2@aar') {
         transitive = true
     }
 

@@ -10,7 +10,7 @@ import com.learning.walletv21.data.local.entity.VCEntity
 
 
 @Database(entities = [VCEntity::class, UserEntity::class],
-    version = 3
+    version = 4
 )
 @TypeConverters(Claim_TypeConverter::class)
 abstract class VCDataBase: RoomDatabase() {
