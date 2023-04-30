@@ -20,7 +20,7 @@ import kotlin.collections.List
 
 @HiltViewModel
 class VCViewModel @Inject constructor(
-    private val repository: UserRepository,
+  //  private val repository: UserRepository,
     private val getVCUseCase: GetVCUseCase,
     private val removeVCUseCase: RemoveVCUseCase,
     private val saveVCUseCase: SaveVCUseCase
@@ -68,7 +68,8 @@ class VCViewModel @Inject constructor(
                                       VCType = it1.type.toString(),
                                       VCTitle = it1.title.toString(),
                                       VCContentOverview = it1.content.toString(),
-                                      VCID = it.id
+                                      VCID = it.id,
+                                      rawVC = it1
                                   )
                               }
 

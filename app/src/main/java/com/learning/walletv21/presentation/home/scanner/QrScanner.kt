@@ -24,6 +24,10 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 
+/**
+ * No longer used in the code
+ * for test pourpouces only
+ */
 
 @Composable
 fun QrScanner() {

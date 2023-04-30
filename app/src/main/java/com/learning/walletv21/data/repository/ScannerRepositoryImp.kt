@@ -50,6 +50,50 @@ class ScannerRepositoryImp @Inject constructor(
                 "ssid : $ssid, password : $password, type : $type"
             }
             Barcode.TYPE_URL -> {
+                "${barcode.url!!.url}"
+            }
+            Barcode.TYPE_PRODUCT -> {
+                "productType : ${barcode.displayValue}"
+            }
+            Barcode.TYPE_EMAIL -> {
+                "email : ${barcode.email}"
+            }
+            Barcode.TYPE_CONTACT_INFO -> {
+                "contact : ${barcode.contactInfo}"
+            }
+            Barcode.TYPE_PHONE -> {
+                "phone : ${barcode.phone}"
+            }
+            Barcode.TYPE_CALENDAR_EVENT -> {
+                "calender event : ${barcode.calendarEvent}"
+            }
+            Barcode.TYPE_GEO -> {
+                "geo point : ${barcode.geoPoint}"
+            }
+            Barcode.TYPE_ISBN -> {
+                "isbn : ${barcode.displayValue}"
+            }
+            Barcode.TYPE_DRIVER_LICENSE -> {
+                "driving license : ${barcode.driverLicense}"
+            }
+            Barcode.TYPE_SMS -> {
+                "sms : ${barcode.sms}"
+            }
+            Barcode.TYPE_TEXT -> {
+                "${barcode.rawValue}"
+            }
+            Barcode.TYPE_UNKNOWN -> {
+                "unknown : ${barcode.rawValue}"
+            }
+            else -> {
+                "Couldn't determine"
+            }
+        }
+    }
+}
+
+/*
+  Barcode.TYPE_URL -> {
                 "url : ${barcode.url!!.url}"
             }
             Barcode.TYPE_PRODUCT -> {
@@ -88,6 +132,4 @@ class ScannerRepositoryImp @Inject constructor(
             else -> {
                 "Couldn't determine"
             }
-        }
-    }
-}
+ */

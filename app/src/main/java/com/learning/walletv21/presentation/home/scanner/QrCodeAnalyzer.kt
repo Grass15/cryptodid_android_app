@@ -11,6 +11,11 @@ import com.google.zxing.PlanarYUVLuminanceSource
 import com.google.zxing.common.HybridBinarizer
 import java.nio.ByteBuffer
 
+/**
+ * No longer used in the code
+ * for test pourpouces only
+ */
+
 class QrCodeAnalyzer(
     private val onQrCodeScanned: (String) -> Unit
 ): ImageAnalysis.Analyzer {
