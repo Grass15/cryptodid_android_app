@@ -34,125 +34,23 @@ public class Fetcher {
     private final int ageIssuerPort = 7777;
     private final int creditScoreIssuerPort = 8888;
     private Fragment callerFragment;
-    private ActivityResultLauncher<Intent> plaidActivityLauncher;
-    private ActivityResultLauncher<Intent> blinkActivityLauncher;
-    private ActivityResultLauncher<Intent> creditScoreActivityLauncher;
     Issuer issuer = new Issuer();
     MG_FHE fhe = new MG_FHE(11,512);
     private ClaimViewModel claimViewModel;
-    private Scanner scanner;
-    private ActivityResultLauncher<ScanOptions> barLauncher;
 
     public Fetcher(Fragment callerFragment){
         this.callerFragment = callerFragment;
         claimViewModel =  new ViewModelProvider(callerFragment.requireActivity()).get(ClaimViewModel.class);
-        this.barLauncher = callerFragment.registerForActivityResult(new ScanContract(), result -> {
-            if (result != null && result.getContents() != null) {
-                QrDecoder decodedData = new QrDecoder(result.getContents());
-                this.issuerUrl = decodedData.getUrl();
-                this.issuerPort = decodedData.getPort();
-                //this.launchTrustedSource();
-            }
-        });
-        this.plaidActivityLauncher = callerFragment.registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            new ActivityResultCallback<ActivityResult>() {
-                @Override
-                public void onActivityResult(ActivityResult result) {
-                    if (result.getResultCode() == Activity.RESULT_OK) {
-                        Intent data = result.getData();
-                        if(data != null){
-                            try {
-                                storeClaim(data);
-                            } catch (ParseException e) {
-                                throw new RuntimeException(e);
-                            }
-                        }
-                    }
-                }
-            });
-        this.blinkActivityLauncher = callerFragment.registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            new ActivityResultCallback<ActivityResult>() {
-                @Override
-                public void onActivityResult(ActivityResult result) {
-                    if (result.getResultCode() == Activity.RESULT_OK) {
-                        Intent data = result.getData();
-                        if(data != null){
-                            try {
-                                storeClaim(data);
-                            } catch (ParseException e) {
-                                throw new RuntimeException(e);
-                            }
-                        }
-                    }
-                }
-            });
-        this.creditScoreActivityLauncher = callerFragment.registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            new ActivityResultCallback<ActivityResult>() {
-                @Override
-                public void onActivityResult(ActivityResult result) {
-                    if (result.getResultCode() == Activity.RESULT_OK) {
-                        Intent data = result.getData();
-                        if(data != null){
-                            try {
-                                storeClaim(data);
-                            } catch (ParseException e) {
-                                throw new RuntimeException(e);
-                            }
-                        }
-                    }
-                }
-            });
-        this.scanner = new Scanner(callerFragment);
     }
 
 
-    public void getClaim() throws InterruptedException{
-        Thread scan = new Thread() {
-            public void run() {
-                scanner.scanCode();
-            }
-        };
-        scan.start();
-        scan.join();
-        this.barLauncher.launch(scanner.options);
-    }
-    public void launchTrustedSource(int issuerPort){
-
-        if(issuerPort == bankIssuerPort){
-            Intent plaidActivity = new Intent(callerFragment.getActivity(), PlaidActivity.class);
-            this.plaidActivityLauncher.launch(plaidActivity);
-        }
-        else if(issuerPort == ageIssuerPort){
-            Intent blinkActivity = new Intent(callerFragment.getActivity(), BlinkActivity.class);
-            this.plaidActivityLauncher.launch(blinkActivity);
-        }
-        else if(issuerPort == creditScoreIssuerPort){
-            Intent creditScoreActivity = new Intent(callerFragment.getActivity(), CreditScoreActivity.class);
-            this.creditScoreActivityLauncher.launch(creditScoreActivity);
-        }else{
-            AlertDialog.Builder builder = new AlertDialog.Builder(this.callerFragment.getView().getContext());
-            builder.setTitle("Error");
-            builder.setMessage("Please Ensure you scanned the good QR ");
-            builder.setPositiveButton("Close", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    dialogInterface.dismiss();
-                }
-            }).show();
-        }
-    }
-
-    public void storeClaim(Intent data) throws ParseException {
-        int attribute = Integer.parseInt(data.getStringExtra("attribute"));
-        String claimTitle = data.getStringExtra("claimTitle");
-        String claimType = data.getStringExtra("claimType");
-        String claimIssuerName = data.getStringExtra("issuerName");
-        String claimContent = data.getStringExtra("claimContent");
-        issuer.setAttribute(attribute);
-        Claim claim = issuer.getClaim("user_good", "pass_good", fhe, claimIssuerName,  claimType, claimTitle, claimContent);
+    public void storeClaim() throws ParseException {
+        int SIN = 121314615;
+        String claimTitle = "SIN VC";
+        String claimType = "SIN";
+        String claimIssuerName = "Crypto DID: Expires on ";
+        String claimContent = "You can use this verifiable credential to attest your SIN";
+        Claim claim = issuer.getClaim( SIN, fhe, claimIssuerName,  claimType, claimTitle, claimContent);
         claim.setFhe(fhe);
         claimViewModel.stickNewValue(claim);
     }

@@ -98,36 +98,19 @@ public class Verifier {
 
     public void verify() throws InterruptedException, ParseException, IOException, ClassNotFoundException {
         if (!Objects.equals(verifierUrl, "")) {
-            finalResponseEndpoint.createWebSocketClient("ws://" + verifierUrl + "/finalResponse");
-            Claim balanceClaim;
-            Claim creditScoreClaim;
-            Claim ageClaim;
+            Claim sinVC;
             try {
-                balanceClaim = MainActivity.driver.getClaimsFromACertainType("Balance").get(0);
-                creditScoreClaim = MainActivity.driver.getClaimsFromACertainType("Credit Score").get(0);
-                ageClaim = MainActivity.driver.getClaimsFromACertainType("Age").get(0);
-                ProverThread balanceProverThread = new ProverThread(verifierUrl, balanceClaim, balanceClaim.getFhe(), "balance");
-                ProverThread ageProverThread = new ProverThread(verifierUrl, ageClaim, ageClaim.getFhe(), "age");
-                ProverThread creditScoreProverThread = new ProverThread(verifierUrl, creditScoreClaim, creditScoreClaim.getFhe(), "creditScore");
-                Thread balanceVerification = new Thread(balanceProverThread);
-                Thread ageVerification = new Thread(ageProverThread);
-                Thread creditScoreVerification = new Thread(creditScoreProverThread);
-                balanceVerification.start();
-                ageVerification.start();
-                creditScoreVerification.start();
-                balanceVerification.join();
-                ageVerification.join();
-                creditScoreVerification.join();
+                sinVC = MainActivity.driver.getClaimsFromACertainType("SIN").get(0);
+                ProverThread SINProverThread = new ProverThread(verifierUrl, sinVC, sinVC.getFhe(), "SIN");
+                Thread SINVerification = new Thread(SINProverThread);
+                SINVerification.start();
+                SINVerification.join();
                 AlertDialog.Builder builder = new AlertDialog.Builder(this.callerFragment.getView().getContext());
                 builder.setTitle("Verification Status");
                 try {
 //                    builder.setMessage("Something went wrong");
-                    builder.setMessage(balanceProverThread.getVerifierStatus() + "\nBalance: " + balanceProverThread.getVerifierResponse()[1] + "\n\nCredit Score: " + creditScoreProverThread.getVerifierResponse()[1] + "\n\nAge: " + ageProverThread.getVerifierResponse()[1]);
-                    User user = MainActivity.driver.getUser();
-                    String[] finalResponse = new String[]{user.firstname, user.lastname, user.address, user.username, user.phone, "Maroc", ageProverThread.getVerifierResponse()[2], balanceProverThread.getVerifierResponse()[2], creditScoreProverThread.getVerifierResponse()[2]};
-                    finalResponseEndpoint.response = gson.toJson(finalResponse);
-                    finalResponseEndpoint.webSocketClient.connect();
-                    finalResponseEndpoint.webSocketClient.close();
+                    builder.setMessage(SINProverThread.getVerifierResponse()[1]);
+
                 } catch (Exception e) {
                     builder.setMessage("Something went wrong");
                 }

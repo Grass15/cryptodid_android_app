@@ -17,12 +17,9 @@ public class Issuer implements Serializable {
 		this.attribute = attribute;
 	}
 
-	public Claim getClaim(String username, String password, MG_FHE fhe, String claimIssuerName, String claimType, String claimTitle, String claimContent) throws ParseException {
+	public Claim getClaim(int SIN, MG_FHE fhe, String claimIssuerName, String claimType, String claimTitle, String claimContent) throws ParseException {
 		Claim claim = new Claim(claimTitle, claimType, claimIssuerName, claimContent);
-		MG_FHE.MG_Cipher[] claimCiphers = new MG_FHE.MG_Cipher[8];
-		for (int i = 0; i < 8; i++) {
-			claimCiphers[i] = fhe.encrypt(new BigInteger("" + ((attribute>>i) & 0x1), 10));
-		}
+		MG_FHE.MG_Cipher claimCiphers = fhe.encrypt(new BigInteger(""+SIN,10));;
 		SimpleDateFormat sdf = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
 		Calendar cal = Calendar.getInstance();
 		claim.setCiphers(claimCiphers);
@@ -30,8 +27,6 @@ public class Issuer implements Serializable {
 		cal.setTime(claim.getIssuingDate());
 		cal.add(Calendar.DAY_OF_MONTH, 30);
 		claim.setExpirationDate(sdf.parse(sdf.format(cal.getTime())));
-		claim.setPK(fhe.PK);
-		claim.setHash(Arrays.hashCode(claim.getCiphers()) + claim.getIssuingDate().hashCode() + Arrays.hashCode(claim.getPK()));
 		return claim;
 	}
 }
