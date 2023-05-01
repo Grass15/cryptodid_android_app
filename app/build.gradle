@@ -12,13 +12,13 @@ plugins {
 android {
 
 
-    namespace 'com.learning.walletv21'
+    namespace 'com.loginid.cryptodid'
 
     compileSdk 33
 
     defaultConfig {
 
-        applicationId "com.learning.walletv21"
+        applicationId "com.loginid.cryptodid"
         minSdk 25
         targetSdk 33
         versionCode 1

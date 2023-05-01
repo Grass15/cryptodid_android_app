@@ -14,5 +14,5 @@ dependencyResolutionManagement {
         maven { url 'https://maven.microblink.com' }
     }
 }
-rootProject.name = "WalletV21"
+rootProject.name = "Cryptodid"
 include ':app'
