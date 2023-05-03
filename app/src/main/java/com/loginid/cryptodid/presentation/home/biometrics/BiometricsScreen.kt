@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 @RequiresApi(Build.VERSION_CODES.P)
 @Composable
 fun BiometricPromptScreen() {
+    /*
     val context = LocalContext.current
     val activity = LocalContext.current as Activity
     val biometricAuthenticator = remember { BiometricAuthenticator(context,{ Log.d("frfr","f") }) }
@@ -39,6 +40,8 @@ fun BiometricPromptScreen() {
             showPrompt = false
         }
     }
+
+     */
 }
 
 /*

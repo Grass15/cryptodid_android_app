@@ -12,12 +12,12 @@ import android.os.Build
 import android.os.CancellationSignal
 import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.Composable
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 
 
-class BiometricAuthenticator(val context: Context,val successFunc : () -> Unit) {
+class BiometricAuthenticator(val context: Context,val onBiometricFailled : (BiometricsSupportState) -> Unit, val successFunc : () -> Unit) {
 
     private var cancellationSignal: CancellationSignal? = null
 
@@ -57,17 +57,29 @@ class BiometricAuthenticator(val context: Context,val successFunc : () -> Unit) 
 
         if (!keyguardManager.isDeviceSecure) {
             notifyUser("Lock screen security not enabled in the settings")
+            onBiometricFailled(BiometricsSupportState(
+                false,
+                "Lock screen security not enabled in the settings"
+            ))
             return false
         }
 
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.USE_BIOMETRIC) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(context as AppCompatActivity, arrayOf(Manifest.permission.USE_BIOMETRIC), 1)
+            ActivityCompat.requestPermissions(context as Activity, arrayOf(Manifest.permission.USE_BIOMETRIC), 1)
             notifyUser("Fingerprint authentication permission not enabled")
+            onBiometricFailled(BiometricsSupportState(
+                false,
+                "Fingerprint authentication permission not enabled"
+            ))
             return false
         }
 
         if (!context.packageManager.hasSystemFeature(PackageManager.FEATURE_FINGERPRINT)) {
             notifyUser("Device does not support fingerprint authentication")
+            onBiometricFailled(BiometricsSupportState(
+                false,
+                "Device does not support fingerprint authentication"
+            ))
             return false
         }
 
@@ -87,6 +99,10 @@ class BiometricAuthenticator(val context: Context,val successFunc : () -> Unit) 
         return object : BiometricPrompt.AuthenticationCallback() {
             override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
                 notifyUser("Authentication error $errorCode: $errString")
+                onBiometricFailled(BiometricsSupportState(
+                    false,
+                    "Authentication error $errorCode: $errString"
+                ))
             }
 
             override fun onAuthenticationFailed() {

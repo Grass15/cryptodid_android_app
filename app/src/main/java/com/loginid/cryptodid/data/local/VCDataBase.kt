@@ -10,7 +10,7 @@ import com.loginid.cryptodid.data.local.entity.VCEntity
 
 
 @Database(entities = [VCEntity::class, UserEntity::class],
-    version = 4
+    version = 5
 )
 @TypeConverters(Claim_TypeConverter::class)
 abstract class VCDataBase: RoomDatabase() {

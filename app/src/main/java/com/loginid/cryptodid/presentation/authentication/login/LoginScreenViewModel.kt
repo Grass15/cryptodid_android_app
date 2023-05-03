@@ -2,10 +2,12 @@ package com.loginid.cryptodid.presentation.authentication.login
 
 import androidx.lifecycle.viewModelScope
 import com.loginid.cryptodid.data.local.entity.UserEntity
+import com.loginid.cryptodid.data.repository.UserDataStoreRepository
 import com.loginid.cryptodid.domain.repository.UserRepository
 import com.loginid.cryptodid.domain.use_case.authentication.LoginUseCase
 import com.loginid.cryptodid.presentation.authentication.login.mock_template.LoginScreenViewModelBase
 import com.loginid.cryptodid.utils.Resource
+import com.loginid.cryptodid.utils.UserDataPrefrence
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -16,7 +18,8 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginScreenViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
-    private val repository: UserRepository
+    private val repository: UserRepository,
+    private val userDataStoreRepository: UserDataStoreRepository
 ) : LoginScreenViewModelBase() {
     private val _state = MutableStateFlow(LoginDataState())
     private val _status = MutableStateFlow(Status.NO_ACTION)
@@ -47,7 +50,20 @@ class LoginScreenViewModel @Inject constructor(
                        }
                        is Resource.Success -> {
                            when(result.data){
-                               true -> _status.value = Status.SUCCESS
+                               true -> {
+                                   //Here we fill our UserdataStrorePrefs
+                                   val userData = repository.getUserByUserName(username)
+                                   userData.let {
+                                       userDataStoreRepository.saveUserDataState(
+                                           UserDataPrefrence(
+                                               userName = it.username,
+                                               userId = it.userId,
+                                               name = it.firstname!!
+                                           )
+                                       )
+                                       _status.value = Status.SUCCESS
+                                   }
+                               }
                                false -> _status.value = Status.FAILLED
                            }
 

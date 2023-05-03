@@ -18,6 +18,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.loginid.cryptodid.claimVerifier.VerificationStatus
 import com.loginid.cryptodid.presentation.home.biometrics.BiometricAuthenticator
 import com.loginid.cryptodid.presentation.home.scanner.ScannerViewModel
 import com.loginid.cryptodid.presentation.home.vc.VCViewModel.VCViewModel
@@ -29,7 +30,8 @@ import com.loginid.cryptodid.utils.Status
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun VCCard(
-    vcViewModel: VCViewModel = hiltViewModel()
+    vcViewModel: VCViewModel = hiltViewModel(),
+    onVerificationStateAction: (VerificationStatus) -> Unit
 ) {
     //Scanner
     val scannerViewModel: ScannerViewModel = hiltViewModel()
@@ -39,7 +41,9 @@ fun VCCard(
     val context = LocalContext.current
     val activity = LocalContext.current as Activity
     val biometricAuthenticator = remember { BiometricAuthenticator(context,
-        { scannerViewModel.startScanning() }) }
+        onBiometricFailled = {}
+        )
+    { scannerViewModel.startScanning() } }
     var showPrompt by remember { mutableStateOf(false) }
 
     //States
@@ -47,10 +51,6 @@ fun VCCard(
     val verificationState = scannerViewModel.vState.collectAsState()
     val vcActionState = vcViewModel.vcAction.collectAsState()
 
-    //Screen Configuration
-    val configuration = LocalConfiguration.current
-    val screenWidth = configuration.screenWidthDp.dp
-    val screenHeight = configuration.screenHeightDp.dp
 
           LazyColumn(modifier = Modifier.padding(12.dp)){
               items(vcstate.value){vc->
@@ -101,22 +101,22 @@ fun VCCard(
     when(verificationState.value.vStatus){
         Status.ERROR -> {
             Log.d("Verification",verificationState.value.vMessage)
+            onVerificationStateAction(verificationState.value)
         }
         Status.SUCCESS -> {
             Log.d("Verification",verificationState.value.vMessage)
+            onVerificationStateAction(verificationState.value)
         }
         Status.FAILLED -> {
             Log.d("Verification",verificationState.value.vMessage)
         }
         Status.LOADING -> {
             Log.d("Verification",verificationState.value.vMessage)
-            Box(modifier = Modifier.size(screenWidth, screenHeight).background(Color.Transparent),contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-
-            }
+            onVerificationStateAction(verificationState.value)
         }
         Status.NO_ACTION -> {
             Log.d("Verification",verificationState.value.vMessage)
+            onVerificationStateAction(verificationState.value)
         }
 
     }

@@ -65,4 +65,8 @@ class UserRepositoryImpl @Inject constructor(
     override suspend fun checkUserCreds(username: String, pass: String): Boolean {
         return  vcDao.checkUserCreds(username,pass)
     }
+
+    override suspend fun getUserByUserName(username: String): UserEntity {
+        return  vcDao.getUserByUserName(username)
+    }
 }

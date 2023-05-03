@@ -20,4 +20,6 @@ interface UserRepository {
     fun getUsersWithVCs(): Flow<List<UserAndVC>>
 
     suspend  fun checkUserCreds(username: String, pass: String): Boolean
+
+    suspend fun getUserByUserName(username: String): UserEntity
 }

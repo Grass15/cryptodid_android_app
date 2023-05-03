@@ -12,7 +12,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 
 public class Verifier {
 
@@ -55,49 +54,8 @@ public class Verifier {
         if(vcs != null)
            this.vcs.addAll(vcs);
     }
-    public void verifySingleVC()  throws InterruptedException, ParseException, IOException, ClassNotFoundException{
-        if(vc != null){
 
-            if (!Objects.equals(this.url, "")) {
-                Log.d("Verifyer","Started Verifier Thread");
-                finalResponseEndpoint.createWebSocketClient("ws://" + this.url + "/finalResponse");
-                Claim ageClaim;
-                Thread ageVerification;
-                try {
-                    ageClaim = this.vc;
-                    ProverThread ageProverThread = new ProverThread(this.url, ageClaim, ageClaim.getFhe(), "age");
-                    ageVerification = new Thread(ageProverThread);
-                    ageVerification.start();
-                    ageVerification.join();
-
-                    try {
-                        String[] finalResponse = new String[]{"user.firstname", "user.lastname", "user.address", "user.username", "user.phone", "Maroc"/*, ageProverThread.getVerifierResponse()[2]*/};
-                        finalResponseEndpoint.response = gson.toJson(finalResponse);
-                        finalResponseEndpoint.webSocketClient.connect();
-                        finalResponseEndpoint.webSocketClient.close();
-                    } catch (Exception e) {
-                        Log.d("Verifyer","Ooops something went wrong");
-                    }finally {
-                        ageVerification.destroy();
-
-                    }
-
-                } catch (Exception e) {
-
-                    Log.d("Verifyer","At least one credential should be added");
-
-
-                }
-            }else{
-                Log.d("Verifyer","Ensure you scanned the QR code");
-
-            }
-
-        }else{
-
-        }
-    }
-    public VerificationStatus verifyMultipleVCs()  throws InterruptedException, ParseException, IOException, ClassNotFoundException{
+    public VerificationStatus verifyVCsRentalHouse()  throws InterruptedException, ParseException, IOException, ClassNotFoundException{
       //  return CompletableFuture.runAsync(() -> {
             if (!vcs.isEmpty()) {
 

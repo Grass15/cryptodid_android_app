@@ -64,4 +64,11 @@ interface VCDao {
     @Query("SELECT EXISTS(SELECT 1 FROM $USER_TABLE_NAME WHERE username = :username AND password = :pass)")
     suspend fun checkUserCreds(username: String, pass: String): Boolean
 
+    /**
+     * getting user data to store them inside the userDataStore prefrence
+     * @param username
+     * @return UserEntity
+     */
+    @Query("SELECT * FROM $USER_TABLE_NAME WHERE username = :username")
+    suspend fun getUserByUserName(username: String): UserEntity
 }

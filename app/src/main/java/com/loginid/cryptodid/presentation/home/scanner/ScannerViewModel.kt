@@ -70,7 +70,7 @@ class ScannerViewModel @Inject constructor(
 
         val issuer2: Issuer =
             Issuer()
-        issuer2.setAttribute(900)
+        issuer2.setAttribute((500 / 10) as Int)
         val CreditScoreVC: Claim = issuer2.getClaim("user_good","pass_good",fhe,"vcContent.issuerName","vcContent.VCType","vcContent.VCTitle","vcContent.VCContentOverview")// Claim(vcContent.VCTitle,vcContent.VCType,vcContent.issuerName,vcContent.VCContentOverview)
         CreditScoreVC.setFhe(fhe)
 
