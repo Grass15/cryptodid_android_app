@@ -44,6 +44,7 @@ The Cryptodid Android application uses protocols from the [Cryptodid verifier](h
   1. In a new shell do the following command:
   ``` terminal
   git clone https://github.com/Grass15/cryptodid_android_app.git
+  git checkout access-control
   ```
   2. Open the project folder in Android Studio and run the project
 
