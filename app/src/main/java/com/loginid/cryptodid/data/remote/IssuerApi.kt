@@ -22,15 +22,4 @@ interface IssuerApi {
     @GET("/v1/{VCType}/{VCProvider}")
     suspend fun getVC(@Path("VCType") VCType: String, @Path("VCProvider") VCProvider: String): VCDto
 
-    /**
-     * for test purposes, rendering fake data in main view
-     */
-    @GET("/v1/coins")
-    suspend fun getVCs() : List<ClaimDto>
-
-    /**
-     * for test purposes, rendering fake data details in main view
-     */
-    @GET("/v1/coins/{coinId}")
-    suspend fun getClaimById(@Path("coinId") coinId: String): ClaimDetailDto
 }

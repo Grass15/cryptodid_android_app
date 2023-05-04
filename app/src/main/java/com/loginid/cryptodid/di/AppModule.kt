@@ -2,9 +2,7 @@ package com.loginid.cryptodid.di
 
 import com.loginid.cryptodid.data.local.dao.VCDao
 import com.loginid.cryptodid.data.remote.IssuerApi
-import com.loginid.cryptodid.data.repository.ClaimRepositoryImpl
 import com.loginid.cryptodid.data.repository.VCRepositoryImp
-import com.loginid.cryptodid.domain.repository.ClaimRepository
 import com.loginid.cryptodid.domain.repository.VCRepository
 import com.loginid.cryptodid.utils.Constants.BASE_URL
 import dagger.Module
@@ -33,12 +31,6 @@ class AppModule {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(IssuerApi::class.java)
-    }
-
-    @Provides
-    @Singleton
-    fun provideClaimRepository(api: IssuerApi): ClaimRepository {
-        return ClaimRepositoryImpl(api)
     }
 
     /**
