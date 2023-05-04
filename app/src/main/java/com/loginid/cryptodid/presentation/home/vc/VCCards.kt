@@ -4,22 +4,17 @@ import android.app.Activity
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.loginid.cryptodid.claimVerifier.VerificationStatus
-import com.loginid.cryptodid.presentation.home.biometrics.BiometricAuthenticator
+import com.loginid.cryptodid.presentation.home.biometrics.FingerPrintAuthenticator
 import com.loginid.cryptodid.presentation.home.scanner.ScannerViewModel
 import com.loginid.cryptodid.presentation.home.vc.VCViewModel.VCViewModel
 import com.loginid.cryptodid.utils.Status
@@ -40,7 +35,7 @@ fun VCCard(
     //Biometrics Prompt
     val context = LocalContext.current
     val activity = LocalContext.current as Activity
-    val biometricAuthenticator = remember { BiometricAuthenticator(context,
+    val fingerPrintAuthenticator = remember { FingerPrintAuthenticator(context,
         onBiometricFailled = {}
         )
     { scannerViewModel.startScanning() } }
@@ -93,7 +88,7 @@ fun VCCard(
 
     if (showPrompt) {
         LaunchedEffect(true) {
-            biometricAuthenticator.authenticate(activity)
+            fingerPrintAuthenticator.authenticate(activity)
             showPrompt = false
         }
     }

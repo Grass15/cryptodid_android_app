@@ -7,25 +7,20 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material.SnackbarDefaults.backgroundColor
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.loginid.cryptodid.claimVerifier.VerificationStatus
-import com.loginid.cryptodid.presentation.home.biometrics.BiometricAuthenticator
+import com.loginid.cryptodid.presentation.home.biometrics.BiometricsAuthenticationProvider
+import com.loginid.cryptodid.presentation.home.biometrics.BiomtricType
 import com.loginid.cryptodid.presentation.home.modalDialogs.ModalDialogs
 import com.loginid.cryptodid.presentation.home.vc.VCCard
 import com.loginid.cryptodid.presentation.navigation.bottom_navigation.BottomSheetNavBodyItems
@@ -36,7 +31,6 @@ import com.loginid.cryptodid.presentation.theme.HomeBackGround
 import com.loginid.cryptodid.presentation.theme.OpsIcons
 import com.loginid.cryptodid.utils.Status
 import kotlinx.coroutines.launch
-import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 
 
 @RequiresApi(Build.VERSION_CODES.P)
@@ -46,24 +40,25 @@ fun HomeScreen(
     navController: NavController,
     appBarViewModel: SearchAppBarViewModel = hiltViewModel(),
 ) {
+
     //Demo dialog
     var showDialog by remember {
         mutableStateOf(false)
     }
-    var modalDialogs = ModalDialogs()
+    val modalDialogsFlow = remember { mutableStateOf<ModalDialogs?>(null) }
 
     //General states
+    /*
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
     val screenHeight = configuration.screenHeightDp.dp
-
+*/
     //Screen Configuration
 
     //Verification responce
     var isLoading by remember {
         mutableStateOf(false)
     }
-
 
 
     val snackbarHostState = remember { SnackbarHostState() }
@@ -78,10 +73,12 @@ fun HomeScreen(
     //Biometrics Prompt
     val context = LocalContext.current
     val activity = LocalContext.current as Activity
-    val biometricAuthenticator = remember { BiometricAuthenticator(context,
+    val biometricAuthenticator = remember { BiometricsAuthenticationProvider(context,
         onBiometricFailled = {
-           modalDialogs = ModalDialogs(it.erroMessage,"Biometrics")
-            showDialog = true
+            if(!it.isSupported){
+                modalDialogsFlow.value = ModalDialogs(it.erroMessage,"Biometrics")
+                showDialog = true
+            }
         }
        ) {
             scope.launch {
@@ -89,8 +86,8 @@ fun HomeScreen(
             }
         }
         }
-    var showPrompt by remember { mutableStateOf(false) }
 
+    var showPrompt by remember { mutableStateOf(false) }
 
 Scaffold(
 
@@ -129,7 +126,6 @@ Scaffold(
     floatingActionButton = {
         FloatingActionButton(onClick = {
             showPrompt = true
-            showDialog = true
         }, backgroundColor = MaterialTheme.colors.OpsIcons) {
           Icon(imageVector = Icons.Default.Add, contentDescription = "Adding a new VC")
         }
@@ -176,21 +172,13 @@ Scaffold(
     
 ) {
 
-
     Column(modifier = Modifier
         .fillMaxSize()
         .background(MaterialTheme.colors.HomeBackGround)
         .padding(it)) {
        // Text(text = "Hello", fontSize = MaterialTheme.typography.h3.fontSize)
-        ExpandableSearchCard()
+       // ExpandableSearchCard()
         VCCard {
-            val snackbarColor = when(it.vStatus) {
-                Status.ERROR -> Color.Red
-                Status.SUCCESS -> Color.Blue
-                Status.LOADING -> Color.Gray
-                Status.NO_ACTION -> Color.Red
-                Status.FAILLED -> TODO()
-            }
             when(it.vStatus){
                 Status.ERROR -> {
                     scope.launch {
@@ -235,10 +223,11 @@ Scaffold(
     //Displaying Prompt
     if (showPrompt) {
         LaunchedEffect(true) {
-            biometricAuthenticator.authenticate(activity)
+            biometricAuthenticator.getBiometricAuthenticator(BiomtricType.AUTO)?.authenticate(activity)
             showPrompt = false
         }
     }
+
 /*
     if(isLoading){
         Box(modifier = Modifier
@@ -277,50 +266,15 @@ Scaffold(
     //Displaying dialog incase of errors
 
      if(showDialog){
-       modalDialogs.BiometricsAlertDialog(onDismiss = {
-           showDialog = it
-       })
-   }
-
-
+         modalDialogsFlow.value?.let {
+             it.BiometricsAlertDialog(onDismiss = {
+                 showDialog = it
+             })
+         }
+       }
 }
 
 }
-
-@Composable
-fun VerificationSnackBar(
-    snackbarHostState: SnackbarHostState,
-    modifier: Modifier = Modifier,
-    title: String,
-    action: String,
-    actionColor: Color,
-    onAction: () -> Unit = { }
-) {
-    Snackbar(
-        elevation = 0.dp, //removing shadow
-        backgroundColor = MaterialTheme.colors.CardForGround
-    ) {
-        Box(
-            modifier = modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-        ){
-            Row(modifier = modifier
-                .padding(7.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(text = title)
-                Text(text = action, modifier = Modifier.clickable {
-
-                },
-                color = actionColor
-                    )
-            }
-        }
-
-    }
-}
-
 
 //Top AppBar widget
 

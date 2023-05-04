@@ -34,10 +34,10 @@ class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        MicroblinkSDK.setLicenseKey(BLINK_ID_LICENCE,this)
-        installSplashScreen().setKeepOnScreenCondition{
-            !splashViewModel.isLoading.value
-        }
+         MicroblinkSDK.setLicenseKey(BLINK_ID_LICENCE,this)
+      installSplashScreen().setKeepOnScreenCondition{
+          !splashViewModel.isLoading.value
+      }
         setContent {
             WalletV21Theme {
                 val screen by splashViewModel.startDestination

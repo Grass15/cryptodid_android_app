@@ -26,13 +26,12 @@ class SplashViewModel @Inject constructor(
         viewModelScope.launch {
             repository.readOnBoardingState().collect { completed ->
                 if (completed) {
-                    _isLoading.value = false
                     _startDestination.value = AUTH_GRAPH //review here
                 } else {
-                    _isLoading.value = false
                     _startDestination.value = WelcomeScreen.Welcome.route
                 }
             }
+            _isLoading.value = false
 
         }
     }

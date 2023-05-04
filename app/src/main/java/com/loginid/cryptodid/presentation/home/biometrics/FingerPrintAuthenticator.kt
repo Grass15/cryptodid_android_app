@@ -12,17 +12,22 @@ import android.os.Build
 import android.os.CancellationSignal
 import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.compose.runtime.Composable
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 
 
-class BiometricAuthenticator(val context: Context,val onBiometricFailled : (BiometricsSupportState) -> Unit, val successFunc : () -> Unit) {
+
+
+
+class FingerPrintAuthenticator(val context: Context, val onBiometricFailled : (BiometricsSupportState) -> Unit, val successFunc : () -> Unit)
+    :BiometricsAuthenticator
+{
 
     private var cancellationSignal: CancellationSignal? = null
+    private val permettedErrors: List<Int> = listOf(10)
 
     @RequiresApi(Build.VERSION_CODES.P)
-    fun authenticate(activity: Activity) {
+    override fun authenticate(activity: Activity) {
         if (checkBiometricSupport()) {
             val biometricPrompt = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 BiometricPrompt
@@ -52,7 +57,7 @@ class BiometricAuthenticator(val context: Context,val onBiometricFailled : (Biom
     }
 
     @RequiresApi(Build.VERSION_CODES.P)
-    private fun checkBiometricSupport(): Boolean {
+     override fun checkBiometricSupport(): Boolean {
         val keyguardManager = context.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
 
         if (!keyguardManager.isDeviceSecure) {
@@ -83,10 +88,11 @@ class BiometricAuthenticator(val context: Context,val onBiometricFailled : (Biom
             return false
         }
 
+
         return true
     }
 
-    private fun getCancellationSignal(): CancellationSignal {
+    override fun getCancellationSignal(): CancellationSignal {
         cancellationSignal = CancellationSignal()
         cancellationSignal?.setOnCancelListener {
             notifyUser("Authentication cancelled via signal")
@@ -95,14 +101,17 @@ class BiometricAuthenticator(val context: Context,val onBiometricFailled : (Biom
     }
 
     @RequiresApi(Build.VERSION_CODES.P)
-    private fun getAuthenticationCallback(): BiometricPrompt.AuthenticationCallback {
+    override fun getAuthenticationCallback(): BiometricPrompt.AuthenticationCallback {
         return object : BiometricPrompt.AuthenticationCallback() {
+
             override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
                 notifyUser("Authentication error $errorCode: $errString")
-                onBiometricFailled(BiometricsSupportState(
-                    false,
-                    "Authentication error $errorCode: $errString"
-                ))
+                if(errorCode !in permettedErrors){
+                    onBiometricFailled(BiometricsSupportState(
+                        false,
+                        "Authentication error $errorCode: $errString"
+                    ))
+                }
             }
 
             override fun onAuthenticationFailed() {
@@ -116,6 +125,27 @@ class BiometricAuthenticator(val context: Context,val onBiometricFailled : (Biom
                // }
             }
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.P)
+    override fun isSupported(): Boolean {
+        val keyguardManager = context.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
+
+        if (!keyguardManager.isDeviceSecure) {
+            return false
+        }
+
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.USE_BIOMETRIC) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(context as Activity, arrayOf(Manifest.permission.USE_BIOMETRIC), 1)
+            return false
+        }
+
+        if (!context.packageManager.hasSystemFeature(PackageManager.FEATURE_FINGERPRINT)) {
+            return false
+        }
+
+
+        return true
     }
 
     private fun notifyUser(message: String) {

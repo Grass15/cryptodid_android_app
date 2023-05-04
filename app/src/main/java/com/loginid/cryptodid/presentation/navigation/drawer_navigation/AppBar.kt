@@ -1,5 +1,7 @@
 package com.loginid.cryptodid.presentation.navigation.drawer_navigation
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.text.KeyboardActions
@@ -17,6 +19,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.loginid.cryptodid.presentation.home.main_home.components.ExpandableSearchCard
 import com.loginid.cryptodid.presentation.theme.AppBar
 import com.loginid.cryptodid.presentation.theme.inputTextColor
 
@@ -55,10 +58,11 @@ fun SearchAppBar(
 ){
     Surface(modifier = Modifier
         .fillMaxWidth()
-        .height(56.dp),
-        elevation = AppBarDefaults.TopAppBarElevation,
+      //  .height(56.dp),
+       , elevation = AppBarDefaults.TopAppBarElevation,
         color = MaterialTheme.colors.AppBar
     ) {
+        Column {
         TextField(modifier = Modifier.fillMaxWidth(),
         value = text,
             onValueChange = {
@@ -107,6 +111,8 @@ fun SearchAppBar(
                 cursorColor = Color.White.copy(alpha = ContentAlpha.medium)
             )
         )
+        ExpandableSearchCard()
+        }
     }
 }
 
