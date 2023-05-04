@@ -4,6 +4,7 @@ package com.loginid.cryptodid.domain.repository
 import com.loginid.cryptodid.data.local.entity.UserAndVC
 import com.loginid.cryptodid.data.local.entity.UserEntity
 import com.loginid.cryptodid.data.local.entity.VCEntity
+import com.loginid.cryptodid.data.local.entity.VCType
 import kotlinx.coroutines.flow.Flow
 
 interface UserRepository {
@@ -22,4 +23,7 @@ interface UserRepository {
     suspend  fun checkUserCreds(username: String, pass: String): Boolean
 
     suspend fun getUserByUserName(username: String): UserEntity
+
+    suspend fun getVCByTitle(userId: String,vcTitle: String): VCEntity
+    fun getVCsByType(userId: String, vcType: VCType): Flow<List<VCEntity>>
 }

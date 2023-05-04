@@ -5,6 +5,7 @@ import com.loginid.cryptodid.protocols.Issuer
 import com.loginid.cryptodid.protocols.MG_FHE
 import com.loginid.cryptodid.model.Claim
 import com.loginid.cryptodid.data.local.entity.VCEntity
+import com.loginid.cryptodid.data.local.entity.VCType
 import com.loginid.cryptodid.domain.repository.UserRepository
 import com.loginid.cryptodid.presentation.home.vc.VCViewModel.VCEnteryState
 import com.loginid.cryptodid.utils.Resource
@@ -15,11 +16,11 @@ import javax.inject.Inject
 class SaveVCUseCase @Inject constructor(
     private val repository: UserRepository
 ) {
-    operator fun invoke(vcID: String,vcContent: VCEnteryState,ownerID: String): Flow<Resource<Boolean>> = flow {
+    operator fun invoke(vcID: String,vcContent: VCEnteryState,ownerID: String,vcType: VCType,vcTitle: String): Flow<Resource<Boolean>> = flow {
         try {
             emit(Resource.Loading<Boolean>())
             val VC = prepareVC(vcContent = vcContent)
-            repository.insertVC(VCEntity(vcID,VC,ownerID))
+            repository.insertVC(VCEntity(id = vcID,vc = VC, claimOwner = ownerID,vcType = vcType,vcTitle = vcTitle))
             emit(Resource.Success<Boolean>(true))
 
         }catch (e: SQLiteException){

@@ -3,6 +3,7 @@ package com.loginid.cryptodid.presentation.home.vc.VCViewModel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.loginid.cryptodid.data.local.entity.VCType
 import com.loginid.cryptodid.data.repository.UserDataStoreRepository
 import com.loginid.cryptodid.domain.use_case.get_vc.GetVCUseCase
 import com.loginid.cryptodid.domain.use_case.remove_vc.RemoveVCUseCase
@@ -113,7 +114,12 @@ class VCViewModel @Inject constructor(
     fun saveVC(newVC: VCEnteryState){
         resetStatus()
         _VCEnteryState.update { newVC }
-        saveVCUseCase(UUID.randomUUID().toString(), ownerID = _userDataPrefs.value!!.userId, vcContent = newVC).onEach { result ->
+        saveVCUseCase(UUID.randomUUID().toString(),
+            ownerID = _userDataPrefs.value!!.userId,
+            vcContent = newVC,
+            vcType = VCType.AGE,
+            vcTitle = newVC.VCTitle
+        ).onEach { result ->
             when(result){
                 is Resource.Error -> {
                     _status.value = Status.ERROR

@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 
-class VerificationUseCase @Inject constructor(
+class HouseRentaleVerificationUseCase @Inject constructor(
     private val repository: UserRepository
 ) {
    // private val verifier: Verifier = Verifier()

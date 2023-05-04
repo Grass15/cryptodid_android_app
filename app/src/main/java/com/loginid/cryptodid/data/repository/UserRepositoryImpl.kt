@@ -4,6 +4,7 @@ import com.loginid.cryptodid.data.local.dao.VCDao
 import com.loginid.cryptodid.data.local.entity.UserAndVC
 import com.loginid.cryptodid.data.local.entity.UserEntity
 import com.loginid.cryptodid.data.local.entity.VCEntity
+import com.loginid.cryptodid.data.local.entity.VCType
 import com.loginid.cryptodid.domain.repository.UserRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -68,5 +69,13 @@ class UserRepositoryImpl @Inject constructor(
 
     override suspend fun getUserByUserName(username: String): UserEntity {
         return  vcDao.getUserByUserName(username)
+    }
+
+    override suspend fun getVCByTitle(userId: String, vcTitle: String): VCEntity {
+        return vcDao.getVCByTitle(userId,vcTitle)
+    }
+
+    override fun getVCsByType(userId: String, vcType: VCType): Flow<List<VCEntity>> {
+        return vcDao.getVCsByType(userId,vcType)
     }
 }

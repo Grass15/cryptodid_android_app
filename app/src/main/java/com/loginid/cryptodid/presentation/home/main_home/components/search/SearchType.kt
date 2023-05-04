@@ -13,15 +13,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.flowlayout.FlowRow
+import com.loginid.cryptodid.data.local.entity.VCType
 
 
 @Composable
-fun SearchType() {
-    val radioOps = listOf("microblink","bank","credit","personal")
+fun SearchType(
+    onvcTypeOptionSelected : (VCType) -> Unit
+) {
+    val radioOps = listOf(
+        VCType.BANK,
+        VCType.CREDIT_SCORE,
+        VCType.AGE,
+        VCType.DEFAULT,
+        VCType.ID,
+        VCType.INSURANCE_NUMBER,
+        VCType.DRIVER_LICENCE,
+    )
     val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOps[2]) }
     FlowRow(
-        mainAxisSpacing = 10.dp,
-        crossAxisSpacing = 10.dp,
+        mainAxisSpacing = 5.dp,
+        crossAxisSpacing = 5.dp,
         modifier = Modifier.fillMaxWidth()
     ) {
         // each radio button in columns.
@@ -30,9 +41,11 @@ fun SearchType() {
                 Modifier
                     .selectable(
                         selected = (text == selectedOption),
-                        onClick = { onOptionSelected(text) }
+                        onClick = { onOptionSelected(text)
+                            onvcTypeOptionSelected(text)
+                        }
                     )
-                    .padding(horizontal = 6.dp),
+                    .padding(horizontal = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
@@ -40,7 +53,7 @@ fun SearchType() {
                 RadioButton(
                     // inside this method we are
                     // adding selected with a option.
-                    selected = (text == selectedOption),modifier = Modifier.padding(all = Dp(value = 8F)),
+                    selected = (text == selectedOption),modifier = Modifier.padding(all = Dp(value = 4F)),
                     onClick = {
 
                     }
@@ -48,7 +61,7 @@ fun SearchType() {
                 // below line is use to add
                 // text to our radio buttons.
                 Text(
-                    text = text,
+                    text = text.name,
                     modifier = Modifier.padding(start = 16.dp)
                 )
             }

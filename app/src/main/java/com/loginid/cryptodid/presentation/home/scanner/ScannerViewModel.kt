@@ -1,7 +1,6 @@
 package com.loginid.cryptodid.presentation.home.scanner
 
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.loginid.cryptodid.claimVerifier.VerificationStatus
@@ -10,7 +9,7 @@ import com.loginid.cryptodid.protocols.MG_FHE
 import com.loginid.cryptodid.model.Claim
 import com.loginid.cryptodid.claimVerifier.Verifier
 import com.loginid.cryptodid.domain.repository.ScannerRepository
-import com.loginid.cryptodid.domain.use_case.verify_vc.VerificationUseCase
+import com.loginid.cryptodid.domain.use_case.verify_vc.HouseRentaleVerificationUseCase
 import com.loginid.cryptodid.utils.Resource
 import com.loginid.cryptodid.utils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,7 +23,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ScannerViewModel @Inject constructor(
       private val repository: ScannerRepository,
-      private val verificationUseCase: VerificationUseCase
+      private val houseRentaleVerificationUseCase: HouseRentaleVerificationUseCase
 ) : ViewModel() {
 
     private val _vState = MutableStateFlow(VerificationStatus())
@@ -70,7 +69,7 @@ class ScannerViewModel @Inject constructor(
 
         val issuer2: Issuer =
             Issuer()
-        issuer2.setAttribute((500 / 10) as Int)
+        issuer2.setAttribute((700) as Int)
         val CreditScoreVC: Claim = issuer2.getClaim("user_good","pass_good",fhe,"vcContent.issuerName","vcContent.VCType","vcContent.VCTitle","vcContent.VCContentOverview")// Claim(vcContent.VCTitle,vcContent.VCType,vcContent.issuerName,vcContent.VCContentOverview)
         CreditScoreVC.setFhe(fhe)
 
@@ -88,7 +87,7 @@ class ScannerViewModel @Inject constructor(
         ) }
     }
     private fun startVerification(verifier: Verifier){
-        verificationUseCase(verifier).onEach { result ->
+        houseRentaleVerificationUseCase(verifier).onEach { result ->
             when(result){
                 is Resource.Error -> {
                     _vState.update { it.copy(

@@ -4,6 +4,7 @@ import androidx.room.*
 import com.loginid.cryptodid.data.local.entity.UserAndVC
 import com.loginid.cryptodid.data.local.entity.UserEntity
 import com.loginid.cryptodid.data.local.entity.VCEntity
+import com.loginid.cryptodid.data.local.entity.VCType
 import com.loginid.cryptodid.utils.Constants.USER_TABLE_NAME
 import com.loginid.cryptodid.utils.Constants.VC_TABLE_NAME
 import kotlinx.coroutines.flow.Flow
@@ -71,4 +72,22 @@ interface VCDao {
      */
     @Query("SELECT * FROM $USER_TABLE_NAME WHERE username = :username")
     suspend fun getUserByUserName(username: String): UserEntity
+
+    /**
+     * Get a list of VCs of a specific type for a given user.
+     * @param userId the user id to filter VCs by
+     * @param vcType the type of VCs to retrieve
+     * @return a list of VCEntity objects matching the filter criteria
+     */
+    @Query("SELECT * FROM $VC_TABLE_NAME WHERE claimOwner = :userId AND vcType = :vcType")
+    fun getVCsByType(userId: String, vcType: VCType): Flow<List<VCEntity>>
+
+    /**
+     * Get a single VCEntity object by its vcTitle.
+     * @param vcTitle the title of the VC to retrieve
+     * @return a VCEntity object matching the specified title, or null if not found
+     */
+    @Query("SELECT * FROM $VC_TABLE_NAME WHERE claimOwner = :userId AND vcTitle = :vcTitle LIMIT 1")
+    suspend fun getVCByTitle(userId: String,vcTitle: String): VCEntity
+
 }

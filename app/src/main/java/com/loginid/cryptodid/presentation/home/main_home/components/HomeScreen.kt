@@ -19,6 +19,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.loginid.cryptodid.data.local.entity.VCType
 import com.loginid.cryptodid.presentation.home.biometrics.BiometricsAuthenticationProvider
 import com.loginid.cryptodid.presentation.home.biometrics.BiomtricType
 import com.loginid.cryptodid.presentation.home.modalDialogs.ModalDialogs
@@ -152,6 +153,10 @@ Scaffold(
                      scope.launch {
                          scaffoldState.drawerState.open()
                      }
+                 },
+                 onSearchOptionSelected = {
+                     //Here we will render only a specific category
+                     Log.d("OPTION",it.name)
                  }
                  )
     },
@@ -176,8 +181,6 @@ Scaffold(
         .fillMaxSize()
         .background(MaterialTheme.colors.HomeBackGround)
         .padding(it)) {
-       // Text(text = "Hello", fontSize = MaterialTheme.typography.h3.fontSize)
-       // ExpandableSearchCard()
         VCCard {
             when(it.vStatus){
                 Status.ERROR -> {
@@ -286,7 +289,8 @@ fun MainAppBar(
     onCloseClicked: () -> Unit,
     onSearchClicked: (String) -> Unit,
     onSearchTriggered: () -> Unit,
-    onNavigationIconClick : () -> Unit
+    onNavigationIconClick : () -> Unit,
+    onSearchOptionSelected : (VCType) -> Unit,
 ) {
     when (searchWidgetState) {
         SearchWidgetState.CLOSED -> {
@@ -300,7 +304,8 @@ fun MainAppBar(
                 text = searchTextState,
                 onTextChange = onTextChange,
                 onCloseClicked = onCloseClicked,
-                onSearchClicked = onSearchClicked
+                onSearchClicked = onSearchClicked,
+                onSearchOptionSelected = onSearchOptionSelected
             )
         }
     }

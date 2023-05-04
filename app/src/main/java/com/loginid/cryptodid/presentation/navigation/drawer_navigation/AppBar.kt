@@ -19,6 +19,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.loginid.cryptodid.data.local.entity.VCType
 import com.loginid.cryptodid.presentation.home.main_home.components.ExpandableSearchCard
 import com.loginid.cryptodid.presentation.theme.AppBar
 import com.loginid.cryptodid.presentation.theme.inputTextColor
@@ -52,6 +53,7 @@ fun AppBar(
 @Composable
 fun SearchAppBar(
   text: String,
+  onSearchOptionSelected : (VCType) -> Unit,
   onTextChange: (String) -> Unit,
   onCloseClicked: () -> Unit,
   onSearchClicked: (String) -> Unit
@@ -111,7 +113,9 @@ fun SearchAppBar(
                 cursorColor = Color.White.copy(alpha = ContentAlpha.medium)
             )
         )
-        ExpandableSearchCard()
+        ExpandableSearchCard{
+            onSearchOptionSelected(it)
+        }
         }
     }
 }

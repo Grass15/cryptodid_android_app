@@ -1,5 +1,6 @@
 package com.loginid.cryptodid.presentation.home.main_home.components
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -12,12 +13,15 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.loginid.cryptodid.data.local.entity.VCType
 import com.loginid.cryptodid.presentation.home.main_home.components.search.SearchType
 import com.loginid.cryptodid.presentation.theme.CardForGround
 
 
 @Composable
-fun ExpandableSearchCard() {
+fun ExpandableSearchCard(
+    onSearchOptionSelected : (VCType) -> Unit
+) {
     var expanded by remember { mutableStateOf(false) }
     Card(
         shape = RoundedCornerShape(8.dp),
@@ -35,7 +39,9 @@ fun ExpandableSearchCard() {
                     "This is the expanded content of the card.",
                     style = MaterialTheme.typography.body2
                 )*/
-                SearchType()
+                SearchType {
+                   onSearchOptionSelected(it)
+                }
             }
         }
     }
