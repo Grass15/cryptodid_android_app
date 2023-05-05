@@ -38,7 +38,11 @@ The Cryptodid Android application uses protocols from the [Cryptodid verifier](h
   1. Download
   2. Install and follow the instructions to download SDK and API Device for the emulator.
   ```
-    
+- [Git](https://git-scm.com/download/win)
+``` terminal
+Download the latest version
+```
+
 ## Setup
   
   1. In a new shell do the following command:
@@ -46,7 +50,13 @@ The Cryptodid Android application uses protocols from the [Cryptodid verifier](h
   git clone https://github.com/Grass15/cryptodid_android_app.git
   git checkout access-control
   ```
-  2. Open the project folder in Android Studio and run the project
+  2. Open the project folder in Android Studio 
+  3. Make sure you have the verifier and stadium web application running 
+  4. Run the project 
 
+<br>
+<br>
+
+Note: You **do not** need an Android device for this. If you do not have one, create an emulator on Android Studio; otherwise, pair your device. <br>
 Note: An apk to install the app on your android device is available in app/release
   
