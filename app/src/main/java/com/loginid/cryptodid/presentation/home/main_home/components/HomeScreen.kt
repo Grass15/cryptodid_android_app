@@ -24,6 +24,7 @@ import com.loginid.cryptodid.presentation.home.biometrics.BiometricsAuthenticati
 import com.loginid.cryptodid.presentation.home.biometrics.BiomtricType
 import com.loginid.cryptodid.presentation.home.modalDialogs.ModalDialogs
 import com.loginid.cryptodid.presentation.home.vc.VCCard
+import com.loginid.cryptodid.presentation.home.vc.VCViewModel.VCViewModel
 import com.loginid.cryptodid.presentation.navigation.bottom_navigation.BottomSheetNavBodyItems
 import com.loginid.cryptodid.presentation.navigation.bottom_navigation.BottomSheetNavigation
 import com.loginid.cryptodid.presentation.navigation.drawer_navigation.*
@@ -32,6 +33,7 @@ import com.loginid.cryptodid.presentation.theme.HomeBackGround
 import com.loginid.cryptodid.presentation.theme.OpsIcons
 import com.loginid.cryptodid.utils.Status
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 
 @RequiresApi(Build.VERSION_CODES.P)
@@ -40,9 +42,10 @@ import kotlinx.coroutines.launch
 fun HomeScreen(
     navController: NavController,
     appBarViewModel: SearchAppBarViewModel = hiltViewModel(),
+    vcViewModel: VCViewModel = hiltViewModel()
 ) {
 
-    //Demo dialog
+    //dialog
     var showDialog by remember {
         mutableStateOf(false)
     }
@@ -142,6 +145,7 @@ Scaffold(
                  },
                  onCloseClicked = {
                      appBarViewModel.updateSearchWidgetState(newValue = SearchWidgetState.CLOSED)
+                     vcViewModel.fetchVCFlow()
                  },
                  onSearchClicked = {
                      Log.d("Searched Text", it)
@@ -156,6 +160,7 @@ Scaffold(
                  },
                  onSearchOptionSelected = {
                      //Here we will render only a specific category
+                     vcViewModel.searchByType(it)
                      Log.d("OPTION",it.name)
                  }
                  )
@@ -255,16 +260,7 @@ Scaffold(
         }
     }
 */
-/*
-        LaunchedEffect(!isLoading){
-            scope.launch {
-                snackbarHostState.showSnackbar(
-                    message = "fregregre",
-                    actionLabel = "Error"
-                )
-            }
-        }
-*/
+
 
     //Displaying dialog incase of errors
 
