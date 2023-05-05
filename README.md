@@ -38,7 +38,7 @@ The Cryptodid Android application uses protocols from the [Cryptodid verifier](h
   1. Download
   2. Install and follow the instructions to download SDK and API Device for the emulator
   ```
-- [Git](https://git-scm.com/download/win)
+- [Git](https://git-scm.com/download)
 ``` terminal 
 Download the latest version
 ```
