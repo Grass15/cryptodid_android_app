@@ -38,14 +38,18 @@ The Cryptodid Android application uses protocols from the [Cryptodid verifier](h
   1. Download
   2. Install and follow the instructions to download SDK and API Device for the emulator
   ```
-    
+- [Git](https://git-scm.com/download/win)
+``` terminal 
+    Download the latest version
+```
 ## Setup
   
   1. In a new shell do the following command:
   ``` terminal
   git clone https://github.com/Grass15/cryptodid_android_app.git
   ```
-  2. Open the project folder in Android Studio and run the project
+  2. Open the project folder in Android Studio and pair your Android device
+  3. Run the project
 
 Note: An apk to install the app on your android device is available in app/release
   
