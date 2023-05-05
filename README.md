@@ -40,7 +40,7 @@ The Cryptodid Android application uses protocols from the [Cryptodid verifier](h
   ```
 - [Git](https://git-scm.com/download/win)
 ``` terminal 
-    Download the latest version
+Download the latest version
 ```
 ## Setup
   
