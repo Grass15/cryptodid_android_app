@@ -57,6 +57,6 @@ Download the latest version
 <br>
 <br>
 
-Note: You **do not** need an Android device for this. If you do not have one, create an emulator on Android Studio; otherwise, pair your device. <br>
+Note: You **do not** need an Android device for this. Create an emulator on Android Studio and execute the demonstration. <br>
 Note: An apk to install the app on your android device is available in app/release.
   
