@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
@@ -74,10 +75,8 @@ public class TransactionMenuFragment extends BottomSheetDialogFragment {
             @Override
             public void onClick(View view) {
                 try {
-                    verifier.verify();
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                } catch (ParseException e) {
+                    verifier.verifyClaim();
+                } catch (InterruptedException | ParseException e) {
                     throw new RuntimeException(e);
                 } catch (IOException e) {
                     throw new RuntimeException(e);

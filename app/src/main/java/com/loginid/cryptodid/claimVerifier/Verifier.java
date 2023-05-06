@@ -21,7 +21,7 @@ import com.loginid.cryptodid.scanner.QrDecoder;
 import com.loginid.cryptodid.scanner.Scanner;
 import android.view.View;
 import android.widget.ProgressBar;
-
+import android.widget.Toast;
 
 
 import java.io.BufferedReader;
@@ -42,8 +42,8 @@ import com.google.gson.Gson;
 
 public class Verifier {
     private int verifierPort;
-    //private String verifierUrl = "192.168.11.102:8080";
-    private String verifierUrl = "192.168.1.7:8080";
+    //private String verifierUrl = "192.168.1.9:8080";
+    private String verifierUrl = "";
     private ClientEndpoint finalResponseEndpoint = new ClientEndpoint();
 
     private Gson gson = new Gson();
@@ -54,15 +54,22 @@ public class Verifier {
 
     private ActivityResultLauncher<ScanOptions> barLauncher;
 
+    public void showToast() {
+        Toast.makeText(this.callerFragment.getActivity(), "Finger Print identified", Toast.LENGTH_SHORT).show();
+    }
+
     public Verifier(Fragment callerFragment){
         this.callerFragment = callerFragment;
         this.scanner = new Scanner(callerFragment);
         this.barLauncher = callerFragment.registerForActivityResult(new ScanContract(), result -> {
             if (result != null && result.getContents() != null) {
                 this.verifierUrl = result.getContents();
+                AlertDialog.Builder fpBuilder = new AlertDialog.Builder(this.callerFragment.getView().getContext());
+                fpBuilder.setTitle("Biometric");
+                fpBuilder.setMessage("Fingerprint successfully identified");
                 AlertDialog.Builder builder = new AlertDialog.Builder(this.callerFragment.getView().getContext());
                 builder.setTitle("Authorisation Required");
-                builder.setMessage("Do you agree to share these information:\nFirstname, Lastname, Address, phone, email?");
+                builder.setMessage("Do you agree to authorized Crytodid Stadium to access your SIN Verifiable Credential?");
                 builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -73,12 +80,23 @@ public class Verifier {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         dialogInterface.dismiss();
-                        try {
-                            verify();
-                        } catch (InterruptedException | ParseException | IOException |
-                                 ClassNotFoundException e) {
-                            throw new RuntimeException(e);
-                        }
+                        fpBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.dismiss();
+                                try {
+                                    verify();
+                                } catch (InterruptedException e) {
+                                    throw new RuntimeException(e);
+                                } catch (ParseException e) {
+                                    throw new RuntimeException(e);
+                                } catch (IOException e) {
+                                    throw new RuntimeException(e);
+                                } catch (ClassNotFoundException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+                        }).show();
                     }
                 }).show();
             }

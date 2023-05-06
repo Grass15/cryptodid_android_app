@@ -14,9 +14,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
-import com.loginid.cryptodid.claimFetcher.blinkid.BlinkActivity;
-import com.loginid.cryptodid.claimFetcher.creditscore.CreditScoreActivity;
-import com.loginid.cryptodid.claimFetcher.plaid.PlaidActivity;
 import com.loginid.cryptodid.model.Claim;
 import com.loginid.cryptodid.model.ClaimViewModel;
 import com.loginid.cryptodid.protocols.Issuer;
