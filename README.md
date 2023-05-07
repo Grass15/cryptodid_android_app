@@ -51,12 +51,12 @@ Download the latest version
   git checkout access-control
   ```
   2. Open the project folder in Android Studio 
-  3. Make sure you have the verifier and stadium web application running 
-  4. Run the project 
+  3. Make sure you have the verifier and the stadium web application running 
+  4. Make sure your Android Device is paired to Android Studio
+  5. Run the project 
 
 <br>
 <br>
 
-Note: You **do not** need an Android device for this. Create an emulator on Android Studio and execute the demonstration. <br>
 Note: An apk to install the app on your android device is available in app/release.
   
