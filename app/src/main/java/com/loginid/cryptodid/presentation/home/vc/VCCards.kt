@@ -9,9 +9,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.Text
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -34,14 +36,22 @@ fun VCCard(
     vcViewModel: VCViewModel = hiltViewModel(),
     onVerificationStateAction: (VerificationStatus) -> Unit
 ) {
+
     //Scanner
     val scannerViewModel: ScannerViewModel = hiltViewModel()
     val scannedText = scannerViewModel.state.collectAsState()
 
+    //Biometrics Modal Dialog
     var showDialog by remember {
         mutableStateOf(false)
     }
     val modalDialogsFlow = remember { mutableStateOf<ModalDialogs?>(null) }
+
+    //Deletion Modal Dialog
+    var showDeletionDialog by remember {
+        mutableStateOf(false)
+    }
+    val modalDeletionDialogsFlow = remember { mutableStateOf<ModalDialogs?>(null) }
 
     //Biometrics Prompt
     val context = LocalContext.current
@@ -74,7 +84,11 @@ fun VCCard(
                 CardSwiper(
                     VCState = it,
                     onDeleteButtonClicked = {
-                        vcViewModel.deleteVC(it.VCID).run {
+                            modalDeletionDialogsFlow.value = ModalDialogs(message ="Are you sure you want to delete this vc",title="VC Deletion", vcid = it.VCID)
+                            showDeletionDialog = true
+                            //showDialog = true
+
+                      /*  vcViewModel.deleteVC(it.VCID).run {
                             /*when(vcActionState.value.status){
                                 Status.ERROR -> TODO()
                                 Status.SUCCESS -> TODO()
@@ -82,7 +96,7 @@ fun VCCard(
                                 Status.LOADING -> TODO()
                                 Status.NO_ACTION -> TODO()
                             }*/
-                        }
+                        }*/
                     },
                     onVerifyButtonClicked = {
                         it.rawVC?.let {
@@ -114,6 +128,32 @@ fun VCCard(
             it.BiometricsAlertDialog(onDismiss = {
                 showDialog = it
             })
+        }
+    }
+
+    //VCDeletion Dialog
+
+    if(showDeletionDialog){
+        modalDeletionDialogsFlow.value?.let {
+            it.VCDeletionAlertDialog(
+                onDismiss = {
+                    modalDeletionDialogsFlow.value = null
+                    showDeletionDialog = it
+                },
+                onProceed = {proceed ->
+                    vcViewModel.deleteVC(it.vcid).run {
+                        /*when(vcActionState.value.status){
+                            Status.ERROR -> TODO()
+                            Status.SUCCESS -> TODO()
+                            Status.FAILLED -> TODO()
+                            Status.LOADING -> TODO()
+                            Status.NO_ACTION -> TODO()
+                        }*/
+                    }
+                    showDeletionDialog = proceed
+                }) {
+                Text(text = it, color = Color.Red)
+            }
         }
     }
 

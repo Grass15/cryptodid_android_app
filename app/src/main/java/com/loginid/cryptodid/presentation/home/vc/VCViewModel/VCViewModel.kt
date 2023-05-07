@@ -38,6 +38,7 @@ class VCViewModel @Inject constructor(
     private val _vcAction = MutableStateFlow(VCActionState())
     private val _vcDataDisplayState = MutableStateFlow<List<VCDataDisplayState?>>(emptyList())
     private val _userDataPrefs : MutableStateFlow<UserDataPrefrence?> = MutableStateFlow(null)
+    val userdata = _userDataPrefs.asStateFlow()
     val vcDataState = combine(_vcDataDisplayState,_status){ vcDataState, status ->
         vcDataState.map {vcdata ->
         vcdata?.copy(

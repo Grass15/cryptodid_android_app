@@ -21,13 +21,13 @@ sealed class NavigationBodyItems(
     )
     object PersonalInfos: NavigationBodyItems(
         icon = Icons.Filled.Person,
-        title = "View deleted VCs",
+        title = "Update user profile",
         route = "Deleted VCs screen",
         contentDescription = "Presonal infos"
     )
     object Status: NavigationBodyItems(
         icon = Icons.Filled.Settings,
-        title = "View deleted VCs",
+        title = "Settings",
         route = "Deleted VCs screen",
         contentDescription = "Cleann"
     )

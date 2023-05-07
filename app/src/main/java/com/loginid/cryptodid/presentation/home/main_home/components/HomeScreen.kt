@@ -166,7 +166,8 @@ Scaffold(
                  )
     },
     drawerContent = {
-        DrawerHeader()
+                    FullDrawer()
+        /*DrawerHeader()
         DrawerBody(
             items = listOf(
                 NavigationBodyItems.DeletedVCs,
@@ -177,7 +178,7 @@ Scaffold(
 
                 Log.d("Drawer","Item clicked")
 
-        }
+        }*/
     },
     
 ) {
@@ -231,7 +232,9 @@ Scaffold(
     //Displaying Prompt
     if (showPrompt) {
         LaunchedEffect(true) {
-            biometricAuthenticator.getBiometricAuthenticator(BiomtricType.AUTO)?.authenticate(activity)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                biometricAuthenticator.getBiometricAuthenticator(BiomtricType.AUTO)?.authenticate(activity)
+            }
             showPrompt = false
         }
     }
