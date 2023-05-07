@@ -49,7 +49,8 @@ Download the latest version
   git clone https://github.com/Grass15/cryptodid_android_app.git
   ```
   2. Open the project folder in Android Studio and pair your Android device
-  3. Run the project
+  3. Make sure the cryptodid_verifier and cryptodid_house_rental are running
+  4. Run the project
 
 Note: An apk to install the app on your android device is available in app/release
   
