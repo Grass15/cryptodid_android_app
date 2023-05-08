@@ -5,6 +5,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.loginid.cryptodid.presentation.navigation.screens.DetailsScreen
 
 
 sealed class NavigationBodyItems(
@@ -16,19 +17,19 @@ sealed class NavigationBodyItems(
     object DeletedVCs: NavigationBodyItems(
         icon = Icons.Filled.Delete,
         title = "View deleted VCs",
-        route = "Deleted VCs screen",
+        route = DetailsScreen.DeletedVCsScreen.route,
         contentDescription = "Deleted items"
     )
     object PersonalInfos: NavigationBodyItems(
         icon = Icons.Filled.Person,
         title = "Update user profile",
-        route = "Deleted VCs screen",
+        route = DetailsScreen.UpdateUserInfoScreen.route,
         contentDescription = "Presonal infos"
     )
     object Status: NavigationBodyItems(
         icon = Icons.Filled.Settings,
         title = "Settings",
-        route = "Deleted VCs screen",
+        route = DetailsScreen.UpdateUserInfoScreen.route,
         contentDescription = "Cleann"
     )
 }

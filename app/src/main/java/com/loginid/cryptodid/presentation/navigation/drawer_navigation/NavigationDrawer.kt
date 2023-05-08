@@ -28,7 +28,7 @@ import com.loginid.cryptodid.utils.UserDataPrefrence
 
 
 @Composable
-fun FullDrawer(vcViewModel: VCViewModel = hiltViewModel()){
+fun FullDrawer(vcViewModel: VCViewModel = hiltViewModel(),onItemClick: (NavigationBodyItems) -> Unit){
     val userData = vcViewModel.userdata.collectAsState()
     Column(modifier = Modifier.fillMaxSize()){
         Box(modifier = Modifier
@@ -47,9 +47,8 @@ fun FullDrawer(vcViewModel: VCViewModel = hiltViewModel()){
                     NavigationBodyItems.PersonalInfos,
                     NavigationBodyItems.Status,
                 ),
-            ){
-                Log.d("Drawer","Item clicked")
-            }
+                onItemClick = {onItemClick(it)}
+            )
         }
         Box(modifier = Modifier
             .fillMaxSize()

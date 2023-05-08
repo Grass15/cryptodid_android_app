@@ -166,7 +166,9 @@ Scaffold(
                  )
     },
     drawerContent = {
-                    FullDrawer()
+                    FullDrawer{
+                        navController.navigate(it.route)
+                    }
         /*DrawerHeader()
         DrawerBody(
             items = listOf(

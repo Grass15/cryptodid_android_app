@@ -45,6 +45,7 @@ import com.loginid.cryptodid.presentation.navigation.screens.HomeScreen
 import com.loginid.cryptodid.presentation.theme.firstBackGroundColor
 import com.loginid.cryptodid.presentation.theme.inputTextColor
 import com.loginid.cryptodid.presentation.theme.secondBackGroundColor
+import com.loginid.cryptodid.utils.Constants
 
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -239,7 +240,8 @@ fun LoginScreen(
             Status.SUCCESS -> {
                 Log.d("Auth", "Success")
                 viewModel.reSetStatus()
-                navController.navigate(route = HomeScreen.MainHomeScreen.route)
+                navController.popBackStack()
+                navController.navigate(HomeScreen.MainHomeScreen.route)
             }
             Status.FAILLED -> {
                 Log.d("Auth", "Failled")
