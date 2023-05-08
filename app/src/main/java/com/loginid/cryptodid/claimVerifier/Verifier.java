@@ -1,7 +1,7 @@
 package com.loginid.cryptodid.claimVerifier;
 
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.os.Environment;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.appcompat.app.AlertDialog;
@@ -19,32 +19,20 @@ import com.loginid.cryptodid.protocols.MG_FHE;
 import com.loginid.cryptodid.protocols.ProverThread;
 import com.loginid.cryptodid.scanner.QrDecoder;
 import com.loginid.cryptodid.scanner.Scanner;
-import android.view.View;
-import android.widget.ProgressBar;
-
-
-
-import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.net.Socket;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import com.google.gson.Gson;
 
 
 public class Verifier {
+
     private int verifierPort;
-    //private String verifierUrl = "192.168.11.102:8080";
-    private String verifierUrl = "cryptodid.herokuapp.com";
+    private String verifierUrl = "192.168.11.100:8080";
+    //private String verifierUrl = "cryptodid.herokuapp.com";
     private ClientEndpoint finalResponseEndpoint = new ClientEndpoint();
+    private ClientEndpoint fileEndpoint = new ClientEndpoint();
 
     private Gson gson = new Gson();
 
@@ -93,6 +81,26 @@ public class Verifier {
         scan.start();
         scan.join();
         this.barLauncher.launch(scanner.options);
+    }
+
+    public native int TFHE(int n1, String filepath);
+    public native int Decrypt(String ClaimPath, String SK_Path);
+
+    public void test() throws InterruptedException, ParseException, IOException, ClassNotFoundException {
+        fileEndpoint.createWebSocketClient("ws://" + verifierUrl + "/ageProof");
+        String path = String.valueOf(MainActivity.path);
+        int cloudKeyPath =  TFHE(18,  path );
+
+        fileEndpoint.webSocketClient.connect();
+        fileEndpoint.latch.await();
+        fileEndpoint.sendFile(path+"/cloud.key");
+        fileEndpoint.sendFile(path+"/cloud.data");
+        fileEndpoint.sendFile(path+"/PK.key");
+        fileEndpoint.webSocketClient.send(gson.toJson("DONE"));
+        fileEndpoint.latch.await();
+        Decrypt(path+"/Answer.data", path+"/keyset.key");
+        fileEndpoint.webSocketClient.close();
+
     }
 
 

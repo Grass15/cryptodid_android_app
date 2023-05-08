@@ -104,7 +104,7 @@ public class TransactionMenuFragment extends BottomSheetDialogFragment {
                     public void onClick(DialogInterface dialogInterface, int i) {
                         dialogInterface.dismiss();
                         try {
-                            verifier.verify();
+                            verifier.test();
                         } catch (InterruptedException | ParseException | IOException |
                                  ClassNotFoundException e) {
                             throw new RuntimeException(e);

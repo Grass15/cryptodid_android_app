@@ -14,6 +14,10 @@ android {
         targetSdk 33
         versionCode 2
         versionName "1.1"
+        ndk{
+            moduleName "tfhe"
+            //abiFilters 'armeabi-v7a'
+        }
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -28,6 +32,21 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    externalNativeBuild {
+        cmake {
+            path file('src/main/cpp/CMakeLists.txt')
+            version '3.22.1'
+        }
+
+        buildFeatures {
+            viewBinding true
+        }
+    }
+    packagingOptions {
+        exclude 'resources.arsc'
+        exclude 'AndroidManifest.xml'
+    }
+    ndkVersion '23.1.7779620'
 }
 
 dependencies {
@@ -38,6 +57,7 @@ dependencies {
     implementation 'org.apache.tomcat.embed:tomcat-embed-websocket:8.0.28'
     implementation "org.slf4j:slf4j-api:2.0.6"
     implementation "org.slf4j:slf4j-simple:2.0.6"
+    implementation 'commons-io:commons-io:2.7'
 
 
 
@@ -85,4 +105,6 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    implementation "com.dropbox.core:dropbox-core-sdk:5.1.0@jar"
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.7.4'
 }
