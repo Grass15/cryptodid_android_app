@@ -82,6 +82,7 @@ public class BlinkActivity extends AppCompatActivity {
         Toast.makeText(this, "Name: " + name + "Age:" + age, Toast.LENGTH_LONG).show();
         Intent intent = getIntent();
         intent.putExtra("attribute", age+"");
+        intent.putExtra("attr", "age");
         intent.putExtra("claimTitle", "Age Claim");
         intent.putExtra("claimType", "Age");
         intent.putExtra("issuerName", "Crypto DID: Expires on ");

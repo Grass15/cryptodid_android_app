@@ -69,7 +69,8 @@ public class PlaidActivity extends AppCompatActivity {
 
             });
             intent = getIntent();
-            intent.putExtra("attribute", (balance / 10)+"");
+            intent.putExtra("attribute", (balance )+"");
+            intent.putExtra("attr", "balance");
             intent.putExtra("claimTitle", "Bank Claim");
             intent.putExtra("claimType", "Balance");
             intent.putExtra("issuerName", "Crypto DID: Expires on ");

@@ -73,7 +73,11 @@ public class TransactionMenuFragment extends BottomSheetDialogFragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         issuerId = input.getText().toString();
-                        fetcher.launchTrustedSource(Integer.parseInt(issuerId));
+                        try {
+                            fetcher.launchTrustedSource(Integer.parseInt(issuerId));
+                        } catch (ParseException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
                 });
                 builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
+import com.loginid.cryptodid.MainActivity;
 import com.loginid.cryptodid.claimFetcher.blinkid.BlinkActivity;
 import com.loginid.cryptodid.claimFetcher.creditscore.CreditScoreActivity;
 import com.loginid.cryptodid.claimFetcher.plaid.PlaidActivity;
@@ -119,15 +120,14 @@ public class Fetcher {
         scan.join();
         this.barLauncher.launch(scanner.options);
     }
-    public void launchTrustedSource(int issuerPort){
+    public void launchTrustedSource(int issuerPort) throws ParseException {
 
         if(issuerPort == bankIssuerPort){
             Intent plaidActivity = new Intent(callerFragment.getActivity(), PlaidActivity.class);
             this.plaidActivityLauncher.launch(plaidActivity);
         }
         else if(issuerPort == ageIssuerPort){
-            Intent blinkActivity = new Intent(callerFragment.getActivity(), BlinkActivity.class);
-            this.plaidActivityLauncher.launch(blinkActivity);
+            storeAge();
         }
         else if(issuerPort == creditScoreIssuerPort){
             Intent creditScoreActivity = new Intent(callerFragment.getActivity(), CreditScoreActivity.class);
@@ -144,13 +144,29 @@ public class Fetcher {
             }).show();
         }
     }
+    public native int TFHE(int n1, String filepath, String attribute);
 
     public void storeClaim(Intent data) throws ParseException {
         int attribute = Integer.parseInt(data.getStringExtra("attribute"));
         String claimTitle = data.getStringExtra("claimTitle");
+        String attr = data.getStringExtra("attr");
         String claimType = data.getStringExtra("claimType");
         String claimIssuerName = data.getStringExtra("issuerName");
         String claimContent = data.getStringExtra("claimContent");
+        TFHE(attribute, String.valueOf(MainActivity.path), attr);
+        issuer.setAttribute(attribute);
+        Claim claim = issuer.getClaim("user_good", "pass_good", fhe, claimIssuerName,  claimType, claimTitle, claimContent);
+        claim.setFhe(fhe);
+        claimViewModel.stickNewValue(claim);
+    }
+    public void storeAge() throws ParseException {
+        int attribute = 23;
+        String claimTitle = "Age Claim";
+        String attr = "age";
+        String claimType = "Age";
+        String claimIssuerName = "Crypto DID: Expires on ";
+        String claimContent = "You can use this claim to attest your age";
+        TFHE(attribute, String.valueOf(MainActivity.path), attr);
         issuer.setAttribute(attribute);
         Claim claim = issuer.getClaim("user_good", "pass_good", fhe, claimIssuerName,  claimType, claimTitle, claimContent);
         claim.setFhe(fhe);

@@ -398,16 +398,17 @@ Java_com_example_proverapp_MainActivity_TFHE(
 }
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_loginid_cryptodid_claimVerifier_Verifier_TFHE(JNIEnv *env, jobject thiz, jint n1,
-                                                       jstring folderPath) {
+Java_com_loginid_cryptodid_claimFetcher_Fetcher_TFHE(JNIEnv *env, jobject thiz, jint n1,
+                                                       jstring folderPath, jstring attribute) {
     // TODO: implement TFHE
     const char *path = env->GetStringUTFChars(folderPath, NULL);
+    const char *attr = env->GetStringUTFChars(attribute, NULL);
     LOGD(" file name is : %s",path);
-    char* cloudkeyPath = concat(path, "/cloud.key");
-    char* clouddataPath = concat(path, "/cloud.data");
-    char* PK_Path = concat(path, "/PK.key");
+    char* cloudkeyPath = concat(path,concat(concat("/", attr), "Cloud.key"));
+    char* clouddataPath = concat(path,concat(concat("/", attr), "Cloud.data"));
+    char* PK_Path = concat(path,concat(concat("/", attr), "PK.key"));
     char* answerPath = concat(path, "/answer.data");
-    char* SecretKeyPath = concat(path, "/keyset.key");
+    char* SecretKeyPath = concat(path,concat(concat("/", attr), "Keyset.key"));
 
 
 

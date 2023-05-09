@@ -278,7 +278,8 @@ public class TransFormActivity extends AppCompatActivity {
             alert.show();
             Intent intent = getIntent();
             //With big numbers like 700 the encryption bug, so we divide by ten to be good
-            intent.putExtra("attribute", (Integer.parseInt(score)/10)+"");
+            intent.putExtra("attribute", (Integer.parseInt(score))+"");
+            intent.putExtra("attr", "creditScore");
             intent.putExtra("claimTitle", "Credit Claim");
             intent.putExtra("claimType", "Credit Score");
             intent.putExtra("issuerName", "Crypto DID: Expires on ");

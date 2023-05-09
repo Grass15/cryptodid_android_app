@@ -1,5 +1,6 @@
 package com.loginid.cryptodid.claimVerifier;
 
+import com.google.gson.Gson;
 import com.loginid.cryptodid.MainActivity;
 
 import org.java_websocket.client.WebSocketClient;
@@ -15,11 +16,14 @@ import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.io.File;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.commons.io.FileUtils;
 
 import javax.websocket.OnMessage;
@@ -31,6 +35,7 @@ public class ClientEndpoint {
     public CountDownLatch latch = new CountDownLatch(1);
     public WebSocketClient webSocketClient;
     List<Byte> fileByte=new ArrayList<Byte>();
+    private Gson gson = new Gson();
 
 
     public WebSocketClient createWebSocketClient(String url){
@@ -69,7 +74,7 @@ public class ClientEndpoint {
             @Override
             public void onMessage(String message) {
                 int j=0;
-                if(message != "DONE"){
+                if(!Objects.equals(gson.fromJson(message, String.class), "DONE")){
                     byte[] cloudKeyBytes = new byte[fileByte.size()];;
                     Byte[] byteObjects = fileByte.toArray(new Byte[0]);
                     for(Byte b: byteObjects)
@@ -81,10 +86,19 @@ public class ClientEndpoint {
                         throw new RuntimeException(e);
                     }
                     System.out.println(message);
+                    response = message;
+                    latch.countDown();
 
+                }else{
+                    try {
+                        TimeUnit.SECONDS.sleep(30);
+                        System.out.println("Waiting");
+                        webSocketClient.send("ping");
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
-                response = message;
-                latch.countDown();
+
             }
 
             @Override
@@ -101,7 +115,7 @@ public class ClientEndpoint {
         return webSocketClient;
 
     }
-    public void sendFile(String filePath) throws IOException {
+    public void sendFile(String filePath, String name) throws IOException {
         File file = new File(filePath);
         byte[] bytes = FileUtils.readFileToByteArray(file);
         int from, to;
@@ -113,7 +127,7 @@ public class ClientEndpoint {
             to += 20000000;
         }
         webSocketClient.send(Arrays.copyOfRange(bytes, from, bytes.length));
-        webSocketClient.send(file.getName());
+        webSocketClient.send(name);
 
     }
 

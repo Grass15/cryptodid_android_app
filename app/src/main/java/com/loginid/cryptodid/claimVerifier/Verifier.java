@@ -29,16 +29,18 @@ import com.google.gson.Gson;
 public class Verifier {
 
     private int verifierPort;
-    private String verifierUrl = "192.168.11.100:8080";
+//    private String verifierUrl = "192.168.11.100:8080";
+    private String verifierUrl = "192.168.1.10:8080";
     //private String verifierUrl = "cryptodid.herokuapp.com";
     private ClientEndpoint finalResponseEndpoint = new ClientEndpoint();
-    private ClientEndpoint fileEndpoint = new ClientEndpoint();
+    private ClientEndpoint ageProofEndpoint = new ClientEndpoint();
 
     private Gson gson = new Gson();
 
     private Fragment callerFragment;
     MG_FHE fhe = new MG_FHE(11,512);
     private Scanner scanner;
+    private String tmp;
 
     private ActivityResultLauncher<ScanOptions> barLauncher;
 
@@ -83,24 +85,45 @@ public class Verifier {
         this.barLauncher.launch(scanner.options);
     }
 
-    public native int TFHE(int n1, String filepath);
+
     public native int Decrypt(String ClaimPath, String SK_Path);
 
-    public void test() throws InterruptedException, ParseException, IOException, ClassNotFoundException {
-        fileEndpoint.createWebSocketClient("ws://" + verifierUrl + "/ageProof");
+    public int verify(String attribute) throws InterruptedException, ParseException, IOException, ClassNotFoundException {
         String path = String.valueOf(MainActivity.path);
-        int cloudKeyPath =  TFHE(18,  path );
+        int response;
+        ClientEndpoint proofEndpoint = new ClientEndpoint();
+        proofEndpoint.createWebSocketClient("ws://" + verifierUrl +"/"+ attribute+ "Proof");
 
-        fileEndpoint.webSocketClient.connect();
-        fileEndpoint.latch.await();
-        fileEndpoint.sendFile(path+"/cloud.key");
-        fileEndpoint.sendFile(path+"/cloud.data");
-        fileEndpoint.sendFile(path+"/PK.key");
-        fileEndpoint.webSocketClient.send(gson.toJson("DONE"));
-        fileEndpoint.latch.await();
-        Decrypt(path+"/Answer.data", path+"/keyset.key");
-        fileEndpoint.webSocketClient.close();
-
+        proofEndpoint.webSocketClient.connect();
+        proofEndpoint.latch.await();
+        proofEndpoint.sendFile(path+"/"+attribute+"Cloud.key", "cloud.key");
+        proofEndpoint.sendFile(path+"/"+attribute+"Cloud.data", "cloud.data");
+        proofEndpoint.sendFile(path+"/"+attribute+"PK.key", "PK.key");
+        proofEndpoint.webSocketClient.send("DONE");
+        proofEndpoint.latch.await();
+        response = Decrypt(path+"/Answer.data", path+"/"+attribute+"Keyset.key");
+        proofEndpoint.webSocketClient.close();
+        return response;
+    }
+    public void test() throws ParseException, IOException, InterruptedException, ClassNotFoundException {
+        int creditScoreStatus = verify("creditScore");
+        int ageStatus = verify("age");
+        int balanceStatus = verify("balance");
+        AlertDialog.Builder builder = new AlertDialog.Builder(this.callerFragment.getView().getContext());
+        builder.setTitle("Verification");
+        builder.setMessage(" "+tmp);
+        finalResponseEndpoint.createWebSocketClient("ws://" + verifierUrl + "/finalResponse");
+        String[] finalResponse = new String[]{"Fabien", "KORGO", "Casablanca", "kograss20@gmail.com", "+212 62606103", "Maroc", String.valueOf(ageStatus != 0), String.valueOf(balanceStatus != 0), String.valueOf(creditScoreStatus != 0)};
+        finalResponseEndpoint.webSocketClient.connect();
+        finalResponseEndpoint.latch.await();
+        finalResponseEndpoint.webSocketClient.send(gson.toJson(finalResponse));
+        finalResponseEndpoint.webSocketClient.close();
+        builder.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        }).show();
     }
 
 
