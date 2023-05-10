@@ -24,6 +24,7 @@ import com.loginid.cryptodid.presentation.home.biometrics.BiometricsAuthenticati
 import com.loginid.cryptodid.presentation.home.biometrics.BiomtricType
 import com.loginid.cryptodid.presentation.home.modalDialogs.ModalDialogs
 import com.loginid.cryptodid.presentation.home.vc.VCCard
+import com.loginid.cryptodid.presentation.home.vc.VCViewModel.MultipleVCOperations
 import com.loginid.cryptodid.presentation.home.vc.VCViewModel.VCViewModel
 import com.loginid.cryptodid.presentation.navigation.bottom_navigation.BottomSheetNavBodyItems
 import com.loginid.cryptodid.presentation.navigation.bottom_navigation.BottomSheetNavigation
@@ -33,7 +34,6 @@ import com.loginid.cryptodid.presentation.theme.HomeBackGround
 import com.loginid.cryptodid.presentation.theme.OpsIcons
 import com.loginid.cryptodid.utils.Status
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 
 @RequiresApi(Build.VERSION_CODES.P)
@@ -44,6 +44,11 @@ fun HomeScreen(
     appBarViewModel: SearchAppBarViewModel = hiltViewModel(),
     vcViewModel: VCViewModel = hiltViewModel()
 ) {
+    //Mutile Verification
+    var multipleOperationFlag by remember { mutableStateOf(false) }
+    var multipleOperationType by remember {
+        mutableStateOf(MultipleVCOperations.ON_NO_ACTION)
+    }
 
     //dialog
     var showDialog by remember {
@@ -162,6 +167,11 @@ Scaffold(
                      //Here we will render only a specific category
                      vcViewModel.searchByType(it)
                      Log.d("OPTION",it.name)
+                 },
+                 onStartMutipleVCOperationFlag = multipleOperationFlag,
+                 onProceedVCOperation = {
+                     multipleOperationType = MultipleVCOperations.ON_NO_ACTION
+                     multipleOperationType = it
                  }
                  )
     },
@@ -189,7 +199,12 @@ Scaffold(
         .fillMaxSize()
         .background(MaterialTheme.colors.HomeBackGround)
         .padding(it)) {
-        VCCard {
+        VCCard(
+            onStartMutipleVCOperationFlag = {flag ->
+                multipleOperationFlag = flag
+            },
+            startOperation = multipleOperationType
+        ) {
             when(it.vStatus){
                 Status.ERROR -> {
                     scope.launch {
@@ -291,23 +306,33 @@ fun MainAppBar(
     onSearchClicked: (String) -> Unit,
     onSearchTriggered: () -> Unit,
     onNavigationIconClick : () -> Unit,
+    onStartMutipleVCOperationFlag : Boolean = false,
+    onProceedVCOperation : (MultipleVCOperations) ->Unit,
     onSearchOptionSelected : (VCType) -> Unit,
 ) {
-    when (searchWidgetState) {
-        SearchWidgetState.CLOSED -> {
-            AppBar(
-                onNavigationIconClick = onNavigationIconClick,
-                onSearchClicked = onSearchTriggered
-            )
-        }
-        SearchWidgetState.OPENED -> {
-            SearchAppBar(
-                text = searchTextState,
-                onTextChange = onTextChange,
-                onCloseClicked = onCloseClicked,
-                onSearchClicked = onSearchClicked,
-                onSearchOptionSelected = onSearchOptionSelected
-            )
+    if(onStartMutipleVCOperationFlag){
+        MultipleVCOperationAppBar(
+            onProceedVCOperation = onProceedVCOperation
+        )
+    }else{
+        //To reset the status
+        onProceedVCOperation(MultipleVCOperations.ON_NO_ACTION)
+        when (searchWidgetState) {
+            SearchWidgetState.CLOSED -> {
+                AppBar(
+                    onNavigationIconClick = onNavigationIconClick,
+                    onSearchClicked = onSearchTriggered
+                )
+            }
+            SearchWidgetState.OPENED -> {
+                SearchAppBar(
+                    text = searchTextState,
+                    onTextChange = onTextChange,
+                    onCloseClicked = onCloseClicked,
+                    onSearchClicked = onSearchClicked,
+                    onSearchOptionSelected = onSearchOptionSelected
+                )
+            }
         }
     }
 }

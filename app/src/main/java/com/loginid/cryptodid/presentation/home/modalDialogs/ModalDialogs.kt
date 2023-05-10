@@ -14,11 +14,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.loginid.cryptodid.presentation.theme.CardForGround
 
-class ModalDialogs (
+class ModalDialogs(
     val message: String = "",
     val title: String = "",
-    val vcid:String = "",
-        ){
+    val vcid: String = "",
+    val vcidList: List<String> = listOf(),
+){
 
     @Composable
     fun BiometricsAlertDialog(onDismiss: (Boolean) -> Unit){

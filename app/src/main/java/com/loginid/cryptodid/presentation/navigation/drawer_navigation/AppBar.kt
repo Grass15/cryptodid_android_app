@@ -1,17 +1,13 @@
 package com.loginid.cryptodid.presentation.navigation.drawer_navigation
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
@@ -21,6 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.loginid.cryptodid.data.local.entity.VCType
 import com.loginid.cryptodid.presentation.home.main_home.components.ExpandableSearchCard
+import com.loginid.cryptodid.presentation.home.vc.VCViewModel.MultipleVCOperations
 import com.loginid.cryptodid.presentation.theme.AppBar
 import com.loginid.cryptodid.presentation.theme.inputTextColor
 
@@ -119,6 +116,40 @@ fun SearchAppBar(
         }
     }
 }
+
+@Composable
+fun MultipleVCOperationAppBar(
+    onProceedVCOperation : (MultipleVCOperations) -> Unit
+){
+    Surface(modifier = Modifier
+        .fillMaxWidth()
+        .height(56.dp),
+         elevation = AppBarDefaults.TopAppBarElevation,
+        color = MaterialTheme.colors.AppBar
+    ) {
+       Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.End){
+           TextButton(onClick = {onProceedVCOperation(MultipleVCOperations.ON_MULTIPLE_VERIFICATION)}) {
+               Text(text = "Verify")
+               IconButton(onClick = {  }) {
+                   Icon(Icons.Default.Send, contentDescription = "verify Button Icon")
+               }
+           }
+           TextButton(onClick = {onProceedVCOperation(MultipleVCOperations.ON_CANCEL)}) {
+               Text(text = "Cancel")
+               IconButton(onClick = {  }) {
+                   Icon(Icons.Default.Cancel, contentDescription = "cancel Button Icon")
+               }
+           }
+           TextButton(onClick = {onProceedVCOperation(MultipleVCOperations.ON_MULTIPLE_DELETE)}) {
+               Text(text = "Delete")
+               IconButton(onClick = {  }) {
+                   Icon(Icons.Default.Delete, contentDescription = "deletion Button Icon")
+               }
+           }
+       }
+    }
+}
+
 
 @Preview(showBackground = true)
 @Composable

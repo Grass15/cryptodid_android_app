@@ -187,6 +187,19 @@ class VCViewModel @Inject constructor(
         }
 
 
+    //MultipleDelete
+    fun multipleDelete(targetVCs : List<String>){
+        if(targetVCs.isEmpty())return
+        targetVCs.forEach {
+            this.deleteVC(it)
+        }
+
+    }
+    //MultipleVerifications
+    fun multipleVerification(targetVCs : List<String>){
+
+    }
+
     fun searchByTitle(vcTitle: String){
 
         _searchQuery.value = vcTitle

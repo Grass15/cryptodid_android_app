@@ -3,6 +3,7 @@ package com.loginid.cryptodid.presentation.home.vc
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
@@ -32,7 +34,14 @@ fun CardSwiper(
     VCState: VCDataDisplayState,
     onDeleteButtonClicked: (VCDataDisplayState) -> Unit,
     onVerifyButtonClicked: (VCDataDisplayState) -> Unit,
+    onDisplayCheckBoxes : (Boolean) -> Unit,
+    displaCheckBox: Boolean = false,
+    onCheckBoxChecked: (Boolean,VCDataDisplayState) -> Unit
 ) {
+    //Checkboxex
+    val (isCheckboxChecked, setIsCheckboxChecked) = remember { mutableStateOf(false) }
+    //var displaCheckBox by remember { mutableStateOf(false) }
+
     var bgColor by remember {
       mutableStateOf(Color.Gray)
     }
@@ -45,6 +54,18 @@ fun CardSwiper(
 
          Box(modifier = Modifier
              .fillMaxWidth()
+             .pointerInput(Unit){
+                 detectTapGestures(
+                     onLongPress = {
+                         onDisplayCheckBoxes(true)
+                     },
+                     onPress = {
+                         onDisplayCheckBoxes(false)
+                         /*displaCheckBox = false
+                         setIsCheckboxChecked(false)*/
+                     }
+                 )
+             }
              .clip(RoundedCornerShape(8.dp))
              .swipeable(
                  state = swipeableState,
@@ -114,6 +135,17 @@ fun CardSwiper(
                         Spacer(modifier = Modifier.height(7.dp))
                         Text(text = VCState.VCType,color = MaterialTheme.colors.inputTextColor, style = Typography.body1)
                         Text(text = VCState.VCContentOverview,color = MaterialTheme.colors.inputTextColor, style = Typography.body1)
+                    }
+                    if(displaCheckBox){
+                        Checkbox(
+                            checked = isCheckboxChecked,
+                            onCheckedChange = {
+                                setIsCheckboxChecked(it)
+                                onCheckBoxChecked(it,VCState)
+                            }
+                        )
+                    }else{
+                        setIsCheckboxChecked(false)
                     }
                 }
              }
