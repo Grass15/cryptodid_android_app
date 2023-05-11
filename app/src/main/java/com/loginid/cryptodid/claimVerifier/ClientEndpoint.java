@@ -58,7 +58,7 @@ public class ClientEndpoint {
                 latch = new CountDownLatch(1);
             }
 
-            @OnMessage(maxMessageSize = 20000000)
+            @OnMessage(maxMessageSize = 10000000)
             public void onMessage(ByteBuffer buffer) {
                 byte[] answer_data = new byte[buffer.remaining()];
                 buffer.get(answer_data);
@@ -127,19 +127,19 @@ public class ClientEndpoint {
 
     }
     public void sendFile(String filePath, String name) throws IOException {
+
         File file = new File(filePath);
         byte[] bytes = FileUtils.readFileToByteArray(file);
         int from, to;
         from = 0;
-        to = 20000000;
+        to = 10000000;
         while (bytes.length > to){
             webSocketClient.send(Arrays.copyOfRange(bytes, from, to));
             from = to;
-            to += 20000000;
+            to += 10000000;
         }
         webSocketClient.send(Arrays.copyOfRange(bytes, from, bytes.length));
         webSocketClient.send(name);
-
     }
 
 }

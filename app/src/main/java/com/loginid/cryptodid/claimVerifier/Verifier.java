@@ -30,7 +30,7 @@ public class Verifier {
 
     private int verifierPort;
 //    private String verifierUrl = "192.168.11.100:8080";
-    private String verifierUrl = "192.168.1.10:8080";
+    private String verifierUrl = "192.168.1.7:8080";
     //private String verifierUrl = "cryptodid.herokuapp.com";
     private ClientEndpoint finalResponseEndpoint = new ClientEndpoint();
     private ClientEndpoint ageProofEndpoint = new ClientEndpoint();
@@ -97,28 +97,30 @@ public class Verifier {
 
         proofEndpoint.webSocketClient.connect();
         proofEndpoint.latch.await();
+        System.out.println("starting");
         proofEndpoint.sendFile(path+"/"+attribute+"Cloud.key", "cloud.key");
         proofEndpoint.sendFile(path+"/"+attribute+"Cloud.data", "cloud.data");
         proofEndpoint.sendFile(path+"/"+attribute+"PK.key", "PK.key");
 //        proofEndpoint.webSocketClient.send("DONE");
         proofEndpoint.latch.await();
         response = Decrypt(path+"/Answer.data", path+"/"+attribute+"Keyset.key");
-        proofEndpoint.webSocketClient.close();
+        //proofEndpoint.webSocketClient.close();
         return response;
     }
     public void test() throws ParseException, IOException, InterruptedException, ClassNotFoundException {
         int creditScoreStatus = verify("creditScore");
-        //int ageStatus = verify("age");
+        System.out.println("creaditscore : "+creditScoreStatus);
+        int ageStatus = verify("age");
         int balanceStatus = verify("balance");
         AlertDialog.Builder builder = new AlertDialog.Builder(this.callerFragment.getView().getContext());
         builder.setTitle("Verification");
         builder.setMessage("\nBalance: " + "Verification positive for this attribute" + "\n\nCredit Score: " + "Verification positive for this attribute" + "\n\nAge: " + "Verification positive for this attribute");
-        finalResponseEndpoint.createWebSocketClient("ws://" + verifierUrl + "/finalResponse");
-        String[] finalResponse = new String[]{"Fabien", "KORGO", "Casablanca", "kograss20@gmail.com", "+212 62606103", "Maroc", String.valueOf(balanceStatus != 0), String.valueOf(balanceStatus != 0), String.valueOf(creditScoreStatus != 0)};
+        /*finalResponseEndpoint.createWebSocketClient("ws://" + verifierUrl + "/finalResponse");
+        String[] finalResponse = new String[]{"Fabien", "KORGO", "Casablanca", "kograss20@gmail.com", "+212 62606103", "Maroc", String.valueOf(creditScoreStatus != 0), String.valueOf(creditScoreStatus != 0), String.valueOf(creditScoreStatus != 0)};
         finalResponseEndpoint.webSocketClient.connect();
         finalResponseEndpoint.latch.await();
         finalResponseEndpoint.webSocketClient.send(gson.toJson(finalResponse));
-        finalResponseEndpoint.webSocketClient.close();
+        finalResponseEndpoint.webSocketClient.close();*/
         builder.setPositiveButton("Close", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
