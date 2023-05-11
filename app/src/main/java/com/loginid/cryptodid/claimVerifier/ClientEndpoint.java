@@ -60,16 +60,27 @@ public class ClientEndpoint {
 
             @OnMessage(maxMessageSize = 20000000)
             public void onMessage(ByteBuffer buffer) {
-                byte[] arr = new byte[buffer.remaining()];
-                buffer.get(arr);
-                Byte[] byteObjects = new Byte[arr.length];
-                int i=0;
-                for(byte b: arr)
-                    byteObjects[i++] = b;
-                fileByte.addAll(Arrays.asList(byteObjects));
-                System.out.println("message");
-                webSocketClient.send("ping");
+                byte[] answer_data = new byte[buffer.remaining()];
+                buffer.get(answer_data);
+                try {
+                    FileUtils.writeByteArrayToFile(new File(MainActivity.path+"/"+"Answer.data"), answer_data);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                latch.countDown();
             }
+//            @OnMessage(maxMessageSize = 20000000)
+//            public void onMessage(ByteBuffer buffer) {
+//                byte[] arr = new byte[buffer.remaining()];
+//                buffer.get(arr);
+//                Byte[] byteObjects = new Byte[arr.length];
+//                int i=0;
+//                for(byte b: arr)
+//                    byteObjects[i++] = b;
+//                fileByte.addAll(Arrays.asList(byteObjects));
+//                System.out.println("message");
+//                webSocketClient.send("ping");
+//            }
 
             @Override
             public void onMessage(String message) {

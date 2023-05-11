@@ -25,7 +25,7 @@ public class DbDriver extends SQLiteOpenHelper {
     public static final String name = "cryptodid.db";
 
     public DbDriver(Context context) {
-        super(context, name, null, 14);
+        super(context, name, null, 15);
     }
 
     @Override
