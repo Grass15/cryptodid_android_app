@@ -30,10 +30,11 @@ public class Verifier {
 
     private int verifierPort;
 //    private String verifierUrl = "192.168.11.100:8080";
-    private String verifierUrl = "192.168.1.10:8080";
+    private String cppVerifierUrl;
+    private String javaVerifierUrl = "192.168.1.10:8080";
     //private String verifierUrl = "cryptodid.herokuapp.com";
     private ClientEndpoint finalResponseEndpoint = new ClientEndpoint();
-    private ClientEndpoint ageProofEndpoint = new ClientEndpoint();
+    private ClientEndpoint verificationEndpoint = new ClientEndpoint();
 
     private Gson gson = new Gson();
 
@@ -49,7 +50,7 @@ public class Verifier {
         this.scanner = new Scanner(callerFragment);
         this.barLauncher = callerFragment.registerForActivityResult(new ScanContract(), result -> {
             if (result != null && result.getContents() != null) {
-                this.verifierUrl = result.getContents();
+                this.javaVerifierUrl = result.getContents();
                 AlertDialog.Builder builder = new AlertDialog.Builder(this.callerFragment.getView().getContext());
                 builder.setTitle("Authorisation Required");
                 builder.setMessage("Do you agree to share these information:\nFirstname, Lastname, Address, phone, email?");
@@ -64,7 +65,7 @@ public class Verifier {
                     public void onClick(DialogInterface dialogInterface, int i) {
                         dialogInterface.dismiss();
                         try {
-                            verify();
+                            verify("attribute");
                         } catch (InterruptedException | ParseException | IOException |
                                  ClassNotFoundException e) {
                             throw new RuntimeException(e);
@@ -93,10 +94,11 @@ public class Verifier {
         int response;
         ClientEndpoint proofEndpoint = new ClientEndpoint();
 //        proofEndpoint.createWebSocketClient("ws://" + verifierUrl +"/"+ attribute+ "Proof");
-        proofEndpoint.createWebSocketClient("ws://" + verifierUrl);
-
+        proofEndpoint.createWebSocketClient("ws://" + cppVerifierUrl);
+        proofEndpoint.latch.await();
         proofEndpoint.webSocketClient.connect();
         proofEndpoint.latch.await();
+        proofEndpoint.webSocketClient.send(attribute);
         proofEndpoint.sendFile(path+"/"+attribute+"Cloud.key", "cloud.key");
         proofEndpoint.sendFile(path+"/"+attribute+"Cloud.data", "cloud.data");
         proofEndpoint.sendFile(path+"/"+attribute+"PK.key", "PK.key");
@@ -107,14 +109,18 @@ public class Verifier {
         return response;
     }
     public void test() throws ParseException, IOException, InterruptedException, ClassNotFoundException {
+        verificationEndpoint.createWebSocketClient("ws://" + javaVerifierUrl + "/cppUrl");
+        verificationEndpoint.webSocketClient.connect();
+        verificationEndpoint.latch.await();
+        cppVerifierUrl = verificationEndpoint.response;
         int creditScoreStatus = verify("creditScore");
-        //int ageStatus = verify("age");
+        int ageStatus = verify("age");
         int balanceStatus = verify("balance");
         AlertDialog.Builder builder = new AlertDialog.Builder(this.callerFragment.getView().getContext());
         builder.setTitle("Verification");
         builder.setMessage("\nBalance: " + "Verification positive for this attribute" + "\n\nCredit Score: " + "Verification positive for this attribute" + "\n\nAge: " + "Verification positive for this attribute");
-        finalResponseEndpoint.createWebSocketClient("ws://" + verifierUrl + "/finalResponse");
-        String[] finalResponse = new String[]{"Fabien", "KORGO", "Casablanca", "kograss20@gmail.com", "+212 62606103", "Maroc", String.valueOf(balanceStatus != 0), String.valueOf(balanceStatus != 0), String.valueOf(creditScoreStatus != 0)};
+        finalResponseEndpoint.createWebSocketClient("ws://" + javaVerifierUrl + "/finalResponse");
+        String[] finalResponse = new String[]{"Fabien", "KORGO", "Casablanca", "kograss20@gmail.com", "+212 62606103", "Maroc", String.valueOf(ageStatus != 0), String.valueOf(balanceStatus != 0), String.valueOf(creditScoreStatus != 0)};
         finalResponseEndpoint.webSocketClient.connect();
         finalResponseEndpoint.latch.await();
         finalResponseEndpoint.webSocketClient.send(gson.toJson(finalResponse));
@@ -128,72 +134,72 @@ public class Verifier {
     }
 
 
-    public void verify() throws InterruptedException, ParseException, IOException, ClassNotFoundException {
-        if (!Objects.equals(verifierUrl, "")) {
-            finalResponseEndpoint.createWebSocketClient("ws://" + verifierUrl + "/finalResponse");
-            Claim balanceClaim;
-            Claim creditScoreClaim;
-            Claim ageClaim;
-            try {
-                balanceClaim = MainActivity.driver.getClaimsFromACertainType("Balance").get(0);
-                creditScoreClaim = MainActivity.driver.getClaimsFromACertainType("Credit Score").get(0);
-                ageClaim = MainActivity.driver.getClaimsFromACertainType("Age").get(0);
-                ProverThread balanceProverThread = new ProverThread(verifierUrl, balanceClaim, balanceClaim.getFhe(), "balance");
-                ProverThread ageProverThread = new ProverThread(verifierUrl, ageClaim, ageClaim.getFhe(), "age");
-                ProverThread creditScoreProverThread = new ProverThread(verifierUrl, creditScoreClaim, creditScoreClaim.getFhe(), "creditScore");
-                Thread balanceVerification = new Thread(balanceProverThread);
-                Thread ageVerification = new Thread(ageProverThread);
-                Thread creditScoreVerification = new Thread(creditScoreProverThread);
-                balanceVerification.start();
-                ageVerification.start();
-                creditScoreVerification.start();
-                balanceVerification.join();
-                ageVerification.join();
-                creditScoreVerification.join();
-                AlertDialog.Builder builder = new AlertDialog.Builder(this.callerFragment.getView().getContext());
-                builder.setTitle("Verification Status");
-                try {
+//    public void verify() throws InterruptedException, ParseException, IOException, ClassNotFoundException {
+//        if (!Objects.equals(verifierUrl, "")) {
+//            finalResponseEndpoint.createWebSocketClient("ws://" + verifierUrl + "/finalResponse");
+//            Claim balanceClaim;
+//            Claim creditScoreClaim;
+//            Claim ageClaim;
+//            try {
+//                balanceClaim = MainActivity.driver.getClaimsFromACertainType("Balance").get(0);
+//                creditScoreClaim = MainActivity.driver.getClaimsFromACertainType("Credit Score").get(0);
+//                ageClaim = MainActivity.driver.getClaimsFromACertainType("Age").get(0);
+//                ProverThread balanceProverThread = new ProverThread(verifierUrl, balanceClaim, balanceClaim.getFhe(), "balance");
+//                ProverThread ageProverThread = new ProverThread(verifierUrl, ageClaim, ageClaim.getFhe(), "age");
+//                ProverThread creditScoreProverThread = new ProverThread(verifierUrl, creditScoreClaim, creditScoreClaim.getFhe(), "creditScore");
+//                Thread balanceVerification = new Thread(balanceProverThread);
+//                Thread ageVerification = new Thread(ageProverThread);
+//                Thread creditScoreVerification = new Thread(creditScoreProverThread);
+//                balanceVerification.start();
+//                ageVerification.start();
+//                creditScoreVerification.start();
+//                balanceVerification.join();
+//                ageVerification.join();
+//                creditScoreVerification.join();
+//                AlertDialog.Builder builder = new AlertDialog.Builder(this.callerFragment.getView().getContext());
+//                builder.setTitle("Verification Status");
+//                try {
+////                    builder.setMessage("Something went wrong");
+//                    builder.setMessage(balanceProverThread.getVerifierStatus() + "\nBalance: " + balanceProverThread.getVerifierResponse()[1] + "\n\nCredit Score: " + creditScoreProverThread.getVerifierResponse()[1] + "\n\nAge: " + ageProverThread.getVerifierResponse()[1]);
+//                    User user = MainActivity.driver.getUser();
+//                    String[] finalResponse = new String[]{user.firstname, user.lastname, user.address, user.username, user.phone, "Maroc", ageProverThread.getVerifierResponse()[2], balanceProverThread.getVerifierResponse()[2], creditScoreProverThread.getVerifierResponse()[2]};
+//                    finalResponseEndpoint.response = gson.toJson(finalResponse);
+//                    finalResponseEndpoint.webSocketClient.connect();
+//                    finalResponseEndpoint.webSocketClient.close();
+//                } catch (Exception e) {
 //                    builder.setMessage("Something went wrong");
-                    builder.setMessage(balanceProverThread.getVerifierStatus() + "\nBalance: " + balanceProverThread.getVerifierResponse()[1] + "\n\nCredit Score: " + creditScoreProverThread.getVerifierResponse()[1] + "\n\nAge: " + ageProverThread.getVerifierResponse()[1]);
-                    User user = MainActivity.driver.getUser();
-                    String[] finalResponse = new String[]{user.firstname, user.lastname, user.address, user.username, user.phone, "Maroc", ageProverThread.getVerifierResponse()[2], balanceProverThread.getVerifierResponse()[2], creditScoreProverThread.getVerifierResponse()[2]};
-                    finalResponseEndpoint.response = gson.toJson(finalResponse);
-                    finalResponseEndpoint.webSocketClient.connect();
-                    finalResponseEndpoint.webSocketClient.close();
-                } catch (Exception e) {
-                    builder.setMessage("Something went wrong");
-                }
-                //builder.setMessage(balanceProverThread.getVerifierStatus()+"\n"+balanceProverThread.getVerifierResponse()[1]);
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
-                    }
-                }).show();
-
-            } catch (Exception e) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(this.callerFragment.getView().getContext());
-                builder.setTitle("Missing verifiable credential");
-                builder.setMessage("At least One verifiable credential are missing");
-                builder.setPositiveButton("Close", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
-                    }
-                }).show();
-            }
-        }else{
-            AlertDialog.Builder builder = new AlertDialog.Builder(this.callerFragment.getView().getContext());
-            builder.setTitle("Error");
-            builder.setMessage("Please Ensure you scanned the good QR ");
-            builder.setPositiveButton("Close", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    dialogInterface.dismiss();
-                }
-            }).show();
-        }
-    }
+//                }
+//                //builder.setMessage(balanceProverThread.getVerifierStatus()+"\n"+balanceProverThread.getVerifierResponse()[1]);
+//                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialogInterface, int i) {
+//                        dialogInterface.dismiss();
+//                    }
+//                }).show();
+//
+//            } catch (Exception e) {
+//                AlertDialog.Builder builder = new AlertDialog.Builder(this.callerFragment.getView().getContext());
+//                builder.setTitle("Missing verifiable credential");
+//                builder.setMessage("At least One verifiable credential are missing");
+//                builder.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialogInterface, int i) {
+//                        dialogInterface.dismiss();
+//                    }
+//                }).show();
+//            }
+//        }else{
+//            AlertDialog.Builder builder = new AlertDialog.Builder(this.callerFragment.getView().getContext());
+//            builder.setTitle("Error");
+//            builder.setMessage("Please Ensure you scanned the good QR ");
+//            builder.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+//                @Override
+//                public void onClick(DialogInterface dialogInterface, int i) {
+//                    dialogInterface.dismiss();
+//                }
+//            }).show();
+//        }
+//    }
 
 
 
