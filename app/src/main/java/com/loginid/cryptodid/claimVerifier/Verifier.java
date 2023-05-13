@@ -30,11 +30,13 @@ public class Verifier {
 
     private int verifierPort;
 //    private String verifierUrl = "192.168.11.100:8080";
+
     private String cppVerifierUrl = "192.168.11.102:8080";
     private String javaVerifierUrl = "192.168.11.100:8080";
     //private String verifierUrl = "cryptodid.herokuapp.com";
     private ClientEndpoint finalResponseEndpoint = new ClientEndpoint();
     private ClientEndpoint verificationEndpoint = new ClientEndpoint();
+    private ClientEndpoint proofEndpoint = new ClientEndpoint();
 
     private Gson gson = new Gson();
 
@@ -65,7 +67,7 @@ public class Verifier {
                     public void onClick(DialogInterface dialogInterface, int i) {
                         dialogInterface.dismiss();
                         try {
-                            verify("attribute");
+                            test();
                         } catch (InterruptedException | ParseException | IOException |
                                  ClassNotFoundException e) {
                             throw new RuntimeException(e);
@@ -97,7 +99,6 @@ public class Verifier {
         proofEndpoint.createWebSocketClient("ws://" + cppVerifierUrl);
         //proofEndpoint.latch.await();
         proofEndpoint.webSocketClient.connect();
-        proofEndpoint.latch.await();
         proofEndpoint.webSocketClient.send(attribute);
         proofEndpoint.sendFile(path+"/"+attribute+"Cloud.key", attribute+ "Cloud.key");
         proofEndpoint.sendFile(path+"/"+attribute+"Cloud.data", attribute+ "Cloud.data");
@@ -109,13 +110,14 @@ public class Verifier {
         System.out.println(attribute + ": " + response);
         return response;
     }
+
     public void test() throws ParseException, IOException, InterruptedException, ClassNotFoundException {
         verificationEndpoint.createWebSocketClient("ws://" + javaVerifierUrl + "/cppUrl");
         verificationEndpoint.webSocketClient.connect();
         verificationEndpoint.latch.await();
         verificationEndpoint.webSocketClient.close();
-        //cppVerifierUrl = verificationEndpoint.response;
         int creditScoreStatus = verify("creditScore");
+        System.out.println("creaditscore : "+creditScoreStatus);
         int ageStatus = verify("age");
         int balanceStatus = verify("balance");
         AlertDialog.Builder builder = new AlertDialog.Builder(this.callerFragment.getView().getContext());
