@@ -30,8 +30,8 @@ public class Verifier {
 
     private int verifierPort;
 //    private String verifierUrl = "192.168.11.100:8080";
-    private String cppVerifierUrl;
-    private String javaVerifierUrl = "192.168.1.10:8080";
+    private String cppVerifierUrl = "192.168.11.102:8080";
+    private String javaVerifierUrl = "192.168.11.100:8080";
     //private String verifierUrl = "cryptodid.herokuapp.com";
     private ClientEndpoint finalResponseEndpoint = new ClientEndpoint();
     private ClientEndpoint verificationEndpoint = new ClientEndpoint();
@@ -95,24 +95,26 @@ public class Verifier {
         ClientEndpoint proofEndpoint = new ClientEndpoint();
 //        proofEndpoint.createWebSocketClient("ws://" + verifierUrl +"/"+ attribute+ "Proof");
         proofEndpoint.createWebSocketClient("ws://" + cppVerifierUrl);
-        proofEndpoint.latch.await();
+        //proofEndpoint.latch.await();
         proofEndpoint.webSocketClient.connect();
         proofEndpoint.latch.await();
         proofEndpoint.webSocketClient.send(attribute);
-        proofEndpoint.sendFile(path+"/"+attribute+"Cloud.key", "cloud.key");
-        proofEndpoint.sendFile(path+"/"+attribute+"Cloud.data", "cloud.data");
-        proofEndpoint.sendFile(path+"/"+attribute+"PK.key", "PK.key");
+        proofEndpoint.sendFile(path+"/"+attribute+"Cloud.key", attribute+ "Cloud.key");
+        proofEndpoint.sendFile(path+"/"+attribute+"Cloud.data", attribute+ "Cloud.data");
+        proofEndpoint.sendFile(path+"/"+attribute+"PK.key", attribute+ "PK.key");
 //        proofEndpoint.webSocketClient.send("DONE");
         proofEndpoint.latch.await();
         response = Decrypt(path+"/Answer.data", path+"/"+attribute+"Keyset.key");
         proofEndpoint.webSocketClient.close();
+        System.out.println(attribute + ": " + response);
         return response;
     }
     public void test() throws ParseException, IOException, InterruptedException, ClassNotFoundException {
         verificationEndpoint.createWebSocketClient("ws://" + javaVerifierUrl + "/cppUrl");
         verificationEndpoint.webSocketClient.connect();
         verificationEndpoint.latch.await();
-        cppVerifierUrl = verificationEndpoint.response;
+        verificationEndpoint.webSocketClient.close();
+        //cppVerifierUrl = verificationEndpoint.response;
         int creditScoreStatus = verify("creditScore");
         int ageStatus = verify("age");
         int balanceStatus = verify("balance");
