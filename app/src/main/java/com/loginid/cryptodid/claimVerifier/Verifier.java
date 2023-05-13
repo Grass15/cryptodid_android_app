@@ -115,6 +115,7 @@ public class Verifier {
         verificationEndpoint.createWebSocketClient("ws://" + javaVerifierUrl + "/cppUrl");
         verificationEndpoint.webSocketClient.connect();
         verificationEndpoint.latch.await();
+        cppVerifierUrl = verificationEndpoint.response;
         verificationEndpoint.webSocketClient.close();
         int creditScoreStatus = verify("creditScore");
         System.out.println("creaditscore : "+creditScoreStatus);
