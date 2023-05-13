@@ -84,33 +84,41 @@ public class ClientEndpoint {
 
             @Override
             public void onMessage(String message) {
-                int j=0;
-                if(!Objects.equals(gson.fromJson(message, String.class), "DONE")){
-                    byte[] cloudKeyBytes = new byte[fileByte.size()];;
-                    Byte[] byteObjects = fileByte.toArray(new Byte[0]);
-                    for(Byte b: byteObjects)
-                        cloudKeyBytes[j++] = b.byteValue();
-                    fileByte.clear();
-                    try {
-                        FileUtils.writeByteArrayToFile(new File(MainActivity.path+"/"+message), cloudKeyBytes);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                    System.out.println(message);
-                    response = message;
-                    latch.countDown();
-
-                }else{
-                    try {
-                        TimeUnit.SECONDS.sleep(30);
-                        System.out.println("Waiting");
-                        webSocketClient.send("ping");
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
+                System.out.println(message);
+                response = message;
+                latch.countDown();
 
             }
+//
+//            @Override
+//            public void onMessage(String message) {
+//                int j=0;
+//                if(!Objects.equals(gson.fromJson(message, String.class), "DONE")){
+//                    byte[] cloudKeyBytes = new byte[fileByte.size()];;
+//                    Byte[] byteObjects = fileByte.toArray(new Byte[0]);
+//                    for(Byte b: byteObjects)
+//                        cloudKeyBytes[j++] = b.byteValue();
+//                    fileByte.clear();
+//                    try {
+//                        FileUtils.writeByteArrayToFile(new File(MainActivity.path+"/"+message), cloudKeyBytes);
+//                    } catch (IOException e) {
+//                        throw new RuntimeException(e);
+//                    }
+//                    System.out.println(message);
+//                    response = message;
+//                    latch.countDown();
+//
+//                }else{
+//                    try {
+//                        TimeUnit.SECONDS.sleep(30);
+//                        System.out.println("Waiting");
+//                        webSocketClient.send("ping");
+//                    } catch (InterruptedException e) {
+//                        throw new RuntimeException(e);
+//                    }
+//                }
+//
+//            }
 
             @Override
             public void onClose(int code, String reason, boolean remote) {
