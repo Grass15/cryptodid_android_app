@@ -99,6 +99,7 @@ public class Verifier {
         proofEndpoint.createWebSocketClient("ws://" + cppVerifierUrl);
         //proofEndpoint.latch.await();
         proofEndpoint.webSocketClient.connect();
+        proofEndpoint.latch.await();
         proofEndpoint.webSocketClient.send(attribute);
         proofEndpoint.sendFile(path+"/"+attribute+"Cloud.key", attribute+ "Cloud.key");
         proofEndpoint.sendFile(path+"/"+attribute+"Cloud.data", attribute+ "Cloud.data");

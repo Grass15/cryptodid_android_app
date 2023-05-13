@@ -142,11 +142,11 @@ public class ClientEndpoint {
         int from, to;
         from = 0;
 
-        to = 15000000;
+        to = 8192;
         while (bytes.length > to){
             webSocketClient.send(Arrays.copyOfRange(bytes, from, to));
             from = to;
-            to += 15000000;
+            to += 8192;
         }
         webSocketClient.send(Arrays.copyOfRange(bytes, from, bytes.length));
         webSocketClient.send(name);
