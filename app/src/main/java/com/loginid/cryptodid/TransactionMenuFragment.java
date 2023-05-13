@@ -62,59 +62,27 @@ public class TransactionMenuFragment extends BottomSheetDialogFragment {
         fetchClaim.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setTitle("Insert The issuer Id");
-                builder.setMessage("Balance: 6666\nAge: 7777\nCredit Score: 8888");
-                final EditText input = new EditText(context);
-                input.setInputType(InputType.TYPE_CLASS_TEXT );
-                builder.setView(input);
-
-                builder.setPositiveButton("Submit", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        issuerId = input.getText().toString();
-                        try {
-                            fetcher.launchTrustedSource(Integer.parseInt(issuerId));
-                        } catch (ParseException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                });
-                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-
-                builder.show();
-                //fetcher.getClaim();
+                try {
+                    fetcher.getClaim();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
         verifyClaim.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                builder.setTitle("Authorisation Required");
-                builder.setMessage("Do you agree to share these information:\nFirstname, Lastname, Address, phone, email?");
-                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
-                    }
-                });
-                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
-                        try {
-                            verifier.test();
-                        } catch (InterruptedException | ParseException | IOException |
-                                 ClassNotFoundException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                }).show();
+                try {
+                    verifier.verifyClaim();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                } catch (ParseException e) {
+                    throw new RuntimeException(e);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
         return view;

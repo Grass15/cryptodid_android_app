@@ -21,7 +21,6 @@ import com.loginid.cryptodid.claimFetcher.plaid.PlaidActivity;
 import com.loginid.cryptodid.model.Claim;
 import com.loginid.cryptodid.model.ClaimViewModel;
 import com.loginid.cryptodid.protocols.Issuer;
-import com.loginid.cryptodid.protocols.MG_FHE;
 import com.loginid.cryptodid.scanner.QrDecoder;
 import com.loginid.cryptodid.scanner.Scanner;
 
@@ -39,7 +38,6 @@ public class Fetcher {
     private ActivityResultLauncher<Intent> blinkActivityLauncher;
     private ActivityResultLauncher<Intent> creditScoreActivityLauncher;
     Issuer issuer = new Issuer();
-    MG_FHE fhe = new MG_FHE(11,512);
     private ClaimViewModel claimViewModel;
     private Scanner scanner;
     private ActivityResultLauncher<ScanOptions> barLauncher;
@@ -52,7 +50,11 @@ public class Fetcher {
                 QrDecoder decodedData = new QrDecoder(result.getContents());
                 this.issuerUrl = decodedData.getUrl();
                 this.issuerPort = decodedData.getPort();
-                //this.launchTrustedSource();
+                try {
+                    this.launchTrustedSource();
+                } catch (ParseException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
         this.plaidActivityLauncher = callerFragment.registerForActivityResult(
@@ -120,14 +122,15 @@ public class Fetcher {
         scan.join();
         this.barLauncher.launch(scanner.options);
     }
-    public void launchTrustedSource(int issuerPort) throws ParseException {
+    public void launchTrustedSource() throws ParseException {
 
         if(issuerPort == bankIssuerPort){
             Intent plaidActivity = new Intent(callerFragment.getActivity(), PlaidActivity.class);
             this.plaidActivityLauncher.launch(plaidActivity);
         }
         else if(issuerPort == ageIssuerPort){
-            storeAge();
+            Intent blinkActivity = new Intent(callerFragment.getActivity(), BlinkActivity.class);
+            this.creditScoreActivityLauncher.launch(blinkActivity);
         }
         else if(issuerPort == creditScoreIssuerPort){
             Intent creditScoreActivity = new Intent(callerFragment.getActivity(), CreditScoreActivity.class);
@@ -155,8 +158,7 @@ public class Fetcher {
         String claimContent = data.getStringExtra("claimContent");
         TFHE(attribute, String.valueOf(MainActivity.path), attr);
         issuer.setAttribute(attribute);
-        Claim claim = issuer.getClaim("user_good", "pass_good", fhe, claimIssuerName,  claimType, claimTitle, claimContent);
-        claim.setFhe(fhe);
+        Claim claim = issuer.getClaim(claimIssuerName,  claimType, claimTitle, claimContent, attr);
         claimViewModel.stickNewValue(claim);
     }
     public void storeAge() throws ParseException {
@@ -168,8 +170,7 @@ public class Fetcher {
         String claimContent = "You can use this claim to attest your age";
         TFHE(attribute, String.valueOf(MainActivity.path), attr);
         issuer.setAttribute(attribute);
-        Claim claim = issuer.getClaim("user_good", "pass_good", fhe, claimIssuerName,  claimType, claimTitle, claimContent);
-        claim.setFhe(fhe);
+        Claim claim = issuer.getClaim( claimIssuerName,  claimType, claimTitle, claimContent, attr);
         claimViewModel.stickNewValue(claim);
     }
 }

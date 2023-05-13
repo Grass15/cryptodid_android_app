@@ -1,7 +1,6 @@
 package com.loginid.cryptodid.claimVerifier;
 
 import android.content.DialogInterface;
-import android.os.Environment;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.appcompat.app.AlertDialog;
@@ -9,20 +8,15 @@ import androidx.fragment.app.Fragment;
 
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
-import com.loginid.cryptodid.DbDriver;
 import com.loginid.cryptodid.MainActivity;
-import com.loginid.cryptodid.R;
-import com.loginid.cryptodid.model.Claim;
 import com.loginid.cryptodid.model.User;
-import com.loginid.cryptodid.protocols.Issuer;
-import com.loginid.cryptodid.protocols.MG_FHE;
-import com.loginid.cryptodid.protocols.ProverThread;
-import com.loginid.cryptodid.scanner.QrDecoder;
 import com.loginid.cryptodid.scanner.Scanner;
-import java.io.File;
+
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Objects;
+import java.util.concurrent.CountDownLatch;
+
 import com.google.gson.Gson;
 
 
@@ -41,7 +35,6 @@ public class Verifier {
     private Gson gson = new Gson();
 
     private Fragment callerFragment;
-    MG_FHE fhe = new MG_FHE(11,512);
     private Scanner scanner;
     private String tmp;
 
@@ -100,6 +93,7 @@ public class Verifier {
         //proofEndpoint.latch.await();
         proofEndpoint.webSocketClient.connect();
         proofEndpoint.latch.await();
+        proofEndpoint.latch = new CountDownLatch(1);
         proofEndpoint.webSocketClient.send(attribute);
         proofEndpoint.sendFile(path+"/"+attribute+"Cloud.key", attribute+ "Cloud.key");
         proofEndpoint.sendFile(path+"/"+attribute+"Cloud.data", attribute+ "Cloud.data");
@@ -112,21 +106,31 @@ public class Verifier {
         return response;
     }
 
+    public String getResultText(boolean status){
+        if(status){
+            return "Verification positive for this attribute";
+        }else{
+            return "Verification negative for this attribute";
+        }
+    }
+
     public void test() throws ParseException, IOException, InterruptedException, ClassNotFoundException {
+        if (!Objects.equals(javaVerifierUrl, "")) {
         verificationEndpoint.createWebSocketClient("ws://" + javaVerifierUrl + "/cppUrl");
+        verificationEndpoint.latch = new CountDownLatch(2);
         verificationEndpoint.webSocketClient.connect();
         verificationEndpoint.latch.await();
-        cppVerifierUrl = verificationEndpoint.response;
+        cppVerifierUrl = String.valueOf(verificationEndpoint.response);
         verificationEndpoint.webSocketClient.close();
         int creditScoreStatus = verify("creditScore");
-        System.out.println("creaditscore : "+creditScoreStatus);
         int ageStatus = verify("age");
         int balanceStatus = verify("balance");
         AlertDialog.Builder builder = new AlertDialog.Builder(this.callerFragment.getView().getContext());
         builder.setTitle("Verification");
-        builder.setMessage("\nBalance: " + "Verification positive for this attribute" + "\n\nCredit Score: " + "Verification positive for this attribute" + "\n\nAge: " + "Verification positive for this attribute");
+        builder.setMessage("\nBalance: " + getResultText(balanceStatus != 0) + "\n\nCredit Score: " + getResultText(creditScoreStatus != 0) + "\n\nAge: " + getResultText(ageStatus != 0));
         finalResponseEndpoint.createWebSocketClient("ws://" + javaVerifierUrl + "/finalResponse");
-        String[] finalResponse = new String[]{"Fabien", "KORGO", "Casablanca", "kograss20@gmail.com", "+212 62606103", "Maroc", String.valueOf(ageStatus != 0), String.valueOf(balanceStatus != 0), String.valueOf(creditScoreStatus != 0)};
+        User user = MainActivity.driver.getUser();
+        String[] finalResponse = new String[]{user.firstname, user.lastname, user.address, user.username, user.phone, "Maroc", "Maroc", String.valueOf(ageStatus != 0), String.valueOf(balanceStatus != 0), String.valueOf(creditScoreStatus != 0)};
         finalResponseEndpoint.webSocketClient.connect();
         finalResponseEndpoint.latch.await();
         finalResponseEndpoint.webSocketClient.send(gson.toJson(finalResponse));
@@ -137,6 +141,17 @@ public class Verifier {
                 dialogInterface.dismiss();
             }
         }).show();
+        }else{
+            AlertDialog.Builder builder = new AlertDialog.Builder(this.callerFragment.getView().getContext());
+            builder.setTitle("Error");
+            builder.setMessage("Please Ensure you scanned the good QR ");
+            builder.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.dismiss();
+                }
+            }).show();
+        }
     }
 
 

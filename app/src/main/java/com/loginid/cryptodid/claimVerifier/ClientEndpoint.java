@@ -55,7 +55,7 @@ public class ClientEndpoint {
                 System.out.println("onOpen");
                 //webSocketClient.send(response);
                 latch.countDown();
-                latch = new CountDownLatch(1);
+                //latch = new CountDownLatch(1);
             }
 
 
@@ -70,57 +70,19 @@ public class ClientEndpoint {
                 }
                 latch.countDown();
             }
-//            @OnMessage(maxMessageSize = 20000000)
-//            public void onMessage(ByteBuffer buffer) {
-//                byte[] arr = new byte[buffer.remaining()];
-//                buffer.get(arr);
-//                Byte[] byteObjects = new Byte[arr.length];
-//                int i=0;
-//                for(byte b: arr)
-//                    byteObjects[i++] = b;
-//                fileByte.addAll(Arrays.asList(byteObjects));
-//                System.out.println("message");
-//                webSocketClient.send("ping");
-//            }
 
             @Override
             public void onMessage(String message) {
                 System.out.println(message);
                 response = message;
+                try {
+                    TimeUnit.SECONDS.sleep(2);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
                 latch.countDown();
 
             }
-//
-//            @Override
-//            public void onMessage(String message) {
-//                int j=0;
-//                if(!Objects.equals(gson.fromJson(message, String.class), "DONE")){
-//                    byte[] cloudKeyBytes = new byte[fileByte.size()];;
-//                    Byte[] byteObjects = fileByte.toArray(new Byte[0]);
-//                    for(Byte b: byteObjects)
-//                        cloudKeyBytes[j++] = b.byteValue();
-//                    fileByte.clear();
-//                    try {
-//                        FileUtils.writeByteArrayToFile(new File(MainActivity.path+"/"+message), cloudKeyBytes);
-//                    } catch (IOException e) {
-//                        throw new RuntimeException(e);
-//                    }
-//                    System.out.println(message);
-//                    response = message;
-//                    latch.countDown();
-//
-//                }else{
-//                    try {
-//                        TimeUnit.SECONDS.sleep(30);
-//                        System.out.println("Waiting");
-//                        webSocketClient.send("ping");
-//                    } catch (InterruptedException e) {
-//                        throw new RuntimeException(e);
-//                    }
-//                }
-//
-//            }
-
             @Override
             public void onClose(int code, String reason, boolean remote) {
                 System.out.println("onCloseReceived");
