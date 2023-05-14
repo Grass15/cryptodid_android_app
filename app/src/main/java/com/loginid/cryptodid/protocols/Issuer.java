@@ -17,12 +17,10 @@ public class Issuer implements Serializable {
 		this.attribute = attribute;
 	}
 
-	public Claim getClaim(int SIN, MG_FHE fhe, String claimIssuerName, String claimType, String claimTitle, String claimContent) throws ParseException {
-		Claim claim = new Claim(claimTitle, claimType, claimIssuerName, claimContent);
-		MG_FHE.MG_Cipher claimCiphers = fhe.encrypt(new BigInteger(""+SIN,10));;
+	public Claim getClaim(String claimIssuerName, String claimType, String claimTitle, String claimContent, String attributeName) throws ParseException {
+		Claim claim = new Claim(claimTitle, claimType, claimIssuerName, claimContent, attributeName);
 		SimpleDateFormat sdf = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
 		Calendar cal = Calendar.getInstance();
-		claim.setCiphers(claimCiphers);
 		claim.setIssuingDate(new Date());
 		cal.setTime(claim.getIssuingDate());
 		cal.add(Calendar.DAY_OF_MONTH, 30);
