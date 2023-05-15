@@ -1,6 +1,5 @@
 package com.loginid.cryptodid.claimVerifier;
 
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -9,34 +8,15 @@ import androidx.fragment.app.Fragment;
 
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
-import com.loginid.cryptodid.DbDriver;
 import com.loginid.cryptodid.MainActivity;
-import com.loginid.cryptodid.R;
-import com.loginid.cryptodid.model.Claim;
-import com.loginid.cryptodid.model.User;
-import com.loginid.cryptodid.protocols.Issuer;
-import com.loginid.cryptodid.protocols.MG_FHE;
-import com.loginid.cryptodid.protocols.ProverThread;
-import com.loginid.cryptodid.scanner.QrDecoder;
 import com.loginid.cryptodid.scanner.Scanner;
-import android.view.View;
-import android.widget.ProgressBar;
+
 import android.widget.Toast;
 
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.net.Socket;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 
 import com.google.gson.Gson;
@@ -55,7 +35,7 @@ public class Verifier {
     private Gson gson = new Gson();
 
     private Fragment callerFragment;
-    MG_FHE fhe = new MG_FHE(11,512);
+
     private Scanner scanner;
 
     private ActivityResultLauncher<ScanOptions> barLauncher;
@@ -163,14 +143,17 @@ public class Verifier {
             AlertDialog.Builder builder = new AlertDialog.Builder(this.callerFragment.getView().getContext());
             builder.setTitle("Verification");
             //builder.setMessage("\nBalance: " + getResultText(balanceStatus != 0) + "\n\nCredit Score: " + getResultText(creditScoreStatus != 0) + "\n\nAge: " + getResultText(ageStatus != 0));
-            builder.setMessage(getResultText(sinStatus != 0));
             finalResponseEndpoint.createWebSocketClient("ws://" + javaVerifierUrl + "/response");
 
             //String[] finalResponse = new String[]{user.firstname, user.lastname, user.address, user.username, user.phone, "Maroc", "Maroc", String.valueOf(ageStatus != 0), String.valueOf(balanceStatus != 0), String.valueOf(creditScoreStatus != 0)};
             finalResponseEndpoint.webSocketClient.connect();
             finalResponseEndpoint.latch.await();
-            finalResponseEndpoint.webSocketClient.send(gson.toJson(sinStatus != 0));
+            finalResponseEndpoint.latch = new CountDownLatch(1);
+            finalResponseEndpoint.webSocketClient.send(gson.toJson(sinStatus));
+            finalResponseEndpoint.latch.await();
+            String[] finalResponse = gson.fromJson(finalResponseEndpoint.response, String[].class);
             finalResponseEndpoint.webSocketClient.close();
+            builder.setMessage(finalResponse[0] +"\n\n"+ finalResponse[1]);
             builder.setPositiveButton("Close", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
