@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -25,7 +26,7 @@ public class DbDriver extends SQLiteOpenHelper {
     public static final String name = "cryptodid.db";
 
     public DbDriver(Context context) {
-        super(context, name, null, 13);
+        super(context, name, null, 16);
     }
 
     @Override
@@ -33,7 +34,7 @@ public class DbDriver extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL("create table users(user_id TEXT primary key,username TEXT unique, password TEXT, firstname TEXT, lastname TEXT, phone TEXT, address TEXT)");
         sqLiteDatabase.execSQL("insert into users(user_id ,username , password , firstname , lastname , phone , address ) " +
                 "values(0 , 'demo' , 'demo' , '' , '' , '' , '' )");
-        sqLiteDatabase.execSQL("create table claims(claim_id INTEGER PRIMARY KEY, title TEXT, type TEXT, issuerName TEXT, content TEXT,  issuingDate TEXT, expirationDate TEXT, hash INTEGER, ciphers BLOB, PK BLOB, fhe BLOB )");
+        sqLiteDatabase.execSQL("create table claims(claim_id INTEGER PRIMARY KEY, title TEXT, type TEXT, issuerName TEXT, content TEXT,  issuingDate TEXT, expirationDate TEXT, attributeName TEXT )");
     }
 
     @Override
@@ -85,10 +86,7 @@ public class DbDriver extends SQLiteOpenHelper {
         SimpleDateFormat sdf = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", Locale.CANADA);
         content.put("issuingDate", sdf.format(claim.getIssuingDate()));
         content.put("expirationDate", sdf.format(claim.getExpirationDate()));
-        content.put("hash", claim.getHash());
-        content.put("ciphers", claim.ciphersToByteArray(claim.getCiphers()));
-        content.put("PK", claim.PKToByteArray(claim.getPK()));
-        content.put("fhe", claim.fheToByteArray(claim.getFhe()));
+        content.put("attributeName", claim.getAttributeName());
         long result = db.insert("claims",null,content);
         return result;
     }
@@ -104,14 +102,10 @@ public class DbDriver extends SQLiteOpenHelper {
         // looping through all rows and adding to list
         if (cursor.moveToFirst()) {
             do {
-                Claim claim = new Claim(cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4) );
+                Claim claim = new Claim(cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(7) );
                 claim.setIssuingDate(sdf.parse(cursor.getString(5)));
                 claim.setExpirationDate(sdf.parse(cursor.getString(6)));
-                claim.setHash(cursor.getInt(7));
                 claim.setId(cursor.getInt(0));
-                claim.setCiphers(claim.byteArrayToCiphers(cursor.getBlob(8)));
-                claim.setPK(claim.byteArrayToPK(cursor.getBlob(9)));
-                claim.setFhe(claim.byteArrayToFhe(cursor.getBlob(10)));
                 claimList.add(claim);
             } while (cursor.moveToNext());
         }
@@ -128,14 +122,10 @@ public class DbDriver extends SQLiteOpenHelper {
                 new String[] { type }, null, null, null, null);
         if (cursor != null){
             cursor.moveToFirst();
-            Claim claim = new Claim(cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4) );
+            Claim claim = new Claim(cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(7) );
             claim.setIssuingDate(sdf.parse(cursor.getString(5)));
             claim.setExpirationDate(sdf.parse(cursor.getString(6)));
-            claim.setHash(cursor.getInt(7));
             claim.setId(cursor.getInt(0));
-            claim.setCiphers(claim.byteArrayToCiphers(cursor.getBlob(8)));
-            claim.setPK(claim.byteArrayToPK(cursor.getBlob(9)));
-            claim.setFhe(claim.byteArrayToFhe(cursor.getBlob(10)));
             cursor.close();
             return claim;
         }
@@ -149,7 +139,7 @@ public class DbDriver extends SQLiteOpenHelper {
         Cursor cursor = db.query(
                 "claims",
                 new String[] { "claim_id", "title",
-                        "type", "issuerName", "content", "issuingDate", "expirationDate", "hash", "ciphers", "PK", "fhe" },
+                        "type", "issuerName", "content", "issuingDate", "expirationDate", "attributeName" },
                 "type=?",
                 new String[] { type },
                 null,
@@ -158,14 +148,10 @@ public class DbDriver extends SQLiteOpenHelper {
                 null);
         if (cursor.moveToFirst()) {
             do {
-                Claim claim = new Claim(cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4) );
+                Claim claim = new Claim(cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(7) );
                 claim.setIssuingDate(sdf.parse(cursor.getString(5)));
                 claim.setExpirationDate(sdf.parse(cursor.getString(6)));
-                claim.setHash(cursor.getInt(7));
                 claim.setId(cursor.getInt(0));
-                claim.setCiphers(claim.byteArrayToCiphers(cursor.getBlob(8)));
-                claim.setPK(claim.byteArrayToPK(cursor.getBlob(9)));
-                claim.setFhe(claim.byteArrayToFhe(cursor.getBlob(10)));
                 claimList.add(claim);
             } while (cursor.moveToNext());
         }
@@ -210,11 +196,11 @@ public class DbDriver extends SQLiteOpenHelper {
         System.out.println(user.id);
         System.out.println(user.firstname);
         db.execSQL("UPDATE users " +
-                "SET firstname = ?  ," +
-                "lastname = ?  ," +
-                "address = ?  ," +
-                "phone = ?  " +
-                "WHERE user_id LIKE ?",
+                        "SET firstname = ?  ," +
+                        "lastname = ?  ," +
+                        "address = ?  ," +
+                        "phone = ?  " +
+                        "WHERE user_id LIKE ?",
                 new String[] {user.firstname, user.lastname, user.address, user.phone, user.id});
 
     }
