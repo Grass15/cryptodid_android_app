@@ -28,12 +28,11 @@ class SaveVCUseCase @Inject constructor(
         }
     }
     private fun prepareVC(vcContent: VCEnteryState): Claim {
-        val fhe = MG_FHE(11, 512)
+
         val issuer: Issuer =
             Issuer()
         issuer.setAttribute(vcContent.VCAttribute)
-        val VC: Claim = issuer.getClaim("user_good","pass_good",fhe,vcContent.issuerName,vcContent.VCType,vcContent.VCTitle,vcContent.VCContentOverview)// Claim(vcContent.VCTitle,vcContent.VCType,vcContent.issuerName,vcContent.VCContentOverview)
-        VC.setFhe(fhe)
+        val VC: Claim = issuer.getClaim(vcContent.issuerName,vcContent.VCType,vcContent.VCTitle,vcContent.VCContentOverview, "attributeName")// Claim(vcContent.VCTitle,vcContent.VCType,vcContent.issuerName,vcContent.VCContentOverview)
         VC.expirationDate = vcContent.experationDate
         return  VC
     }

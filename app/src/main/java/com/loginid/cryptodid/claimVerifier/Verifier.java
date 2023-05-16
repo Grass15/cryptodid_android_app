@@ -3,6 +3,7 @@ package com.loginid.cryptodid.claimVerifier;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.loginid.cryptodid.presentation.MainActivity;
 import com.loginid.cryptodid.protocols.ProverThread;
 import com.loginid.cryptodid.model.Claim;
 import com.loginid.cryptodid.utils.Status;
@@ -12,9 +13,13 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CountDownLatch;
 
 public class Verifier {
 
+    private ClientEndpoint getcppUrlEndpoint = new ClientEndpoint();
+    private String cppVerifierUrl = "";
+    private String javaVerifierUrl = "";
     private String url = "";
     private Claim vc;
     private ClientEndpoint finalResponseEndpoint = new ClientEndpoint();
@@ -45,7 +50,6 @@ public class Verifier {
         this.vc = vc;
     }
 
-
     public void AppendVC(Claim vc){
         this.vcs.add(vc);
     }
@@ -55,41 +59,50 @@ public class Verifier {
            this.vcs.addAll(vcs);
     }
 
+    public native int Decrypt(String ClaimPath, String SK_Path);
+
+    public int verify(String attribute) throws InterruptedException, ParseException, IOException, ClassNotFoundException {
+        String path = String.valueOf(MainActivity.getFilesDir());
+        int response;
+        ClientEndpoint proofEndpoint = new ClientEndpoint();
+        proofEndpoint.createWebSocketClient("ws://" + cppVerifierUrl);
+        proofEndpoint.webSocketClient.connect();
+        proofEndpoint.latch.await();
+        proofEndpoint.latch = new CountDownLatch(1);
+        proofEndpoint.webSocketClient.send(attribute);
+        proofEndpoint.sendFile(path+"/"+attribute+"Cloud.key", attribute+ "Cloud.key");
+        proofEndpoint.sendFile(path+"/"+attribute+"Cloud.data", attribute+ "Cloud.data");
+        proofEndpoint.sendFile(path+"/"+attribute+"PK.key", attribute+ "PK.key");
+        proofEndpoint.latch.await();
+        response = Decrypt(path+"/Answer.data", path+"/"+attribute+"Keyset.key");
+        proofEndpoint.webSocketClient.close();
+        System.out.println(attribute + ": " + response);
+        return response;
+    }
+    public String getResultText(boolean status){
+        if(status){
+            return "Verification positive for this attribute";
+        }else{
+            return "Verification negative for this attribute";
+        }
+    }
+
     public VerificationStatus verifyVCsRentalHouse()  throws InterruptedException, ParseException, IOException, ClassNotFoundException{
       //  return CompletableFuture.runAsync(() -> {
             if (!vcs.isEmpty()) {
 
                 if (!Objects.equals(this.url, "")) {
+                    try{
                     finalResponseEndpoint.createWebSocketClient("ws://" + this.url + "/finalResponse");
-                    Claim balanceClaim;
-                    Claim creditScoreClaim;
-                    Claim ageClaim;
-                    try {
-                        balanceClaim = this.vcs.get(2);
-                        creditScoreClaim = this.vcs.get(1);
-                        ageClaim = this.vcs.get(0);
-                        ProverThread balanceProverThread = new ProverThread(this.url, balanceClaim, balanceClaim.getFhe(), "balance");
-                        ProverThread ageProverThread = new ProverThread(this.url, ageClaim, ageClaim.getFhe(), "age");
-                        ProverThread creditScoreProverThread = new ProverThread(this.url, creditScoreClaim, creditScoreClaim.getFhe(), "creditScore");
-
-                    Thread balanceVerification = new Thread(balanceProverThread);
-                    Thread ageVerification = new Thread(ageProverThread);
-                    Thread creditScoreVerification = new Thread(creditScoreProverThread);
-                    balanceVerification.start();
-                    ageVerification.start();
-                    creditScoreVerification.start();
-                    /*
-                    if (balanceVerification.isAlive() || ageVerification.isAlive() || creditScoreVerification.isAlive()) {
-                        System.out.println("VThread"+ "One or more verification threads are still running");
-                    } else {
-                        System.out.println("VThread"+ "All verification threads have completed");
-                    }
-
-                     */
-                        System.out.println("VThread" + "Starting verification");
-                    balanceVerification.join();
-                    ageVerification.join();
-                    creditScoreVerification.join();
+                    getcppUrlEndpoint.createWebSocketClient("ws://" + javaVerifierUrl + "/cppUrl");
+                    getcppUrlEndpoint.latch = new CountDownLatch(2);
+                    getcppUrlEndpoint.webSocketClient.connect();
+                    getcppUrlEndpoint.latch.await();
+                    cppVerifierUrl = String.valueOf(getcppUrlEndpoint.response);
+                    getcppUrlEndpoint.webSocketClient.close();
+                    int creditScoreStatus = verify("creditScore");
+                    int ageStatus = verify("age");
+                    int balanceStatus = verify("balance");
                         /*
 
 
@@ -101,7 +114,7 @@ public class Verifier {
 */
                         try {
 //
-                            String[] finalResponse = new String[]{"user.firstname", "user.lastname", "user.address", "user.username", "user.phone", "Maroc", ageProverThread.getVerifierResponse()[2].toString(), balanceProverThread.getVerifierResponse()[2].toString(), creditScoreProverThread.getVerifierResponse()[2].toString()};
+                            String[] finalResponse = new String[]{"user.firstname", "user.lastname", "user.address", "user.username", "user.phone", "Maroc", String.valueOf(ageStatus != 0), String.valueOf(balanceStatus != 0), String.valueOf(creditScoreStatus != 0)};
                             finalResponseEndpoint.response = gson.toJson(finalResponse);
                             finalResponseEndpoint.webSocketClient.connect();
                             return new VerificationStatus("VERIFIED WITH SUCCESS", Status.SUCCESS);

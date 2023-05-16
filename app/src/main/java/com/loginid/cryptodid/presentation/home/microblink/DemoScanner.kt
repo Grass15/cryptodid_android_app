@@ -71,6 +71,5 @@ fun ScanIDCard(
         Text(text = "Get Age VC",modifier = Modifier.weight(1f), style = TextStyle(fontSize = 18.sp))
     }
 
-
 }
 
