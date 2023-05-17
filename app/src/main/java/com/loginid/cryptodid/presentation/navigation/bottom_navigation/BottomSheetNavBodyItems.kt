@@ -10,6 +10,18 @@ sealed class BottomSheetNavBodyItems(
     val route: String,
     val contentDescription: String,
 ) {
+    object GovVC: BottomSheetNavBodyItems(
+        icon = Icons.Filled.DocumentScanner,
+        title = "Get Government ID VC",
+        route = "",
+        contentDescription = "Deleted items"
+    )
+    object IssuerGateWay: BottomSheetNavBodyItems(
+        icon = Icons.Filled.NetworkCell,
+        title = "Get VC using QR Code",
+        route = "",
+        contentDescription = "Deleted items"
+    )
     object BankVC: BottomSheetNavBodyItems(
         icon = Icons.Filled.Money,
         title = "Bank VC",

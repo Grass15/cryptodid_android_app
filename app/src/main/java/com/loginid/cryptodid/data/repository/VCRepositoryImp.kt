@@ -19,5 +19,4 @@ class VCRepositoryImp @Inject constructor(
     override suspend fun getVC(VCType: String, VCProvider: String): VCDto {
         return api.getVC(VCType,VCProvider)
     }
-
 }

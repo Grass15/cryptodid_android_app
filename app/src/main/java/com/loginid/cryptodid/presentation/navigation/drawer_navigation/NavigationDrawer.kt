@@ -58,7 +58,7 @@ fun FullDrawer(vcViewModel: VCViewModel = hiltViewModel(),onItemClick: (Navigati
                 color = MaterialTheme.colors.inputTextColor,
                 thickness = 2.dp,
                 startIndent = 16.dp,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth() //get doc gov vc
             )
             Row(
                 modifier = Modifier
