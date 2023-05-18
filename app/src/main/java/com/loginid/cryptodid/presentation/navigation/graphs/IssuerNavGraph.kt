@@ -11,12 +11,15 @@ import com.loginid.cryptodid.presentation.authentication.login.LoginScreen
 import com.loginid.cryptodid.presentation.authentication.login.LoginScreenViewModel
 import com.loginid.cryptodid.presentation.authentication.register.RegisterScreen
 import com.loginid.cryptodid.presentation.authentication.register.RegisterScreenViewModel
+import com.loginid.cryptodid.presentation.home.vc.VCViewModel.VCEnteryState
+import com.loginid.cryptodid.presentation.home.vc.VCViewModel.VCViewModel
+import com.loginid.cryptodid.presentation.issuer.MicroBlinkIssuerScreen
 import com.loginid.cryptodid.presentation.issuer.bank.CreditScoreScreen
 import com.loginid.cryptodid.presentation.issuer.bank.PlaidScreen
-import com.loginid.cryptodid.presentation.issuer.microBlinkScreen
 import com.loginid.cryptodid.presentation.navigation.screens.AuthScreen
 import com.loginid.cryptodid.presentation.navigation.screens.IssuerScreen
 import com.loginid.cryptodid.utils.Constants
+import java.util.*
 
 
 fun NavGraphBuilder.issuerNavGraph(
@@ -29,7 +32,22 @@ fun NavGraphBuilder.issuerNavGraph(
         composable(
             route = IssuerScreen.MicroBlinkScreenScreen.route
         ){
-            microBlinkScreen()
+            val viewModel = hiltViewModel<VCViewModel>()
+            val microblink = MicroBlinkIssuerScreen(
+                navController = navController,
+            ){
+                viewModel.saveVC(
+                        VCEnteryState(
+                            experationDate = Date(),
+                            issuerName = "MicroBlink",
+                            VCType = "Personal data",
+                            VCTitle = "Age",
+                            VCContentOverview = "+18",
+                            VCAttribute = it
+                        )
+                )
+            }
+            microblink.microBlinkScreen()
         }
         /* TO DO */
       /*  composable(
