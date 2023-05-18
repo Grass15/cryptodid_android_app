@@ -29,5 +29,6 @@ fun SetupNavGraph(
       authNavGraph(navController = navController)
       homeGraph(navController = navController)
         detailsGraph(navController = navController)
+        issuerNavGraph(navController = navController)
     }
 }

@@ -29,6 +29,7 @@ import com.loginid.cryptodid.presentation.home.vc.VCViewModel.VCViewModel
 import com.loginid.cryptodid.presentation.navigation.bottom_navigation.BottomSheetNavBodyItems
 import com.loginid.cryptodid.presentation.navigation.bottom_navigation.BottomSheetNavigation
 import com.loginid.cryptodid.presentation.navigation.drawer_navigation.*
+import com.loginid.cryptodid.presentation.navigation.screens.IssuerScreen
 import com.loginid.cryptodid.presentation.theme.CardForGround
 import com.loginid.cryptodid.presentation.theme.HomeBackGround
 import com.loginid.cryptodid.presentation.theme.OpsIcons
@@ -238,10 +239,15 @@ Scaffold(
     }
 
     ModalBottomSheetLayout(modifier = Modifier.clip(RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)), sheetState = modalSheetState, sheetContent = {
-        BottomSheetNavigation(navitems = listOf(BottomSheetNavBodyItems.BankVC,BottomSheetNavBodyItems.CreditScoreVC,
-        BottomSheetNavBodyItems.DriverLicenceVC,BottomSheetNavBodyItems.PersenalVC,BottomSheetNavBodyItems.TelecomVC,
+        BottomSheetNavigation(navitems =
+        listOf(BottomSheetNavBodyItems.BankVC,BottomSheetNavBodyItems.CreditScoreVC,
             BottomSheetNavBodyItems.BlinkVC
-            ), onItemClick = {Log.d("BI",it.route)})
+            ), onItemClick = {
+           // if(it.route == IssuerScreen.MicroBlinkScreenScreen.route){
+                navController.navigate(route = it.route)
+          //  }
+            Log.d("BI",it.route)
+            })
     }) {
 
     }

@@ -6,6 +6,7 @@ object Constants {
     const val AUTH_GRAPH = "auth_graph"
     const val HOME_ROOT_GRAPH = "home_root_graph"
     const val DETAILS_GRAPH = "details_graph"
+    const val ISSUER_GRAPH = "issuer_graph"
 
 
     //DATABASE constatnts

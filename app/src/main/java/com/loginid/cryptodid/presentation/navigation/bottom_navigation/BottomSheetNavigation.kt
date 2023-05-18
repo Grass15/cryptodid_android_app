@@ -52,7 +52,7 @@ fun BottomSheetNavigation(
             }
 
         }
-        item {
+        /*item {
              ScanIDCard(
                  onScanResult = {
                      Log.d("Extracted",it.toString())
@@ -70,6 +70,6 @@ fun BottomSheetNavigation(
                  launchCamera = {
                      it.launch(null)
                  })
-        }
+        }*/
     }
 }

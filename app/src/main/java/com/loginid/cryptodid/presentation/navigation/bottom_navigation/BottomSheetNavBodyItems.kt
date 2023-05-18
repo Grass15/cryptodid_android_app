@@ -3,6 +3,7 @@ package com.loginid.cryptodid.presentation.navigation.bottom_navigation
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.loginid.cryptodid.presentation.navigation.screens.IssuerScreen
 
 sealed class BottomSheetNavBodyItems(
     val icon: ImageVector,
@@ -13,25 +14,25 @@ sealed class BottomSheetNavBodyItems(
     object GovVC: BottomSheetNavBodyItems(
         icon = Icons.Filled.DocumentScanner,
         title = "Get Government ID VC",
-        route = "",
+        route = IssuerScreen.GovernmentIDVCScreen.route,
         contentDescription = "Deleted items"
     )
     object IssuerGateWay: BottomSheetNavBodyItems(
         icon = Icons.Filled.NetworkCell,
         title = "Get VC using QR Code",
-        route = "",
+        route = IssuerScreen.VCFromIssuerGateWayScreen.route,
         contentDescription = "Deleted items"
     )
     object BankVC: BottomSheetNavBodyItems(
         icon = Icons.Filled.Money,
         title = "Bank VC",
-        route = "",
+        route = IssuerScreen.PLAIDVCScreen.route,
         contentDescription = "Deleted items"
     )
     object CreditScoreVC: BottomSheetNavBodyItems(
         icon = Icons.Filled.Score,
         title = "Credit Score VC",
-        route = "",
+        route = IssuerScreen.CreditScorevcScreen.route,
         contentDescription = "Presonal infos"
     )
     object DriverLicenceVC: BottomSheetNavBodyItems(
@@ -55,7 +56,7 @@ sealed class BottomSheetNavBodyItems(
     object BlinkVC: BottomSheetNavBodyItems(
         icon = Icons.Filled.Camera,
         title = "Blink VC",
-        route = "",
+        route = IssuerScreen.MicroBlinkScreenScreen.route,
         contentDescription = "Cleann"
     )
 
