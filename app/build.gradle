@@ -23,7 +23,9 @@ android {
         targetSdk 33
         versionCode 1
         versionName "1.0"
-
+        ndk{
+            moduleName "tfhe"
+        }
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         vectorDrawables {
@@ -55,10 +57,25 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion '1.1.1'
     }
+    externalNativeBuild {
+        cmake {
+            path file('src/main/cpp/CMakeLists.txt')
+            version '3.22.1'
+        }
+
+        buildFeatures {
+            viewBinding true
+        }
+    }
+
+    ndkVersion '23.1.7779620'
 
     packagingOptions {
+
         resources {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
+            excludes += 'resources.arsc'
+            excludes += 'AndroidManifest.xml'
         }
     }
 
@@ -181,6 +198,9 @@ dependencies {
     implementation 'org.apache.tomcat.embed:tomcat-embed-websocket:8.0.28'
     implementation "org.slf4j:slf4j-api:2.0.6"
     implementation "org.slf4j:slf4j-simple:2.0.6"
+
+    //Filess
+    implementation 'commons-io:commons-io:2.7'
 
 
 }

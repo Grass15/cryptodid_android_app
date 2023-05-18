@@ -1,13 +1,14 @@
 package com.loginid.cryptodid.domain.use_case.save_vc
 
 import android.database.sqlite.SQLiteException
-import com.loginid.cryptodid.protocols.Issuer
-import com.loginid.cryptodid.protocols.MG_FHE
-import com.loginid.cryptodid.model.Claim
 import com.loginid.cryptodid.data.local.entity.VCEntity
 import com.loginid.cryptodid.data.local.entity.VCType
 import com.loginid.cryptodid.domain.repository.UserRepository
+import com.loginid.cryptodid.model.Claim
+import com.loginid.cryptodid.presentation.MainActivity
+import com.loginid.cryptodid.presentation.MainActivity.Companion.getFilesFolder
 import com.loginid.cryptodid.presentation.home.vc.VCViewModel.VCEnteryState
+import com.loginid.cryptodid.protocols.Issuer
 import com.loginid.cryptodid.utils.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -27,13 +28,14 @@ class SaveVCUseCase @Inject constructor(
             emit(Resource.Error<Boolean>(e.localizedMessage?:"An error occured",null))
         }
     }
+    external fun TFHE(n1: Int, filepath: String?, attribute: String?): Int
     private fun prepareVC(vcContent: VCEnteryState): Claim {
-        val fhe = MG_FHE(11, 512)
         val issuer: Issuer =
             Issuer()
         issuer.setAttribute(vcContent.VCAttribute)
-        val VC: Claim = issuer.getClaim("user_good","pass_good",fhe,vcContent.issuerName,vcContent.VCType,vcContent.VCTitle,vcContent.VCContentOverview)// Claim(vcContent.VCTitle,vcContent.VCType,vcContent.issuerName,vcContent.VCContentOverview)
-        VC.setFhe(fhe)
+        val test = getFilesFolder()
+        TFHE(vcContent.VCAttribute, java.lang.String.valueOf(test), vcContent.VCType)
+        val VC: Claim = issuer.getClaim(vcContent.issuerName,vcContent.VCType,vcContent.VCTitle,vcContent.VCContentOverview, "attributeName")// Claim(vcContent.VCTitle,vcContent.VCType,vcContent.issuerName,vcContent.VCContentOverview)
         VC.expirationDate = vcContent.experationDate
         return  VC
     }
