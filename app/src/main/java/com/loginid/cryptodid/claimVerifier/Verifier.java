@@ -1,10 +1,7 @@
 package com.loginid.cryptodid.claimVerifier;
 
-import android.util.Log;
-
 import com.google.gson.Gson;
 import com.loginid.cryptodid.presentation.MainActivity;
-import com.loginid.cryptodid.protocols.ProverThread;
 import com.loginid.cryptodid.model.Claim;
 import com.loginid.cryptodid.utils.Status;
 
@@ -62,7 +59,8 @@ public class Verifier {
     public native int Decrypt(String ClaimPath, String SK_Path);
 
     public int verify(String attribute) throws InterruptedException, ParseException, IOException, ClassNotFoundException {
-        String path = String.valueOf(MainActivity.getFilesDir());
+        String path = String.valueOf(MainActivity.getFilesFolder());
+
         int response;
         ClientEndpoint proofEndpoint = new ClientEndpoint();
         proofEndpoint.createWebSocketClient("ws://" + cppVerifierUrl);

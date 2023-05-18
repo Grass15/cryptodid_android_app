@@ -4,8 +4,6 @@ package com.loginid.cryptodid.presentation.home.scanner
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.loginid.cryptodid.claimVerifier.VerificationStatus
-import com.loginid.cryptodid.protocols.Issuer
-import com.loginid.cryptodid.protocols.MG_FHE
 import com.loginid.cryptodid.model.Claim
 import com.loginid.cryptodid.claimVerifier.Verifier
 import com.loginid.cryptodid.domain.repository.ScannerRepository
@@ -58,25 +56,25 @@ class ScannerViewModel @Inject constructor(
     fun setupVerifier(vc: Claim){
 
         //bank vc
-        val fhe = MG_FHE(11, 512)
-        val issuer1: Issuer =
-            Issuer()
-        issuer1.setAttribute(800)
-            val BankVC: Claim = issuer1.getClaim("user_good","pass_good",fhe,"vcContent.issuerName","vcContent.VCType","vcContent.VCTitle","vcContent.VCContentOverview")// Claim(vcContent.VCTitle,vcContent.VCType,vcContent.issuerName,vcContent.VCContentOverview)
-            BankVC.setFhe(fhe)
-
-        //Creditscore
-
-        val issuer2: Issuer =
-            Issuer()
-        issuer2.setAttribute((700) as Int)
-        val CreditScoreVC: Claim = issuer2.getClaim("user_good","pass_good",fhe,"vcContent.issuerName","vcContent.VCType","vcContent.VCTitle","vcContent.VCContentOverview")// Claim(vcContent.VCTitle,vcContent.VCType,vcContent.issuerName,vcContent.VCContentOverview)
-        CreditScoreVC.setFhe(fhe)
-
-        val vcs: List<Claim> = listOf(vc,CreditScoreVC,BankVC)
-      // verifier.AppendVCs(listOf(vc,CreditScoreVC,BankVC))
-        verifier.setVc(vc)
-        verifier.AppendVCs(vcs)
+//        val fhe = MG_FHE(11, 512)
+//        val issuer1: Issuer =
+//            Issuer()
+//        issuer1.setAttribute(800)
+//            val BankVC: Claim = issuer1.getClaim("user_good","pass_good",fhe,"vcContent.issuerName","vcContent.VCType","vcContent.VCTitle","vcContent.VCContentOverview")// Claim(vcContent.VCTitle,vcContent.VCType,vcContent.issuerName,vcContent.VCContentOverview)
+//            //BankVC.setFhe(fhe)
+//
+//        //Creditscore
+//
+//        val issuer2: Issuer =
+//            Issuer()
+//        issuer2.setAttribute((700) as Int)
+//        val CreditScoreVC: Claim = issuer2.getClaim("user_good","pass_good",fhe,"vcContent.issuerName","vcContent.VCType","vcContent.VCTitle","vcContent.VCContentOverview")// Claim(vcContent.VCTitle,vcContent.VCType,vcContent.issuerName,vcContent.VCContentOverview)
+//        CreditScoreVC.setFhe(fhe)
+//
+//        val vcs: List<Claim> = listOf(vc,CreditScoreVC,BankVC)
+//      // verifier.AppendVCs(listOf(vc,CreditScoreVC,BankVC))
+//        verifier.setVc(vc)
+//        verifier.AppendVCs(vcs)
 
     }
 

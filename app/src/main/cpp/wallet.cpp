@@ -103,7 +103,7 @@ char* concat(const char* s1, const char* s2)
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_loginid_cryptodid_claimFetcher_Fetcher_TFHE(JNIEnv *env, jobject thiz, jint n1,
+Java_com_loginid_cryptodid_domain_use_1case_save_1vc_SaveVCUseCase_TFHE(JNIEnv *env, jobject thiz, jint n1,
                                                        jstring folderPath, jstring attribute) {
     // TODO: implement TFHE
     const char *path = env->GetStringUTFChars(folderPath, NULL);

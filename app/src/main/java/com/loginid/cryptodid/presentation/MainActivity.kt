@@ -35,7 +35,7 @@ class MainActivity : ComponentActivity() {
     lateinit var navController: NavHostController
     @Inject
     lateinit var splashViewModel: SplashViewModel
-    var path: File? = null
+
 
 
     @RequiresApi(Build.VERSION_CODES.P)
@@ -49,7 +49,7 @@ class MainActivity : ComponentActivity() {
             PackageManager.PERMISSION_GRANTED
         )
         path = filesDir
-         MicroblinkSDK.setLicenseKey(BLINK_ID_LICENCE,this)
+//         MicroblinkSDK.setLicenseKey(BLINK_ID_LICENCE,this)
       installSplashScreen().setKeepOnScreenCondition{
           !splashViewModel.isLoading.value
       }
@@ -84,11 +84,10 @@ class MainActivity : ComponentActivity() {
         init {
             System.loadLibrary("tfhemain")
         }
-        @JvmField
         var path: File? = null
         @JvmStatic
-        fun  getFilesDir(): File? {
-            return path;
+        fun  getFilesFolder(): File? {
+            return MainActivity.path;
         }
     }
 }

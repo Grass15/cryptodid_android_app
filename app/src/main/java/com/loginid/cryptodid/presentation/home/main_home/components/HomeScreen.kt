@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.loginid.cryptodid.data.local.entity.VCType
+import com.loginid.cryptodid.presentation.MainActivity.Companion.getFilesFolder
 import com.loginid.cryptodid.presentation.home.biometrics.BiometricsAuthenticationProvider
 import com.loginid.cryptodid.presentation.home.biometrics.BiomtricType
 import com.loginid.cryptodid.presentation.home.modalDialogs.ModalDialogs
@@ -248,9 +249,14 @@ Scaffold(
 
     //Displaying Prompt
     if (showPrompt) {
+
         LaunchedEffect(true) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 biometricAuthenticator.getBiometricAuthenticator(BiomtricType.AUTO)?.authenticate(activity)
+            }
+            //Just a personal reminder to handle This before deploying it to play store
+            scope.launch {
+                modalSheetState.show()
             }
             showPrompt = false
         }

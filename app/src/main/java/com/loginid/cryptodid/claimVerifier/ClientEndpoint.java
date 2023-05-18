@@ -58,7 +58,7 @@ public class ClientEndpoint {
                 byte[] answer_data = new byte[buffer.remaining()];
                 buffer.get(answer_data);
                 try {
-                    FileUtils.writeByteArrayToFile(new File(MainActivity.getFilesDir()+"/"+"Answer.data"), answer_data);
+                    FileUtils.writeByteArrayToFile(new File(MainActivity.getFilesFolder()+"/"+"Answer.data"), answer_data);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
