@@ -50,7 +50,7 @@ fun NavGraphBuilder.issuerNavGraph(
         composable(
             route = IssuerScreen.PLAIDVCScreen.route
         ){
-            PlaidScreen()
+            PlaidScreen(navController)
         }
     }
 }

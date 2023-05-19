@@ -4,7 +4,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'dagger.hilt.android.plugin'
     id 'kotlin-kapt'
-    //id 'kotlinx-serialization'
+//    id 'kotlinx-serialization'
     id 'org.jetbrains.kotlin.plugin.serialization'
     id 'org.jetbrains.dokka'
 }
@@ -192,6 +192,14 @@ dependencies {
   implementation('com.microblink:blinkid:6.1.2@aar') {
         transitive = true
     }
+
+    //Plaid
+    implementation "io.reactivex.rxjava3:rxandroid:3.0.0"
+    implementation 'com.squareup.retrofit2:adapter-rxjava3:2.9.0'
+    implementation "com.squareup.retrofit2:retrofit:2.9.0"
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+    implementation 'com.google.code.gson:gson:2.9.0'
+    implementation "com.plaid.link:sdk-core:3.10.1"
 
     //Websockets
     implementation "org.java-websocket:Java-WebSocket:1.5.1"
