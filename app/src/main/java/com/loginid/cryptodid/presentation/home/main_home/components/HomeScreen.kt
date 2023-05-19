@@ -57,6 +57,9 @@ fun HomeScreen(
         mutableStateOf(false)
     }
     val modalDialogsFlow = remember { mutableStateOf<ModalDialogs?>(null) }
+    println("Balance Amount".split(" ")[0].lowercase().trim())
+    println("CreditScore Point".split(" ")[0].lowercase().trim())
+    println("Age".split(" ")[0].lowercase().trim())
 
     //General states
     /*
