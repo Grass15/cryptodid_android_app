@@ -1,4 +1,4 @@
-package com.loginid.cryptodid.presentation.issuer.bank.network;
+package com.loginid.cryptodid.presentation.issuer.plaid.network;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers

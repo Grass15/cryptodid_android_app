@@ -1,17 +1,15 @@
-package com.loginid.cryptodid.presentation.issuer.bank
+package com.loginid.cryptodid.presentation.issuer.plaid
 
 
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.loginid.cryptodid.presentation.home.vc.VCViewModel.VCEnteryState
-import com.loginid.cryptodid.presentation.issuer.bank.network.AccountRequester
-import com.loginid.cryptodid.presentation.issuer.bank.network.ResponseClass
+import com.loginid.cryptodid.presentation.issuer.plaid.network.AccountRequester
+import com.loginid.cryptodid.presentation.issuer.plaid.network.ResponseClass
 import com.plaid.link.configuration.LinkTokenConfiguration
 import com.plaid.link.result.LinkExit
 import com.plaid.link.result.LinkSuccess
@@ -19,9 +17,7 @@ import retrofit2.Call
 import retrofit2.Response
 import java.util.*
 import com.loginid.cryptodid.presentation.home.vc.VCViewModel.VCViewModel
-import com.loginid.cryptodid.presentation.issuer.bank.network.LinkTokenRequester
-import com.loginid.cryptodid.presentation.issuer.bank.network.LinkTokenRequester.token
-import com.loginid.cryptodid.presentation.navigation.screens.HomeScreen
+import com.loginid.cryptodid.presentation.issuer.plaid.network.LinkTokenRequester.token
 import com.plaid.link.OpenPlaidLink
 import com.plaid.link.result.LinkResult
 
@@ -38,9 +34,6 @@ fun PlaidScreen( navController: NavController,) {
     openLink(linkAccountToPlaid)
 
 }
-
-
-
 
 private fun showSuccess(success: LinkSuccess, vcViewModel: VCViewModel, navController: NavController,) {
     AccountRequester.getAccounts(object : retrofit2.Callback<ResponseClass>{
@@ -61,7 +54,7 @@ private fun showSuccess(success: LinkSuccess, vcViewModel: VCViewModel, navContr
                         )
                     )
                     navController.popBackStack()
-                    navController.navigate(HomeScreen.MainHomeScreen.route)
+                    //navController.navigate(HomeScreen.MainHomeScreen.route)
 
                 }else{
                     println(responseBody)
