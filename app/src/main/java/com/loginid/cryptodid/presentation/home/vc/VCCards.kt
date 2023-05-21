@@ -17,6 +17,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.loginid.cryptodid.claimVerifier.VerificationStatus
+import com.loginid.cryptodid.claimVerifier.Verifier
+import com.loginid.cryptodid.domain.use_case.verify_vc.HouseRentaleVerificationUseCase
 import com.loginid.cryptodid.model.Claim
 import com.loginid.cryptodid.presentation.home.biometrics.BiometricsAuthenticationProvider
 import com.loginid.cryptodid.presentation.home.biometrics.BiomtricType
@@ -25,7 +27,13 @@ import com.loginid.cryptodid.presentation.home.scanner.ScannerViewModel
 import com.loginid.cryptodid.presentation.home.vc.VCViewModel.MultipleVCOperations
 import com.loginid.cryptodid.presentation.home.vc.VCViewModel.VCDataDisplayState
 import com.loginid.cryptodid.presentation.home.vc.VCViewModel.VCViewModel
+import com.loginid.cryptodid.utils.Resource
 import com.loginid.cryptodid.utils.Status
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 
@@ -39,6 +47,8 @@ fun VCCard(
     startOperation : MultipleVCOperations,
     onVerificationStateAction: (VerificationStatus) -> Unit
 ) {
+
+
     //Handle Checklist
     var displaCheckBox by remember { mutableStateOf(false) }
     var checkedListIndex by remember {
@@ -112,6 +122,7 @@ fun VCCard(
                         it.rawVC?.let {
                                 it1 -> scannerViewModel.setupVerifier(it1)
                             scannerViewModel.resetStatus()
+
                             showPrompt = true
                         }
                     },
@@ -225,6 +236,8 @@ fun VCCard(
             biometricAuthenticator.getBiometricAuthenticator(BiomtricType.AUTO)?.authenticate(activity)
             showPrompt = false
         }
+        //Remove the line below before deployment
+        scannerViewModel.startScanning()
     }
 
     when(verificationState.value.vStatus){

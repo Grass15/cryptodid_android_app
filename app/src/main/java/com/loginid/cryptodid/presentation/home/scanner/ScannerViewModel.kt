@@ -37,6 +37,8 @@ class ScannerViewModel @Inject constructor(
     }*/
 
     fun startScanning(){
+//        verifier.setUrl("192.168.11.106:8080")
+//        startVerification(verifier)
         viewModelScope.launch {
             repository.startScanning().collect{data ->
                 if(!data.isNullOrBlank()){

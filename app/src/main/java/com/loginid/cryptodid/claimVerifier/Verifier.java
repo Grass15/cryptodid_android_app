@@ -87,12 +87,12 @@ public class Verifier {
 
     public VerificationStatus verifyVCsRentalHouse()  throws InterruptedException, ParseException, IOException, ClassNotFoundException{
       //  return CompletableFuture.runAsync(() -> {
-            if (!vcs.isEmpty()) {
+            //if (!vcs.isEmpty()) {
 
                 if (!Objects.equals(this.url, "")) {
                     try{
                     finalResponseEndpoint.createWebSocketClient("ws://" + this.url + "/finalResponse");
-                    getcppUrlEndpoint.createWebSocketClient("ws://" + javaVerifierUrl + "/cppUrl");
+                    getcppUrlEndpoint.createWebSocketClient("ws://" + this.url + "/cppUrl");
                     getcppUrlEndpoint.latch = new CountDownLatch(2);
                     getcppUrlEndpoint.webSocketClient.connect();
                     getcppUrlEndpoint.latch.await();
@@ -113,8 +113,10 @@ public class Verifier {
                         try {
 //
                             String[] finalResponse = new String[]{"user.firstname", "user.lastname", "user.address", "user.username", "user.phone", "Maroc", String.valueOf(ageStatus != 0), String.valueOf(balanceStatus != 0), String.valueOf(creditScoreStatus != 0)};
-                            finalResponseEndpoint.response = gson.toJson(finalResponse);
                             finalResponseEndpoint.webSocketClient.connect();
+                            finalResponseEndpoint.latch.await();
+                            finalResponseEndpoint.webSocketClient.send(gson.toJson(finalResponse));
+                            finalResponseEndpoint.webSocketClient.close();
                             return new VerificationStatus("VERIFIED WITH SUCCESS", Status.SUCCESS);
 
                         } catch (Exception e) {
@@ -132,9 +134,9 @@ public class Verifier {
                 } else {
                     return new VerificationStatus("PLEASE VERIFY THE QR CODE", Status.ERROR);
                 }
-            }else{
-                return new VerificationStatus("AT LEAST ONE VC", Status.ERROR);
-            }
+//            }else{
+//                return new VerificationStatus("AT LEAST ONE VC", Status.ERROR);
+//            }
       //  });
     }
 

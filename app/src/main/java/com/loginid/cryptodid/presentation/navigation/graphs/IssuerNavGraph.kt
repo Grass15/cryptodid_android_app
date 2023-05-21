@@ -56,7 +56,7 @@ fun NavGraphBuilder.issuerNavGraph(
         composable(
             route = IssuerScreen.CreditScorevcScreen.route
         ){
-            CreditScoreScreen()
+            CreditScoreScreen(navController)
         }
         composable(
             route = IssuerScreen.PLAIDVCScreen.route

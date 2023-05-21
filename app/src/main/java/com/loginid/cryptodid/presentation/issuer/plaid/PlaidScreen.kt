@@ -18,12 +18,13 @@ import retrofit2.Response
 import java.util.*
 import com.loginid.cryptodid.presentation.home.vc.VCViewModel.VCViewModel
 import com.loginid.cryptodid.presentation.issuer.plaid.network.LinkTokenRequester.token
+import com.loginid.cryptodid.presentation.navigation.screens.HomeScreen
 import com.plaid.link.OpenPlaidLink
 import com.plaid.link.result.LinkResult
 
 //var vcViewModel : VCViewModel = TODO();
 @Composable
-fun PlaidScreen( navController: NavController,) {
+fun PlaidScreen( navController: NavController) {
     var vcViewModel: VCViewModel = hiltViewModel()
     val linkAccountToPlaid = rememberLauncherForActivityResult(contract = OpenPlaidLink()){
         when(it){
@@ -53,8 +54,7 @@ private fun showSuccess(success: LinkSuccess, vcViewModel: VCViewModel, navContr
                             VCAttribute = responseBody.accounts[1].balances.available
                         )
                     )
-                    navController.popBackStack()
-                    //navController.navigate(HomeScreen.MainHomeScreen.route)
+                    navController.navigate(HomeScreen.MainHomeScreen.route)
 
                 }else{
                     println(responseBody)
