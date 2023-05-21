@@ -50,7 +50,6 @@ class MainActivity : ComponentActivity() {
             PackageManager.PERMISSION_GRANTED
         )
         path = filesDir
-//         MicroblinkSDK.setLicenseKey(BLINK_ID_LICENCE,this)
       installSplashScreen().setKeepOnScreenCondition{
           !splashViewModel.isLoading.value
       }

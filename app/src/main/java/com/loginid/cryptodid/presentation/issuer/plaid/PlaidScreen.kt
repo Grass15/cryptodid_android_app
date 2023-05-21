@@ -1,4 +1,4 @@
-package com.loginid.cryptodid.presentation.issuer.bank
+package com.loginid.cryptodid.presentation.issuer.plaid
 
 
 import android.util.Log
@@ -7,9 +7,10 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.loginid.cryptodid.data.local.entity.VCType
 import com.loginid.cryptodid.presentation.home.vc.VCViewModel.VCEnteryState
-import com.loginid.cryptodid.presentation.issuer.bank.network.AccountRequester
-import com.loginid.cryptodid.presentation.issuer.bank.network.ResponseClass
+import com.loginid.cryptodid.presentation.issuer.plaid.network.AccountRequester
+import com.loginid.cryptodid.presentation.issuer.plaid.network.ResponseClass
 import com.plaid.link.configuration.LinkTokenConfiguration
 import com.plaid.link.result.LinkExit
 import com.plaid.link.result.LinkSuccess
@@ -17,14 +18,15 @@ import retrofit2.Call
 import retrofit2.Response
 import java.util.*
 import com.loginid.cryptodid.presentation.home.vc.VCViewModel.VCViewModel
-import com.loginid.cryptodid.presentation.issuer.bank.network.LinkTokenRequester.token
+
+import com.loginid.cryptodid.presentation.issuer.plaid.network.LinkTokenRequester.token
 import com.loginid.cryptodid.presentation.navigation.screens.HomeScreen
 import com.plaid.link.OpenPlaidLink
 import com.plaid.link.result.LinkResult
 
 //var vcViewModel : VCViewModel = TODO();
 @Composable
-fun PlaidScreen( navController: NavController,) {
+fun PlaidScreen( navController: NavController) {
     var vcViewModel: VCViewModel = hiltViewModel()
     val linkAccountToPlaid = rememberLauncherForActivityResult(contract = OpenPlaidLink()){
         when(it){
@@ -35,9 +37,6 @@ fun PlaidScreen( navController: NavController,) {
     openLink(linkAccountToPlaid)
 
 }
-
-
-
 
 private fun showSuccess(success: LinkSuccess, vcViewModel: VCViewModel, navController: NavController,) {
     AccountRequester.getAccounts(object : retrofit2.Callback<ResponseClass>{
@@ -52,12 +51,12 @@ private fun showSuccess(success: LinkSuccess, vcViewModel: VCViewModel, navContr
                             experationDate = Date(),
                             issuerName = "Plaid",
                             VCTypeText = "Balance Amount",
+                            VCTypeEnum = VCType.BANK,
                             VCTitle = "Balance",
                             VCContentOverview = "+100",
                             VCAttribute = responseBody.accounts[1].balances.available
                         )
                     )
-                    navController.popBackStack()
                     navController.navigate(HomeScreen.MainHomeScreen.route)
 
                 }else{

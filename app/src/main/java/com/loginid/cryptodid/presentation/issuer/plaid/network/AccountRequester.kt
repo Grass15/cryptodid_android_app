@@ -1,8 +1,4 @@
-package com.loginid.cryptodid.presentation.issuer.bank.network;
-
-import okhttp3.Call
-import okhttp3.Callback
-import okhttp3.Response
+package com.loginid.cryptodid.presentation.issuer.plaid.network;
 
 
 import retrofit2.Retrofit

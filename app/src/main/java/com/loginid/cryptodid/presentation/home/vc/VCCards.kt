@@ -32,6 +32,7 @@ import com.loginid.cryptodid.presentation.home.vc.VCViewModel.VCViewModel
 import com.loginid.cryptodid.presentation.issuer.voting.VotingViewModel
 import com.loginid.cryptodid.utils.Status
 import kotlinx.coroutines.delay
+
 import kotlinx.coroutines.launch
 
 
@@ -46,6 +47,8 @@ fun VCCard(
     startOperation : MultipleVCOperations,
     onVerificationStateAction: (VerificationStatus) -> Unit
 ) {
+
+
     //Handle Checklist
     var displaCheckBox by remember { mutableStateOf(false) }
     var checkedListIndex by remember {
@@ -125,7 +128,6 @@ fun VCCard(
                                 scanner.displayScannerType()
                                 showPrompt = true
                             }
-
                         }
                     },
                     onDisplayCheckBoxes = {
@@ -262,6 +264,7 @@ fun VCCard(
                 showPrompt = false
             }
         }
+
     }
 
     when(verificationState.value.vStatus){

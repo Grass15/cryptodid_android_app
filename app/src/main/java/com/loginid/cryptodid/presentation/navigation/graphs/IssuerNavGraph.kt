@@ -1,17 +1,20 @@
 package com.loginid.cryptodid.presentation.navigation.graphs
 
-import androidx.compose.runtime.rememberCoroutineScope
+
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+
 import com.loginid.cryptodid.presentation.home.vc.VCViewModel.VCEnteryState
 import com.loginid.cryptodid.presentation.home.vc.VCViewModel.VCViewModel
 import com.loginid.cryptodid.presentation.issuer.MicroBlinkIssuerScreen
-import com.loginid.cryptodid.presentation.issuer.bank.CreditScoreScreen
-import com.loginid.cryptodid.presentation.issuer.bank.PlaidScreen
+import com.loginid.cryptodid.presentation.issuer.creditScore.CreditScoreScreen
+import com.loginid.cryptodid.presentation.issuer.plaid.PlaidScreen
+
 import com.loginid.cryptodid.presentation.issuer.voting.VotingScreen
+
 import com.loginid.cryptodid.presentation.navigation.screens.IssuerScreen
 import com.loginid.cryptodid.utils.Constants
 import kotlinx.coroutines.launch
@@ -59,7 +62,7 @@ fun NavGraphBuilder.issuerNavGraph(
         composable(
             route = IssuerScreen.CreditScorevcScreen.route
         ){
-            CreditScoreScreen()
+            CreditScoreScreen(navController)
         }
         composable(
             route = IssuerScreen.PLAIDVCScreen.route

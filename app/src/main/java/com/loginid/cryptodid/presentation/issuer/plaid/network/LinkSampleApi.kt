@@ -1,4 +1,4 @@
-package com.loginid.cryptodid.presentation.issuer.bank.network;
+package com.loginid.cryptodid.presentation.issuer.plaid.network;
 
 import com.google.gson.annotations.SerializedName
 import io.reactivex.rxjava3.core.Single
