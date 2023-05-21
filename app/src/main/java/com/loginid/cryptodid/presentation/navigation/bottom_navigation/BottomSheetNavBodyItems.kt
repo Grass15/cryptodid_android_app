@@ -60,4 +60,11 @@ sealed class BottomSheetNavBodyItems(
         contentDescription = "Cleann"
     )
 
+    object PrivilegeVC: BottomSheetNavBodyItems(
+        icon = Icons.Filled.HowToVote,
+        title = "Add Privilege",
+        route = IssuerScreen.VotingScreen.route,
+        contentDescription = "voting"
+    )
+
 }

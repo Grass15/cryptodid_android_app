@@ -2,10 +2,8 @@ package com.loginid.cryptodid.presentation.issuer.bank
 
 
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -19,7 +17,6 @@ import retrofit2.Call
 import retrofit2.Response
 import java.util.*
 import com.loginid.cryptodid.presentation.home.vc.VCViewModel.VCViewModel
-import com.loginid.cryptodid.presentation.issuer.bank.network.LinkTokenRequester
 import com.loginid.cryptodid.presentation.issuer.bank.network.LinkTokenRequester.token
 import com.loginid.cryptodid.presentation.navigation.screens.HomeScreen
 import com.plaid.link.OpenPlaidLink
@@ -54,7 +51,7 @@ private fun showSuccess(success: LinkSuccess, vcViewModel: VCViewModel, navContr
                         VCEnteryState(
                             experationDate = Date(),
                             issuerName = "Plaid",
-                            VCType = "Balance Amount",
+                            VCTypeText = "Balance Amount",
                             VCTitle = "Balance",
                             VCContentOverview = "+100",
                             VCAttribute = responseBody.accounts[1].balances.available

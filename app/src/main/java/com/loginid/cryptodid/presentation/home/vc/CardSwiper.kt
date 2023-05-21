@@ -10,6 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.HowToVote
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -24,8 +25,11 @@ import androidx.compose.ui.unit.dp
 import kotlin.math.roundToInt
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.sp
+import com.loginid.cryptodid.data.local.entity.VCType
 import com.loginid.cryptodid.presentation.home.vc.VCViewModel.VCDataDisplayState
 import com.loginid.cryptodid.presentation.theme.*
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 @ExperimentalMaterialApi
@@ -54,7 +58,7 @@ fun CardSwiper(
 
          Box(modifier = Modifier
              .fillMaxWidth()
-             .pointerInput(Unit){
+             .pointerInput(Unit) {
                  detectTapGestures(
                      onLongPress = {
                          onDisplayCheckBoxes(true)
@@ -98,7 +102,11 @@ fun CardSwiper(
                          //.background
 
                  ) {
-                     Icon(imageVector = Icons.Default.Send, contentDescription = "Verify", tint = MaterialTheme.colors.OpsIcons)
+                     if(VCState.VCTypeEnum == VCType.PRIVILEGE){
+                         Icon(imageVector = Icons.Default.HowToVote, contentDescription = "Vote", tint = Color.Yellow)
+                     }else{
+                         Icon(imageVector = Icons.Default.Send, contentDescription = "Verify", tint = MaterialTheme.colors.OpsIcons)
+                     }
                  }
 
              }
@@ -113,7 +121,58 @@ fun CardSwiper(
                  .background(color = MaterialTheme.colors.CardForGround)
                  .align(Alignment.CenterStart)
              ){
-                Row(modifier = Modifier
+
+                 Column{
+                     //First element ==> Title
+                     Column(
+                         modifier = Modifier
+                             .fillMaxSize()
+                             .padding(5.dp)
+                             .weight(3f),
+                         verticalArrangement = Arrangement.SpaceBetween,
+                         horizontalAlignment = Alignment.CenterHorizontally
+                     ) {
+                         Text(text = VCState.VCTitle,color = MaterialTheme.colors.inputTextColor, style = Typography.h4)
+                     }
+
+                     //Second element ==> content overview
+                     Column(
+                         modifier = Modifier
+                             .fillMaxSize()
+                             .padding(5.dp)
+                             .weight(2f),
+                         verticalArrangement = Arrangement.SpaceBetween,
+                         horizontalAlignment = Alignment.CenterHorizontally
+                     ) {
+                         Text(text = VCState.issuerName,color = MaterialTheme.colors.inputTextColor, style = Typography.body1)
+                     }
+                     //Third  element ==> date
+                     Column(
+                         modifier = Modifier
+                             .fillMaxSize()
+                             .padding(5.dp)
+                             .weight(2f),
+                         verticalArrangement = Arrangement.SpaceBetween,
+                         horizontalAlignment = Alignment.End
+                     ) {
+                         val format = SimpleDateFormat("MMMM d HH:mm:ss", Locale.ENGLISH)
+                         Text(text = format.format(VCState.experationDate).toString(),color = MaterialTheme.colors.inputTextColor, style = Typography.body2, fontStyle = FontStyle.Italic)
+                     }
+                     if(displaCheckBox){
+                         Checkbox(
+                             checked = isCheckboxChecked,
+                             onCheckedChange = {
+                                 setIsCheckboxChecked(it)
+                                 onCheckBoxChecked(it,VCState)
+                             }
+                         )
+                     }else{
+                         setIsCheckboxChecked(false)
+                     }
+                 }
+
+                 //Old layout
+               /* Row(modifier = Modifier
                     .fillMaxSize()
                 ) {
                   Column(modifier = Modifier
@@ -123,8 +182,9 @@ fun CardSwiper(
                       verticalArrangement = Arrangement.SpaceBetween
 
                   ) {
+                      val format = SimpleDateFormat("MMMM d HH:mm:ss", Locale.ENGLISH)
                       Text(text = VCState.VCTitle,color = MaterialTheme.colors.inputTextColor, style = Typography.h4)
-                      Text(text = VCState.experationDate.toString(),color = MaterialTheme.colors.inputTextColor, style = Typography.body2, fontStyle = FontStyle.Italic)
+                      Text(text = format.format(VCState.experationDate).toString(),color = MaterialTheme.colors.inputTextColor, style = Typography.body2, fontStyle = FontStyle.Italic)
                       
                   }
                     Column(modifier = Modifier
@@ -133,7 +193,7 @@ fun CardSwiper(
                         .weight(7f)) {
                         Text(text = VCState.issuerName,color = MaterialTheme.colors.inputTextColor, style = Typography.body1, fontSize = 15.sp)
                         Spacer(modifier = Modifier.height(7.dp))
-                        Text(text = VCState.VCType,color = MaterialTheme.colors.inputTextColor, style = Typography.body1)
+                        Text(text = VCState.VCTypeText,color = MaterialTheme.colors.inputTextColor, style = Typography.body1)
                         Text(text = VCState.VCContentOverview,color = MaterialTheme.colors.inputTextColor, style = Typography.body1)
                     }
                     if(displaCheckBox){
@@ -147,7 +207,7 @@ fun CardSwiper(
                     }else{
                         setIsCheckboxChecked(false)
                     }
-                }
+                }*/
              }
          }
 
@@ -159,5 +219,18 @@ fun CardSwiper(
 @Preview(showBackground = true)
 @Composable
 fun previewcardSwiper(){
-
+    CardSwiper(VCDataDisplayState(experationDate = Date(),issuerName = "preview", VCTypeText = "None", VCTitle = "hello", VCContentOverview = "Nooone", VCID = "fefe"),{},{},{},false){
+        a,b->
+    }
 }
+/*
+ val experationDate: Date? = null,//Date(),
+    val issuerName: String,
+    val VCTypeText: String,
+    val VCTypeEnum:VCType?=VCType.DEFAULT,
+    val VCTitle: String,
+    val VCContentOverview: String,
+    val status: Status=Status.NO_ACTION,
+    val VCID: String,
+    val rawVC: Claim? = null
+ */

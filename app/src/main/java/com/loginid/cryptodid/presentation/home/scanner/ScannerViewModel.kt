@@ -1,6 +1,7 @@
 package com.loginid.cryptodid.presentation.home.scanner
 
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.loginid.cryptodid.claimVerifier.VerificationStatus
@@ -8,9 +9,11 @@ import com.loginid.cryptodid.model.Claim
 import com.loginid.cryptodid.claimVerifier.Verifier
 import com.loginid.cryptodid.domain.repository.ScannerRepository
 import com.loginid.cryptodid.domain.use_case.verify_vc.HouseRentaleVerificationUseCase
+import com.loginid.cryptodid.presentation.home.scanner.ScannerStrategy.Scanner
 import com.loginid.cryptodid.utils.Resource
 import com.loginid.cryptodid.utils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -22,7 +25,7 @@ import javax.inject.Inject
 class ScannerViewModel @Inject constructor(
       private val repository: ScannerRepository,
       private val houseRentaleVerificationUseCase: HouseRentaleVerificationUseCase
-) : ViewModel() {
+) : ViewModel(),Scanner {
 
     private val _vState = MutableStateFlow(VerificationStatus())
     private val _state = MutableStateFlow(ScannerState())
@@ -36,7 +39,8 @@ class ScannerViewModel @Inject constructor(
         startScanning()
     }*/
 
-    fun startScanning(){
+    override fun startScanning(){
+        resetStatus()
         viewModelScope.launch {
             repository.startScanning().collect{data ->
                 if(!data.isNullOrBlank()){
@@ -53,7 +57,7 @@ class ScannerViewModel @Inject constructor(
     }
 
     //Here we should configure our verify method so we can call it right after scanning
-    fun setupVerifier(vc: Claim){
+    override fun setupVerifier(vc: Claim){
 
         //bank vc
 //        val fhe = MG_FHE(11, 512)
@@ -78,13 +82,22 @@ class ScannerViewModel @Inject constructor(
 
     }
 
-    fun resetStatus(){
+    override fun resetStatus(){
         _vState.update { it.copy(
             vMessage = "",
             vStatus = Status.NO_ACTION
         ) }
     }
-    private fun startVerification(verifier: Verifier){
+
+    override fun displayScannerType() {
+        Log.d("ChangingScanner","To vcScanner Viewmodel")
+    }
+
+    override fun getVerificationStatus(): StateFlow<VerificationStatus> {
+        return vState
+    }
+
+    override fun startVerification(verifier: Verifier){
         houseRentaleVerificationUseCase(verifier).onEach { result ->
             when(result){
                 is Resource.Error -> {
@@ -137,5 +150,22 @@ class ScannerViewModel @Inject constructor(
 
     }
 */
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        val otherScanner = other as Scanner
+
+        // Implement your own logic to compare properties for equality
+        // Return false if any properties are not equal
+
+        // For example:
+        // if (property1 != otherScanner.property1) return false
+        // if (property2 != otherScanner.property2) return false
+
+        return true
+    }
+
 
 }

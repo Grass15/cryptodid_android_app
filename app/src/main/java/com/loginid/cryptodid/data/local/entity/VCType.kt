@@ -8,4 +8,5 @@ enum class VCType {
     ID,
     INSURANCE_NUMBER,
     DRIVER_LICENCE,
+    PRIVILEGE,
 }

@@ -17,15 +17,21 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.loginid.cryptodid.claimVerifier.VerificationStatus
+import com.loginid.cryptodid.data.local.entity.VCType
 import com.loginid.cryptodid.model.Claim
 import com.loginid.cryptodid.presentation.home.biometrics.BiometricsAuthenticationProvider
 import com.loginid.cryptodid.presentation.home.biometrics.BiomtricType
 import com.loginid.cryptodid.presentation.home.modalDialogs.ModalDialogs
+import com.loginid.cryptodid.presentation.home.scanner.ScannerStrategy.Scanner
+import com.loginid.cryptodid.presentation.home.scanner.ScannerStrategy.ScannerProvider
+import com.loginid.cryptodid.presentation.home.scanner.ScannerStrategy.emptyScanner
 import com.loginid.cryptodid.presentation.home.scanner.ScannerViewModel
 import com.loginid.cryptodid.presentation.home.vc.VCViewModel.MultipleVCOperations
 import com.loginid.cryptodid.presentation.home.vc.VCViewModel.VCDataDisplayState
 import com.loginid.cryptodid.presentation.home.vc.VCViewModel.VCViewModel
+import com.loginid.cryptodid.presentation.issuer.voting.VotingViewModel
 import com.loginid.cryptodid.utils.Status
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
@@ -35,6 +41,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun VCCard(
     vcViewModel: VCViewModel = hiltViewModel(),
+    voteViewModel: VotingViewModel = hiltViewModel(),
     onStartMutipleVCOperationFlag : (Boolean) -> Unit,
     startOperation : MultipleVCOperations,
     onVerificationStateAction: (VerificationStatus) -> Unit
@@ -47,8 +54,14 @@ fun VCCard(
     val checkedVCList = remember { mutableListOf<VCDataDisplayState>() }
 
     //Scanner
-    val scannerViewModel: ScannerViewModel = hiltViewModel()
-    val scannedText = scannerViewModel.state.collectAsState()
+    //val scannerViewModel: ScannerViewModel = hiltViewModel()
+    //val scannedText = scannerViewModel.state.collectAsState()
+
+    //Providing Scanner
+    val scannerProvider = ScannerProvider(hiltViewModel(), hiltViewModel())
+    var scanner : Scanner by remember {
+        mutableStateOf(emptyScanner())
+    }
 
     //Biometrics Modal Dialog
     var showDialog by remember {
@@ -67,25 +80,13 @@ fun VCCard(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val activity = LocalContext.current as Activity
-    val biometricAuthenticator = remember { BiometricsAuthenticationProvider(context,
-        onBiometricFailled = {
-            if(!it.isSupported){
-                modalDialogsFlow.value = ModalDialogs(it.erroMessage,"Biometrics")
-                showDialog = true
-            }
-        }
-    ) {
-        scope.launch {
-           scannerViewModel.startScanning()
-        }
-    }
-    }
 
     var showPrompt by remember { mutableStateOf(false) }
 
     //States
     val vcstate = vcViewModel.vcDataState.collectAsState()
-    val verificationState = scannerViewModel.vState.collectAsState()
+    val verificationState = scanner.getVerificationStatus().collectAsState()
+    //scannerViewModel.vState.collectAsState()
     val vcActionState = vcViewModel.vcAction.collectAsState()
 
     LazyColumn(modifier = Modifier.padding(12.dp)){
@@ -109,10 +110,22 @@ fun VCCard(
                         }*/
                     },
                     onVerifyButtonClicked = {
-                        it.rawVC?.let {
-                                it1 -> scannerViewModel.setupVerifier(it1)
-                            scannerViewModel.resetStatus()
-                            showPrompt = true
+                        it.rawVC?.let {it1->
+                            if(it.VCTypeEnum  == VCType.PRIVILEGE){
+                               scanner = scannerProvider.getScanner("priv")
+                               scanner.setupVerifier(it1)
+                               scanner.resetStatus()
+                               scanner.displayScannerType()
+                               showPrompt = true
+
+                            }else{
+                               scanner = scannerProvider.getScanner("vc")
+                                scanner.setupVerifier(it1)
+                                scanner.resetStatus()
+                                scanner.displayScannerType()
+                                showPrompt = true
+                            }
+
                         }
                     },
                     onDisplayCheckBoxes = {
@@ -157,6 +170,24 @@ fun VCCard(
         }
     }
 
+    val biometricAuthenticator = remember(scanner) { BiometricsAuthenticationProvider(context,
+        onBiometricFailled = {
+            if(!it.isSupported){
+                modalDialogsFlow.value = ModalDialogs(it.erroMessage,"Biometrics")
+                showDialog = true
+            }
+        }
+    ) {
+            scope.launch {
+                //scannerViewModel.startScanning()
+                // voteViewModel.verifyVoteScan()
+               // scanner.startScanning()
+                scanner.startScanning()
+            }
+    }
+    }
+
+
     //scannerViewModel.startScanning()
 
     //Displaying dialog incase of errors
@@ -167,6 +198,7 @@ fun VCCard(
                 showDialog = it
             })
         }
+
     }
 
     //VCDeletion Dialog
@@ -221,9 +253,14 @@ fun VCCard(
 
     //Displaying Prompt
     if (showPrompt) {
-        LaunchedEffect(true) {
-            biometricAuthenticator.getBiometricAuthenticator(BiomtricType.AUTO)?.authenticate(activity)
-            showPrompt = false
+        LaunchedEffect(showPrompt,scanner) {
+           // biometricAuthenticator.getBiometricAuthenticator(BiomtricType.AUTO)?.authenticate(activity)
+           // showPrompt = false
+            scope.launch {
+                delay(500)
+                scanner.startScanning()
+                showPrompt = false
+            }
         }
     }
 
@@ -231,23 +268,26 @@ fun VCCard(
         Status.ERROR -> {
             Log.d("Verification",verificationState.value.vMessage)
             onVerificationStateAction(verificationState.value)
+            scanner.resetStatus()
         }
         Status.SUCCESS -> {
             Log.d("Verification",verificationState.value.vMessage)
             onVerificationStateAction(verificationState.value)
+            scanner.resetStatus()
         }
         Status.FAILLED -> {
             Log.d("Verification",verificationState.value.vMessage)
+            scanner.resetStatus()
         }
         Status.LOADING -> {
             Log.d("Verification",verificationState.value.vMessage)
             onVerificationStateAction(verificationState.value)
+            scanner.resetStatus()
         }
         Status.NO_ACTION -> {
             Log.d("Verification",verificationState.value.vMessage)
             onVerificationStateAction(verificationState.value)
         }
-
     }
 
     //Multiple and single deletion Operation

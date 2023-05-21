@@ -138,6 +138,10 @@ public class Verifier {
       //  });
     }
 
+    public VerificationStatus verifyVoting() throws InterruptedException, ParseException, IOException, ClassNotFoundException{
+           return new VerificationStatus("Verified with success", Status.SUCCESS);
+    }
+
 
     public String toString(){
         return "" + this.url + " | " + this.vc.toString();

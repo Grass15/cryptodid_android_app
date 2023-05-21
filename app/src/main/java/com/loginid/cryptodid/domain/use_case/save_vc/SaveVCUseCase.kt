@@ -1,11 +1,11 @@
 package com.loginid.cryptodid.domain.use_case.save_vc
 
 import android.database.sqlite.SQLiteException
+import androidx.compose.animation.ExperimentalAnimationApi
 import com.loginid.cryptodid.data.local.entity.VCEntity
 import com.loginid.cryptodid.data.local.entity.VCType
 import com.loginid.cryptodid.domain.repository.UserRepository
 import com.loginid.cryptodid.model.Claim
-import com.loginid.cryptodid.presentation.MainActivity
 import com.loginid.cryptodid.presentation.MainActivity.Companion.getFilesFolder
 import com.loginid.cryptodid.presentation.home.vc.VCViewModel.VCEnteryState
 import com.loginid.cryptodid.protocols.Issuer
@@ -29,13 +29,14 @@ class SaveVCUseCase @Inject constructor(
         }
     }
     external fun TFHE(n1: Int, filepath: String?, attribute: String?): Int
+
     private fun prepareVC(vcContent: VCEnteryState): Claim {
         val issuer: Issuer =
             Issuer()
         issuer.setAttribute(vcContent.VCAttribute)
         val test = getFilesFolder()
-        TFHE(vcContent.VCAttribute, java.lang.String.valueOf(test), vcContent.VCType)
-        val VC: Claim = issuer.getClaim(vcContent.issuerName,vcContent.VCType,vcContent.VCTitle,vcContent.VCContentOverview, "attributeName")// Claim(vcContent.VCTitle,vcContent.VCType,vcContent.issuerName,vcContent.VCContentOverview)
+        TFHE(vcContent.VCAttribute, java.lang.String.valueOf(test), vcContent.VCTypeText)
+        val VC: Claim = issuer.getClaim(vcContent.issuerName,vcContent.VCTypeText,vcContent.VCTitle,vcContent.VCContentOverview, "attributeName")// Claim(vcContent.VCTitle,vcContent.VCType,vcContent.issuerName,vcContent.VCContentOverview)
         VC.expirationDate = vcContent.experationDate
         return  VC
     }

@@ -10,8 +10,6 @@ import com.loginid.cryptodid.domain.use_case.get_vc.GetVCUseCase
 import com.loginid.cryptodid.domain.use_case.remove_vc.RemoveVCUseCase
 import com.loginid.cryptodid.domain.use_case.save_vc.SaveVCUseCase
 import com.loginid.cryptodid.domain.use_case.search_vc.SearchByTypeUseCase
-import com.loginid.cryptodid.presentation.navigation.screens.WelcomeScreen
-import com.loginid.cryptodid.utils.Constants
 import com.loginid.cryptodid.utils.Resource
 import com.loginid.cryptodid.utils.Status
 import com.loginid.cryptodid.utils.UserDataPrefrence
@@ -78,7 +76,8 @@ class VCViewModel @Inject constructor(
                                  VCDataDisplayState(
                                       experationDate = it1.expirationDate ?: null,
                                       issuerName = it1.issuerName.toString(),
-                                      VCType = it1.type.toString(),
+                                      VCTypeText = it1.type.toString(),
+                                      VCTypeEnum = it.vcType,
                                       VCTitle = it1.title.toString(),
                                       VCContentOverview = it1.content.toString(),
                                       VCID = it.id,
@@ -126,7 +125,7 @@ class VCViewModel @Inject constructor(
         saveVCUseCase(UUID.randomUUID().toString(),
             ownerID = _userDataPrefs.value!!.userId,
             vcContent = newVC,
-            vcType = VCType.ID,
+            vcType = newVC.VCTypeEnum!!,
             vcTitle = newVC.VCTitle
         ).onEach { result ->
             when(result){
@@ -170,7 +169,8 @@ class VCViewModel @Inject constructor(
                                 VCDataDisplayState(
                                     experationDate = it1.expirationDate ?: null,
                                     issuerName = it1.issuerName.toString(),
-                                    VCType = it1.type.toString(),
+                                    VCTypeText = it1.type.toString(),
+                                    VCTypeEnum = it.vcType,
                                     VCTitle = it1.title.toString(),
                                     VCContentOverview = it1.content.toString(),
                                     VCID = it.id,
