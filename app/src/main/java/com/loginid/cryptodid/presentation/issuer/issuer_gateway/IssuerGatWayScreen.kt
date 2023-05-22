@@ -66,22 +66,28 @@ Scaffold(
 
                         if (url?.startsWith("https://mostafa-hmoura.github.io/issuer-gateway/final.html") == true) {
                             try{
+                                val socialInss = "Social Insurance"
                                 val uri = Uri.parse(url)
-                                val name = uri.getQueryParameter("Name")
-                                val value = uri.getQueryParameter("Value")
+                                val regex = "\\d+".toRegex()
+                                val name = if(uri.getQueryParameter("Name").toString().startsWith(socialInss)) "SIN" else uri.getQueryParameter("Name")
+                                val value = regex.find(uri.getQueryParameter("Value").toString())
                                 val issuer = uri.getQueryParameter("IssuerName")
-                                vcViewModel.saveVC(
-                                    VCEnteryState(
-                                        experationDate = Date(),
-                                        issuerName = issuer.toString(),
-                                        VCTypeText = name.toString(),
-                                        VCTitle = name.toString(),
-                                        VCContentOverview = "none",
-                                        VCTypeEnum = VCType.DEFAULT,
-                                        VCAttribute = 300
-                                    )
-                                )
-                                Log.d("ExtractedFromBr",name.toString() + "  " + value.toString())
+                                value?.value?.toIntOrNull().let {
+                                    it!!.let { it1->
+                                        Log.d("ExtractedFromBr",name.toString() + "  " + it1.toString())
+                                        vcViewModel.saveVC(
+                                            VCEnteryState(
+                                                experationDate = Date(),
+                                                issuerName = issuer.toString().trim(),
+                                                VCTypeText = name.toString(),
+                                                VCTitle = name.toString().trim(),
+                                                VCContentOverview = "none",
+                                                VCTypeEnum = VCType.INSURANCE_NUMBER,
+                                                VCAttribute = it1
+                                            )
+                                        )
+                                    }
+                                }
                             }catch (e: Exception){
                                 e.printStackTrace()
                             }
