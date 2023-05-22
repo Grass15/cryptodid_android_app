@@ -38,7 +38,7 @@ class SaveVCUseCase @Inject constructor(
         val path = getFilesFolder()
 
         if(vcContent.VCTypeEnum != VCType.PRIVILEGE && vcContent.VCTypeText != "sin"){
-            TFHE(vcContent.VCAttribute, java.lang.String.valueOf(path), vcContent.VCTypeText.split(" ")[0].lowercase().trim())
+            TFHE(vcContent.VCAttribute, java.lang.String.valueOf(path), vcContent.VCTypeText)
         }
         else if(vcContent.VCTypeText == "sin" ){
             encryptSin(123456789, java.lang.String.valueOf(getFilesFolder()), "sin")

@@ -119,7 +119,7 @@ public class Verifier {
 */
                         try {
 //
-                            String[] finalResponse = new String[]{"user.firstname", "user.lastname", "user.address", "user.username", "user.phone", "Maroc", String.valueOf(ageStatus != 0), String.valueOf(balanceStatus != 0), String.valueOf(creditScoreStatus != 0)};
+                            String[] finalResponse = new String[]{"Yassine", "HOUIZI", "Rabat", "test@test.com", "+212666068102", "Maroc", String.valueOf(ageStatus != 0), String.valueOf(balanceStatus != 0), String.valueOf(creditScoreStatus != 0)};
                             finalResponseEndpoint.webSocketClient.connect();
                             finalResponseEndpoint.latch.await();
                             finalResponseEndpoint.webSocketClient.send(gson.toJson(finalResponse));

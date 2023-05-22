@@ -79,7 +79,7 @@ Scaffold(
                                 value?.value?.toIntOrNull().let {
                                     it!!.let { it1->
                                         Log.d("ExtractedFromBr",name.toString() + "  " + it1.toString())
-                                        var temp = name.toString()
+                                        var temp = name.toString().lowercase()
                                         if (name.toString() == "Date of Birth"){
                                             temp = "age"
                                         } else if (name.toString() == "Bank Balance"){
