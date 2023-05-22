@@ -61,7 +61,7 @@ fun VCCard(
     //val scannedText = scannerViewModel.state.collectAsState()
 
     //Providing Scanner
-    val scannerProvider = ScannerProvider(hiltViewModel(), hiltViewModel())
+    val scannerProvider = ScannerProvider(hiltViewModel(), hiltViewModel(), hiltViewModel())
     var scanner : Scanner by remember {
         mutableStateOf(emptyScanner())
     }
@@ -121,7 +121,15 @@ fun VCCard(
                                scanner.displayScannerType()
                                showPrompt = true
 
-                            }else{
+                            }else if(it.VCTypeEnum  == VCType.INSURANCE_NUMBER){
+                                scanner = scannerProvider.getScanner("sin")
+                                scanner.setupVerifier(it1)
+                                scanner.resetStatus()
+                                scanner.displayScannerType()
+                                showPrompt = true
+
+                            }
+                            else{
                                scanner = scannerProvider.getScanner("vc")
                                 scanner.setupVerifier(it1)
                                 scanner.resetStatus()

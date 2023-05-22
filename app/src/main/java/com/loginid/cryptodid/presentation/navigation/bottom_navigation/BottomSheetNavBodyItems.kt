@@ -72,5 +72,11 @@ sealed class BottomSheetNavBodyItems(
         route = IssuerScreen.VotingScreen.route,
         contentDescription = "voting"
     )
+    object SINVC: BottomSheetNavBodyItems(
+        icon = Icons.Filled.DocumentScanner,
+        title = "Get Insurance Number VC",
+        route = IssuerScreen.GetInsuranceNumberScreen.route,
+        contentDescription = "Access "
+    )
 
 }

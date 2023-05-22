@@ -30,6 +30,7 @@ public class ClientEndpoint {
     public WebSocketClient webSocketClient;
     List<Byte> fileByte=new ArrayList<Byte>();
     private Gson gson = new Gson();
+    public int pos = -1;
 
 
     public WebSocketClient createWebSocketClient(String url){
@@ -58,7 +59,16 @@ public class ClientEndpoint {
                 byte[] answer_data = new byte[buffer.remaining()];
                 buffer.get(answer_data);
                 try {
-                    FileUtils.writeByteArrayToFile(new File(MainActivity.getFilesFolder()+"/"+"Answer.data"), answer_data);
+                    if(pos == 0) {
+                        FileUtils.writeByteArrayToFile(new File(MainActivity.getFilesFolder() + "/" + "vot_answer.data"), answer_data);
+                        pos += 1;
+                    }
+                    else if(pos == 1) {
+                        FileUtils.writeByteArrayToFile(new File(MainActivity.getFilesFolder() + "/" + "H_NULL.data"), answer_data);
+                    } else {
+                        FileUtils.writeByteArrayToFile(new File(MainActivity.getFilesFolder()+"/"+"Answer.data"), answer_data);
+                    }
+
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }

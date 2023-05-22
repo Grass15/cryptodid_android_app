@@ -1,5 +1,7 @@
 package com.loginid.cryptodid.claimVerifier;
 
+import androidx.appcompat.app.AlertDialog;
+
 import com.google.gson.Gson;
 import com.loginid.cryptodid.presentation.MainActivity;
 import com.loginid.cryptodid.model.Claim;
@@ -72,6 +74,7 @@ public class Verifier {
         proofEndpoint.sendFile(path+"/"+attribute+"Cloud.data", attribute+ "Cloud.data");
         proofEndpoint.sendFile(path+"/"+attribute+"PK.key", attribute+ "PK.key");
         proofEndpoint.latch.await();
+        System.out.println("signal");
         response = Decrypt(path+"/Answer.data", path+"/"+attribute+"Keyset.key");
         proofEndpoint.webSocketClient.close();
         System.out.println(attribute + ": " + response);
@@ -140,7 +143,64 @@ public class Verifier {
       //  });
     }
 
+    public VerificationStatus accessControl()  throws InterruptedException, ParseException, IOException, ClassNotFoundException{
+        if (!Objects.equals(this.url, "")) {
+            try{
+                getcppUrlEndpoint.createWebSocketClient("ws://" + this.url + "/cppUrl");
+                getcppUrlEndpoint.latch = new CountDownLatch(2);
+                getcppUrlEndpoint.webSocketClient.connect();
+                getcppUrlEndpoint.latch.await();
+                cppVerifierUrl = String.valueOf(getcppUrlEndpoint.response);
+                getcppUrlEndpoint.webSocketClient.close();
+                int sinStatus = verify("sin");
+                finalResponseEndpoint.createWebSocketClient("ws://" + this.url + "/response");
+                finalResponseEndpoint.webSocketClient.connect();
+                finalResponseEndpoint.latch.await();
+                finalResponseEndpoint.latch = new CountDownLatch(1);
+                finalResponseEndpoint.webSocketClient.send(gson.toJson(sinStatus));
+                finalResponseEndpoint.latch.await();
+                String[] finalResponse = gson.fromJson(finalResponseEndpoint.response, String[].class);
+                finalResponseEndpoint.webSocketClient.close();
+                return new VerificationStatus(finalResponse[0] + " " + finalResponse[1], Status.SUCCESS);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return new VerificationStatus("OOOPS SOMETHING WENT WRONG WHILE VERIFICATION", Status.ERROR);
+            }
+        } else {
+            return new VerificationStatus("PLEASE VERIFY THE QR CODE", Status.ERROR);
+        }
+    }
+
+    public native int decryptVotingResult(String ClaimPath, String SK_Path, int nbit);
     public VerificationStatus verifyVoting() throws InterruptedException, ParseException, IOException, ClassNotFoundException{
+        String path = String.valueOf(MainActivity.getFilesFolder());
+        int x1=2;
+        int y1=2;
+        int z1=1;
+
+        ClientEndpoint proofEndpoint = new ClientEndpoint();
+        proofEndpoint.createWebSocketClient("ws://" + this.url);
+        //proofEndpoint.latch.await();
+        proofEndpoint.webSocketClient.connect();
+        proofEndpoint.latch.await();
+        proofEndpoint.latch = new CountDownLatch(1);
+        proofEndpoint.pos = 0;
+        proofEndpoint.webSocketClient.send("VOTING");
+        proofEndpoint.sendFile(path + "/CK.key", "CK.key");
+        proofEndpoint.sendFile(path + "/CD.data", "CD.data");
+        proofEndpoint.sendFile(path + "/PK.key", "PK.key");
+        int A = (x1*x1*x1) + (y1*y1*y1) + (z1*z1*z1);
+        proofEndpoint.webSocketClient.send(String.valueOf(A));
+        //proofEndpoint.webSocketClient.send("DONE");
+        proofEndpoint.latch.await();
+        int r = decryptVotingResult(path+"/vot_answer.data", path+"/SK.key",1);
+        int n = decryptVotingResult(path+"/H_NULL.data", path+"/SK.key",4);
+        System.out.println("r:"+r);
+        System.out.println("null:"+n);
+        proofEndpoint.webSocketClient.send(String.valueOf(r));
+        proofEndpoint.webSocketClient.send(String.valueOf(n));
+
+        proofEndpoint.webSocketClient.close();
            return new VerificationStatus("Verified with success", Status.SUCCESS);
     }
 
