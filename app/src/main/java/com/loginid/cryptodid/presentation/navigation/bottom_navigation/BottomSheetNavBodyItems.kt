@@ -18,7 +18,13 @@ sealed class BottomSheetNavBodyItems(
         contentDescription = "Deleted items"
     )
     object IssuerGateWay: BottomSheetNavBodyItems(
-        icon = Icons.Filled.NetworkCell,
+        icon = Icons.Filled.DocumentScanner,
+        title = "Get VC From Issuer Gateway",
+        route = IssuerScreen.VCFromIssuerGateWayScreen.route,
+        contentDescription = "Deleted items"
+    )
+    object QRIssuerGateWay: BottomSheetNavBodyItems(
+        icon = Icons.Filled.DocumentScanner,
         title = "Get VC using QR Code",
         route = IssuerScreen.VCFromIssuerGateWayScreen.route,
         contentDescription = "Deleted items"

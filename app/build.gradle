@@ -211,5 +211,7 @@ dependencies {
     //Filess
     implementation 'commons-io:commons-io:2.7'
 
+    //Browsing
+    implementation 'androidx.webkit:webkit:1.6.0-alpha01'
 
 }
