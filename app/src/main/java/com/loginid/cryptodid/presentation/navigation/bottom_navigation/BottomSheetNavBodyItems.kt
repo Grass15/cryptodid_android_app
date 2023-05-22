@@ -18,7 +18,13 @@ sealed class BottomSheetNavBodyItems(
         contentDescription = "Deleted items"
     )
     object IssuerGateWay: BottomSheetNavBodyItems(
-        icon = Icons.Filled.NetworkCell,
+        icon = Icons.Filled.DocumentScanner,
+        title = "Get VC From Issuer Gateway",
+        route = IssuerScreen.VCFromIssuerGateWayScreen.route,
+        contentDescription = "Deleted items"
+    )
+    object QRIssuerGateWay: BottomSheetNavBodyItems(
+        icon = Icons.Filled.DocumentScanner,
         title = "Get VC using QR Code",
         route = IssuerScreen.VCFromIssuerGateWayScreen.route,
         contentDescription = "Deleted items"
@@ -67,7 +73,7 @@ sealed class BottomSheetNavBodyItems(
         contentDescription = "voting"
     )
     object SINVC: BottomSheetNavBodyItems(
-        icon = Icons.Filled.DocumentScanner,
+        icon = Icons.Filled.CardMembership,
         title = "Get Insurance Number VC",
         route = IssuerScreen.GetInsuranceNumberScreen.route,
         contentDescription = "Access "

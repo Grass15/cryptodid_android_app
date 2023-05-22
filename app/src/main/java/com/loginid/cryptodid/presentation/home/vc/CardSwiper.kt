@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import kotlin.math.roundToInt
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import com.loginid.cryptodid.data.local.entity.VCType
 import com.loginid.cryptodid.presentation.home.vc.VCViewModel.VCDataDisplayState
 import com.loginid.cryptodid.presentation.theme.*
@@ -63,11 +64,11 @@ fun CardSwiper(
                      onLongPress = {
                          onDisplayCheckBoxes(true)
                      },
-                     onPress = {
+                     /*onPress = {
                          onDisplayCheckBoxes(false)
                          /*displaCheckBox = false
                          setIsCheckboxChecked(false)*/
-                     }
+                     }*/
                  )
              }
              .clip(RoundedCornerShape(8.dp))
@@ -121,7 +122,8 @@ fun CardSwiper(
                  .background(color = MaterialTheme.colors.CardForGround)
                  .align(Alignment.CenterStart)
              ){
-
+                 Row(modifier = Modifier.fillMaxWidth()){
+                     Box(modifier = Modifier.fillMaxSize()) {
                  Column{
                      //First element ==> Title
                      Column(
@@ -158,8 +160,10 @@ fun CardSwiper(
                          val format = SimpleDateFormat("MMMM d HH:mm:ss", Locale.ENGLISH)
                          Text(text = format.format(VCState.experationDate).toString(),color = MaterialTheme.colors.inputTextColor, style = Typography.body2, fontStyle = FontStyle.Italic)
                      }
+                 }
                      if(displaCheckBox){
                          Checkbox(
+                             modifier = Modifier.zIndex(1f),
                              checked = isCheckboxChecked,
                              onCheckedChange = {
                                  setIsCheckboxChecked(it)
@@ -170,6 +174,9 @@ fun CardSwiper(
                          setIsCheckboxChecked(false)
                      }
                  }
+
+                 }
+
 
                  //Old layout
                /* Row(modifier = Modifier

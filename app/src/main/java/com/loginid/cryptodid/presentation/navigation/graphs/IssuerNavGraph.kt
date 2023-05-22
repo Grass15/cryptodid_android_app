@@ -12,6 +12,7 @@ import com.loginid.cryptodid.presentation.home.vc.VCViewModel.VCViewModel
 import com.loginid.cryptodid.presentation.issuer.InsuranceNumberScreen
 import com.loginid.cryptodid.presentation.issuer.MicroBlinkIssuerScreen
 import com.loginid.cryptodid.presentation.issuer.creditScore.CreditScoreScreen
+import com.loginid.cryptodid.presentation.issuer.issuer_gateway.issuerGateWay
 import com.loginid.cryptodid.presentation.issuer.plaid.PlaidScreen
 
 import com.loginid.cryptodid.presentation.issuer.voting.VotingScreen
@@ -84,6 +85,12 @@ fun NavGraphBuilder.issuerNavGraph(
                 viewModel.saveVC(it)
             }
             privilege.AddPrivilegeScreen()
+        }
+
+        composable(
+            route = IssuerScreen.VCFromIssuerGateWayScreen.route
+        ){
+            issuerGateWay(navController)
         }
     }
 }

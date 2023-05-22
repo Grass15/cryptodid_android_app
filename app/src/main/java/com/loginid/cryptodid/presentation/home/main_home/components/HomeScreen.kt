@@ -242,7 +242,7 @@ Scaffold(
     ModalBottomSheetLayout(modifier = Modifier.clip(RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)), sheetState = modalSheetState, sheetContent = {
         BottomSheetNavigation(navitems =
         listOf(BottomSheetNavBodyItems.PrivilegeVC,BottomSheetNavBodyItems.BankVC,BottomSheetNavBodyItems.CreditScoreVC,
-            BottomSheetNavBodyItems.BlinkVC, BottomSheetNavBodyItems.SINVC
+            BottomSheetNavBodyItems.BlinkVC, BottomSheetNavBodyItems.SINVC,BottomSheetNavBodyItems.IssuerGateWay
             ), onItemClick = {
            // if(it.route == IssuerScreen.MicroBlinkScreenScreen.route){
                 navController.navigate(route = it.route)
