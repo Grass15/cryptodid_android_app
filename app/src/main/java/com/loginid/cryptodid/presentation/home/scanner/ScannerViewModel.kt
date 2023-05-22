@@ -47,7 +47,6 @@ class ScannerViewModel @Inject constructor(
                     _state.update { it.copy(
                         details = data
                     ) }
-
                     //adding url
                     verifier.setUrl(data)
                     startVerification(verifier)
