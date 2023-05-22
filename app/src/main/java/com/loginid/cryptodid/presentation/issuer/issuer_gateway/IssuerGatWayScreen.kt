@@ -21,8 +21,12 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.loginid.cryptodid.data.local.entity.VCType
+import com.loginid.cryptodid.presentation.MainActivity
+import com.loginid.cryptodid.presentation.MainActivity.Companion.getFilesFolder
+import com.loginid.cryptodid.presentation.MainActivity.Companion.path
 import com.loginid.cryptodid.presentation.home.vc.VCViewModel.VCEnteryState
 import com.loginid.cryptodid.presentation.home.vc.VCViewModel.VCViewModel
+import com.loginid.cryptodid.presentation.issuer.encryptSin
 import com.loginid.cryptodid.presentation.navigation.screens.HomeScreen
 import com.loginid.cryptodid.utils.Status
 import java.util.*
@@ -75,14 +79,23 @@ Scaffold(
                                 value?.value?.toIntOrNull().let {
                                     it!!.let { it1->
                                         Log.d("ExtractedFromBr",name.toString() + "  " + it1.toString())
+                                        var temp = name.toString()
+                                        if (name.toString() == "Date of Birth"){
+                                            temp = "age"
+                                        } else if (name.toString() == "Bank Balance"){
+                                            temp = "balance"
+                                        } else if (name.toString() == "Credit Score"){
+                                            temp = "creditScore"
+                                        }
+                                        println(temp)
                                         vcViewModel.saveVC(
                                             VCEnteryState(
                                                 experationDate = Date(),
                                                 issuerName = issuer.toString().trim(),
-                                                VCTypeText = name.toString(),
+                                                VCTypeText = temp,
                                                 VCTitle = name.toString().trim(),
                                                 VCContentOverview = "none",
-                                                VCTypeEnum = VCType.INSURANCE_NUMBER,
+                                                VCTypeEnum = VCType.BANK,
                                                 VCAttribute = it1
                                             )
                                         )

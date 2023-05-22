@@ -215,7 +215,6 @@ fun InsuranceNumberScreen(navController: NavController) {
                     Button(
                         onClick = {
                             //showProgress = true
-                            encryptSin(123456789, java.lang.String.valueOf(path), "sin")
                             vcViewModel.saveVC(
                                 VCEnteryState(
                                     experationDate = Date(),

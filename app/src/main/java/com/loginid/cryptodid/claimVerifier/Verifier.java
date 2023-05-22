@@ -179,8 +179,8 @@ public class Verifier {
     public native int decryptVotingResult(String ClaimPath, String SK_Path, int nbit);
     public VerificationStatus verifyVoting() throws InterruptedException, ParseException, IOException, ClassNotFoundException{
         String path = String.valueOf(MainActivity.getFilesFolder());
-        int x1=2;
-        int y1=2;
+        int x1=1;
+        int y1=1;
         int z1=1;
 
         ClientEndpoint proofEndpoint = new ClientEndpoint();

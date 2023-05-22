@@ -54,7 +54,8 @@ class VotingViewModel @Inject constructor(
                 if(!data.isNullOrBlank()){
                     privilegeDataSender.setUrl(data)
                     privilegeDataSender.SendSocketData()
-                    completion(17)
+                    //completion(privilegeDataSender.ToCubeValue().get(0))
+                    completion(3)
                 }
             }
         }

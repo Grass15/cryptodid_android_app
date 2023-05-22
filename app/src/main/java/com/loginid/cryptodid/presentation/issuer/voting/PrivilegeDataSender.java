@@ -38,7 +38,7 @@ public class PrivilegeDataSender {
         sendPrivilegeIdEndpoint.createWebSocketClient("ws://" + this.url+"/voteRegistration");
         sendPrivilegeIdEndpoint.webSocketClient.connect();
         sendPrivilegeIdEndpoint.latch.await();
-        sendPrivilegeIdEndpoint.webSocketClient.send("17");
+        sendPrivilegeIdEndpoint.webSocketClient.send("3");
         sendPrivilegeIdEndpoint.webSocketClient.close();
     }
 }
