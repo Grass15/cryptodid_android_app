@@ -21,12 +21,12 @@ import java.util.concurrent.CountDownLatch;
 
 import com.google.gson.Gson;
 
-
+// demo 22222222222222222222222222
 public class Verifier {
     private int verifierPort;
     //private String verifierUrl = "192.168.1.9:8080";
-    private String cppVerifierUrl = "192.168.11.102:8080";
-    private String javaVerifierUrl = "192.168.11.100:8080";
+    private String cppVerifierUrl = "192.168.6.36:8040";
+    private String javaVerifierUrl = "192.168.6.36:8080";
     //private String verifierUrl = "cryptodid.herokuapp.com";
     private ClientEndpoint finalResponseEndpoint = new ClientEndpoint();
     private ClientEndpoint verificationEndpoint = new ClientEndpoint();
@@ -136,7 +136,9 @@ public class Verifier {
             verificationEndpoint.createWebSocketClient("ws://" + javaVerifierUrl + "/cppUrl");
             verificationEndpoint.latch = new CountDownLatch(2);
             verificationEndpoint.webSocketClient.connect();
+            System.out.println(javaVerifierUrl);
             verificationEndpoint.latch.await();
+            System.out.println("Hi there");
             cppVerifierUrl = String.valueOf(verificationEndpoint.response);
             verificationEndpoint.webSocketClient.close();
             int sinStatus = verify("sin");

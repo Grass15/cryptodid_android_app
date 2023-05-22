@@ -28,16 +28,15 @@ Java_com_loginid_cryptodid_claimVerifier_Verifier_Decrypt(JNIEnv *env, jobject t
     FILE* secret_key = fopen(SK_Path,"rb");
     TFheGateBootstrappingSecretKeySet* keyset = new_tfheGateBootstrappingSecretKeySet_fromFile(secret_key);
 
-    LweSample* answer = new_gate_bootstrapping_ciphertext_array(16,keyset->params);
+    LweSample* answer = new_gate_bootstrapping_ciphertext_array(8,keyset->params);
     FILE * claim_data = fopen(Claim_Path,"rb");
-
-    for (int i=0; i<16; i++)
+    for(int i=0; i<8; i++)
         import_gate_bootstrapping_ciphertext_fromFile(claim_data, &answer[i], keyset->params);
     fclose(claim_data);
 
     int16_t int_answer = 0;
-    int ai[16];
-    for (int i=0; i<16; i++) {
+    int ai[8];
+    for (int i=0; i<8; i++) {
         ai[i] = bootsSymDecrypt(&answer[i], keyset)>0;
         int_answer |= (ai[i]<<i);
     }

@@ -31,7 +31,8 @@ public class Fetcher {
     public native int TFHE(int n1, String filepath, String attribute);
 
     public void storeClaim() throws ParseException {
-        int SIN = 121314615;
+        int SIN = 123456789;
+        //int SIN = 123456781;
         String claimTitle = "SIN VC";
         String claimType = "SIN";
         String claimIssuerName = "Crypto DID: Expires on ";
