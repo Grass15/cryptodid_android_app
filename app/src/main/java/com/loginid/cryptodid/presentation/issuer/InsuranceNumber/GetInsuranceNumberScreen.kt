@@ -1,8 +1,6 @@
 package com.loginid.cryptodid.presentation.issuer
 
-import android.os.StrictMode
 import android.util.Log
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -11,10 +9,9 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.LocationCity
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,13 +27,17 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.loginid.cryptodid.R
 import com.loginid.cryptodid.data.local.entity.VCType
+import com.loginid.cryptodid.presentation.MainActivity
+import com.loginid.cryptodid.presentation.MainActivity.Companion.getFilesFolder
 import com.loginid.cryptodid.presentation.home.vc.VCViewModel.VCEnteryState
 import com.loginid.cryptodid.presentation.home.vc.VCViewModel.VCViewModel
-
 import com.loginid.cryptodid.presentation.theme.firstBackGroundColor
 import com.loginid.cryptodid.presentation.theme.inputTextColor
 import com.loginid.cryptodid.presentation.theme.secondBackGroundColor
 import java.util.*
+
+
+external fun encryptSin(n1: Int, filepath: String?, attribute: String?): Int
 
 @Composable
 fun InsuranceNumberScreen(navController: NavController) {
@@ -45,10 +46,11 @@ fun InsuranceNumberScreen(navController: NavController) {
     val lastName: String = "KORGO"
     val city: String = "KENITRA"
 
+    val path = getFilesFolder()
+
     val sinImg = painterResource(id = R.drawable.transunion)
     var showProgress = false
-    val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
-    StrictMode.setThreadPolicy(policy)
+
 
     var vcViewModel: VCViewModel = hiltViewModel()
     Column(
@@ -95,7 +97,7 @@ fun InsuranceNumberScreen(navController: NavController) {
             ) {
                 item {
                     Text(
-                        text = "Insurance Number",
+                        text = "Insurance",
                         color = MaterialTheme.colors.primary,
                         fontStyle = MaterialTheme.typography.h3.fontStyle,
                         fontSize = MaterialTheme.typography.h3.fontSize,
@@ -213,6 +215,7 @@ fun InsuranceNumberScreen(navController: NavController) {
                     Button(
                         onClick = {
                             //showProgress = true
+                            encryptSin(123456789, java.lang.String.valueOf(path), "sin")
                             vcViewModel.saveVC(
                                 VCEnteryState(
                                     experationDate = Date(),

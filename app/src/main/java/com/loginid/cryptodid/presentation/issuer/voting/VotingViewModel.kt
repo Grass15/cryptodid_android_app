@@ -50,29 +50,25 @@ class VotingViewModel @Inject constructor(
 
     fun registreVoteScan(completion: (Int) -> Unit){
         viewModelScope.launch {
-            completion(17)
-//            repository.startScanning().collect{data ->
-//                if(!data.isNullOrBlank()){
-//                    privilegeDataSender.setUrl(data)
-//                    privilegeDataSender.SendSocketData()
-//                    completion(privilegeDataSender.ToCubeValue().get(0))
-//                }
-//            }
+            repository.startScanning().collect{data ->
+                if(!data.isNullOrBlank()){
+                    privilegeDataSender.setUrl(data)
+                    privilegeDataSender.SendSocketData()
+                    completion(17)
+                }
+            }
         }
     }
 
     fun verifyVoteScan(){
         resetStatus()
-
         viewModelScope.launch {
-            verifier.setUrl("192.168.11.102:8080")
-            startVoteVerification(verifier)
-//            repository.startScanning().collect{data ->
-//                if(!data.isNullOrBlank()){
-//                    verifier.setUrl(data)
-//                    startVoteVerification(verifier)
-//                }
-//            }
+            repository.startScanning().collect{data ->
+                if(!data.isNullOrBlank()){
+                    verifier.setUrl(data)
+                    startVoteVerification(verifier)
+                }
+            }
         }
     }
 

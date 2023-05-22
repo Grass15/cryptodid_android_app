@@ -45,19 +45,16 @@ class SINViewModel @Inject constructor(
     override fun startScanning(){
         resetStatus()
         viewModelScope.launch {
-            verifier.setUrl("192.168.1.10:8080")
-            startVerification(verifier)
-//            repository.startScanning().collect{data ->
-//                if(!data.isNullOrBlank()){
-//                    _state.update { it.copy(
-//                        details = data
-//                    ) }
-//
-//                    //adding url
-//                    verifier.setUrl(data)
-//                    startVerification(verifier)
-//                }
-//            }
+            repository.startScanning().collect{data ->
+                if(!data.isNullOrBlank()){
+                    _state.update { it.copy(
+                        details = data
+                    ) }
+                    //adding url
+                    verifier.setUrl(data)
+                    startVerification(verifier)
+                }
+            }
         }
     }
 
