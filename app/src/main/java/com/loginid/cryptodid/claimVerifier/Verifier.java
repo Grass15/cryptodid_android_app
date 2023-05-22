@@ -75,7 +75,11 @@ public class Verifier {
         proofEndpoint.sendFile(path+"/"+attribute+"PK.key", attribute+ "PK.key");
         proofEndpoint.latch.await();
         System.out.println("signal");
-        response = Decrypt(path+"/Answer.data", path+"/"+attribute+"Keyset.key");
+        if (Objects.equals(attribute, "sin")){
+            response = decryptAccessControlResult(path+"/Answer.data", path+"/"+attribute+"Keyset.key");
+        }else{
+            response = Decrypt(path+"/Answer.data", path+"/"+attribute+"Keyset.key");
+        }
         proofEndpoint.webSocketClient.close();
         System.out.println(attribute + ": " + response);
         return response;
@@ -143,6 +147,7 @@ public class Verifier {
       //  });
     }
 
+    public native int decryptAccessControlResult(String ClaimPath, String SK_Path);
     public VerificationStatus accessControl()  throws InterruptedException, ParseException, IOException, ClassNotFoundException{
         if (!Objects.equals(this.url, "")) {
             try{

@@ -36,9 +36,10 @@ class SaveVCUseCase @Inject constructor(
         issuer.setAttribute(vcContent.VCAttribute)
         val path = getFilesFolder()
 
-        TFHE(vcContent.VCAttribute, java.lang.String.valueOf(path), vcContent.VCTypeText.split(" ")[0].lowercase().trim())
-        val VC: Claim = issuer.getClaim(vcContent.issuerName,vcContent.VCTypeText,vcContent.VCTitle,vcContent.VCContentOverview, "attributeName")// Claim(vcContent.VCTitle,vcContent.VCType,vcContent.issuerName,vcContent.VCContentOverview)
-
+        if(!(vcContent.VCTypeEnum == VCType.INSURANCE_NUMBER || vcContent.VCTypeEnum == VCType.PRIVILEGE)){
+            TFHE(vcContent.VCAttribute, java.lang.String.valueOf(path), vcContent.VCTypeText.split(" ")[0].lowercase().trim())
+        }
+        val VC: Claim = issuer.getClaim(vcContent.issuerName,vcContent.VCTypeText,vcContent.VCTitle,vcContent.VCContentOverview, vcContent.VCTypeText.split(" ")[0].lowercase().trim())// Claim(vcContent.VCTitle,vcContent.VCType,vcContent.issuerName,vcContent.VCContentOverview)
         VC.expirationDate = vcContent.experationDate
         return  VC
     }
