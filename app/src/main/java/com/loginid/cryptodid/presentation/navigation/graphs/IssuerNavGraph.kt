@@ -9,6 +9,7 @@ import androidx.navigation.navigation
 
 import com.loginid.cryptodid.presentation.home.vc.VCViewModel.VCEnteryState
 import com.loginid.cryptodid.presentation.home.vc.VCViewModel.VCViewModel
+import com.loginid.cryptodid.presentation.issuer.InsuranceNumberScreen
 import com.loginid.cryptodid.presentation.issuer.MicroBlinkIssuerScreen
 import com.loginid.cryptodid.presentation.issuer.creditScore.CreditScoreScreen
 import com.loginid.cryptodid.presentation.issuer.plaid.PlaidScreen
@@ -39,7 +40,8 @@ fun NavGraphBuilder.issuerNavGraph(
                         VCEnteryState(
                             experationDate = Date(),
                             issuerName = "MicroBlink",
-                            VCTypeText = "Personal data",
+                            VCTypeText = "Age", //Used in the encryption files name
+//                            VCTypeText = "Personal data",
                             VCTitle = "Age",
                             VCContentOverview = "+18",
                             VCAttribute = it
@@ -68,6 +70,11 @@ fun NavGraphBuilder.issuerNavGraph(
             route = IssuerScreen.PLAIDVCScreen.route
         ){
             PlaidScreen(navController)
+        }
+        composable(
+            route = IssuerScreen.GetInsuranceNumberScreen.route
+        ){
+            InsuranceNumberScreen(navController)
         }
         composable(
             route = IssuerScreen.VotingScreen.route

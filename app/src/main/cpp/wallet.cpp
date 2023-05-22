@@ -156,3 +156,76 @@ Java_com_loginid_cryptodid_domain_use_1case_save_1vc_SaveVCUseCase_TFHE(JNIEnv *
 
     return 1;
 }
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_loginid_cryptodid_presentation_issuer_voting_VotingScreen_addPrivilege(JNIEnv *env,
+                                                                                jobject thiz,
+                                                                                jstring secret_key__path,
+                                                                                jstring pk__path,
+                                                                                jstring cloud_key__path,
+                                                                                jstring cloud_data__path,
+                                                                                jint x1, jint y1,
+                                                                                jint z1) {
+    const char *Sk_path = env->GetStringUTFChars(secret_key__path, nullptr);
+    const char *Pk_path = env->GetStringUTFChars(pk__path, nullptr);
+    const char *Ck_path = env->GetStringUTFChars(cloud_key__path, nullptr);
+    const char *CD_path = env->GetStringUTFChars(cloud_data__path, nullptr);
+
+    LOGD(" SK path : %s",Sk_path);
+    LOGD(" PK path : %s",Pk_path);
+    LOGD(" CK path : %s",Ck_path);
+    LOGD(" CD path : %s",CD_path);
+
+
+    LOGD("[+] key generation");
+
+    //generate a keyset
+    const int minimum_lambda = 80;
+    TFheGateBootstrappingParameterSet* params = new_default_gate_bootstrapping_parameters(minimum_lambda);
+    //generate a random key
+    uint32_t seed[] = { 314, 1592, 411 };
+    tfhe_random_generator_setSeed(seed,3);
+    TFheGateBootstrappingSecretKeySet* key = new_random_gate_bootstrapping_secret_keyset(params);
+
+    LweSample* enc_x1 = new_gate_bootstrapping_ciphertext_array(4, params);
+    LweSample* enc_y1 = new_gate_bootstrapping_ciphertext_array(4, params);
+    LweSample* enc_z1 = new_gate_bootstrapping_ciphertext_array(4, params);
+    LweSample* ONE = new_gate_bootstrapping_ciphertext_array(1, params);
+    LweSample* ZERO = new_gate_bootstrapping_ciphertext_array(1, params);
+
+    FILE* pk_data = fopen(Pk_path,"wb");
+    bootsSymEncrypt(ONE,1, key);
+    export_gate_bootstrapping_ciphertext_toFile(pk_data, ONE, params);
+    bootsSymEncrypt(ZERO,0, key);
+    export_gate_bootstrapping_ciphertext_toFile(pk_data, ZERO, params);
+    fclose(pk_data);
+
+    for (int i=0; i<4; i++) {
+        bootsSymEncrypt(&enc_x1[i], (x1>>i)&1, key);
+    }
+    for (int i=0; i<4; i++) {
+        bootsSymEncrypt(&enc_y1[i], (y1>>i)&1, key);
+    }
+    for (int i=0; i<4; i++) {
+        bootsSymEncrypt(&enc_z1[i], (z1>>i)&1, key);
+    }
+
+    FILE* cloud_data = fopen(CD_path,"wb");
+    for (int i=0; i<4; i++)
+        export_gate_bootstrapping_ciphertext_toFile(cloud_data, &enc_x1[i], params);
+    for (int i=0; i<4; i++)
+        export_gate_bootstrapping_ciphertext_toFile(cloud_data, &enc_y1[i], params);
+    for (int i=0; i<4; i++)
+        export_gate_bootstrapping_ciphertext_toFile(cloud_data, &enc_z1[i], params);
+    fclose(cloud_data);
+
+    FILE* cloud_key = fopen(Ck_path,"wb");
+    export_tfheGateBootstrappingCloudKeySet_toFile(cloud_key, &key->cloud);
+    fclose(cloud_key);
+
+    FILE* SK_pt = fopen(Sk_path,"wb");
+    export_tfheGateBootstrappingSecretKeySet_toFile(SK_pt,key);
+    fclose(SK_pt);
+
+    return 1;
+}

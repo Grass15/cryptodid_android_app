@@ -11,4 +11,5 @@ sealed class IssuerScreen(
     object PLAIDVCScreen: IssuerScreen("plaid_vc_screen")
     object CreditScorevcScreen: IssuerScreen("credit_score_vc_screen")
     object VotingScreen: IssuerScreen("voting_screen")
+    object GetInsuranceNumberScreen: IssuerScreen("sin_screen")
 }

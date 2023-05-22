@@ -41,7 +41,7 @@ class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        MicroblinkSDK.setLicenseKey(BLINK_ID_LICENCE, this)
+//        MicroblinkSDK.setLicenseKey(BLINK_ID_LICENCE, this)
         ActivityCompat.requestPermissions(
             this, arrayOf(
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,

@@ -1,8 +1,6 @@
 package com.loginid.cryptodid.presentation.issuer.voting
 
 import android.app.Activity
-import android.util.Log
-import com.loginid.cryptodid.data.local.entity.VCType
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,6 +12,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.loginid.cryptodid.data.local.entity.VCType
+import com.loginid.cryptodid.presentation.MainActivity
+import com.loginid.cryptodid.presentation.MainActivity.Companion.getFilesFolder
 import com.loginid.cryptodid.presentation.home.biometrics.BiometricsAuthenticationProvider
 import com.loginid.cryptodid.presentation.home.modalDialogs.ModalDialogs
 import com.loginid.cryptodid.presentation.home.vc.VCViewModel.VCEnteryState
@@ -28,6 +29,16 @@ class VotingScreen constructor(
     val onScanResult: (VCEnteryState) -> Unit,
 ){
     private var showProgress = true
+
+    external fun addPrivilege(
+        SecretKey_Path: String?,
+        Pk_Path: String?,
+        CloudKey_Path: String?,
+        CloudData_Path: String?,
+        x1: Int,
+        y1: Int,
+        z1: Int
+    ): Int
 
     @Composable
     fun AddPrivilegeScreen(
@@ -55,6 +66,11 @@ class VotingScreen constructor(
         var showDialog by remember {
             mutableStateOf(false)
         }
+        val path = getFilesFolder()
+        val PKPath = path.toString() + "/PK.key"
+        val cloudKeyPath = path.toString() + "/CK.key"
+        val cloudDataPath = path.toString() + "/CD.data"
+        val secretKeyPath = path.toString() + "/SK.key"
 
         val biometricAuthenticator = remember { BiometricsAuthenticationProvider(context,
             onBiometricFailled = {
@@ -85,7 +101,10 @@ class VotingScreen constructor(
         //This does not require biometrics
         LaunchedEffect(true){
             scope.launch {
+
+                //Uncomment the stuff below
                 scannerViewModel.registreVoteScan{
+                    addPrivilege(secretKeyPath, PKPath, cloudKeyPath, cloudDataPath, 2, 2, 1 )
                     onScanResult(
                         VCEnteryState(
                             experationDate = Date(),
