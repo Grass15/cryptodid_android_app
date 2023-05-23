@@ -8,6 +8,7 @@ import com.loginid.cryptodid.domain.repository.UserRepository
 import com.loginid.cryptodid.model.Claim
 import com.loginid.cryptodid.presentation.MainActivity.Companion.getFilesFolder
 import com.loginid.cryptodid.presentation.home.vc.VCViewModel.VCEnteryState
+import com.loginid.cryptodid.presentation.issuer.encryptSin
 import com.loginid.cryptodid.protocols.Issuer
 import com.loginid.cryptodid.utils.Resource
 import kotlinx.coroutines.flow.Flow
@@ -36,10 +37,13 @@ class SaveVCUseCase @Inject constructor(
         issuer.setAttribute(vcContent.VCAttribute)
         val path = getFilesFolder()
 
-        if(!(vcContent.VCTypeEnum == VCType.INSURANCE_NUMBER || vcContent.VCTypeEnum == VCType.PRIVILEGE)){
-            TFHE(vcContent.VCAttribute, java.lang.String.valueOf(path), vcContent.VCTypeText.split(" ")[0].lowercase().trim())
+        if(vcContent.VCTypeEnum != VCType.PRIVILEGE && vcContent.VCTypeText != "sin"){
+            TFHE(vcContent.VCAttribute, java.lang.String.valueOf(path), vcContent.VCTypeText)
         }
-        val VC: Claim = issuer.getClaim(vcContent.issuerName,vcContent.VCTypeText,vcContent.VCTitle,vcContent.VCContentOverview, vcContent.VCTypeText.split(" ")[0].lowercase().trim())// Claim(vcContent.VCTitle,vcContent.VCType,vcContent.issuerName,vcContent.VCContentOverview)
+        else if(vcContent.VCTypeText == "sin" ){
+            encryptSin(123456789, java.lang.String.valueOf(getFilesFolder()), "sin")
+        }
+        val VC: Claim = issuer.getClaim(vcContent.issuerName,vcContent.VCTypeText,vcContent.VCTitle,vcContent.VCContentOverview, vcContent.VCTypeText)// Claim(vcContent.VCTitle,vcContent.VCType,vcContent.issuerName,vcContent.VCContentOverview)
         VC.expirationDate = vcContent.experationDate
         return  VC
     }

@@ -261,9 +261,6 @@ Scaffold(
                 biometricAuthenticator.getBiometricAuthenticator(BiomtricType.AUTO)?.authenticate(activity)
             }
             //Just a personal reminder to handle This before deploying it to play store
-            scope.launch {
-                modalSheetState.show()
-            }
             showPrompt = false
         }
     }

@@ -121,7 +121,7 @@ fun VCCard(
                                scanner.displayScannerType()
                                showPrompt = true
 
-                            }else if(it.VCTypeEnum  == VCType.INSURANCE_NUMBER){
+                            }else if(it.VCTypeText  == "sin"){
                                 scanner = scannerProvider.getScanner("sin")
                                 scanner.setupVerifier(it1)
                                 scanner.resetStatus()
@@ -192,7 +192,9 @@ fun VCCard(
                 //scannerViewModel.startScanning()
                 // voteViewModel.verifyVoteScan()
                // scanner.startScanning()
+                delay(500)
                 scanner.startScanning()
+                showPrompt = false
             }
     }
     }
@@ -264,13 +266,9 @@ fun VCCard(
     //Displaying Prompt
     if (showPrompt) {
         LaunchedEffect(showPrompt,scanner) {
-           // biometricAuthenticator.getBiometricAuthenticator(BiomtricType.AUTO)?.authenticate(activity)
+            biometricAuthenticator.getBiometricAuthenticator(BiomtricType.AUTO)?.authenticate(activity)
            // showPrompt = false
-            scope.launch {
-                delay(500)
-                scanner.startScanning()
-                showPrompt = false
-            }
+
         }
 
     }

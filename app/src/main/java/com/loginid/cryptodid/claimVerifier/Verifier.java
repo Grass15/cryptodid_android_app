@@ -105,7 +105,7 @@ public class Verifier {
                     getcppUrlEndpoint.latch.await();
                     cppVerifierUrl = String.valueOf(getcppUrlEndpoint.response);
                     getcppUrlEndpoint.webSocketClient.close();
-                    int creditScoreStatus = verify("creditscore");
+                    int creditScoreStatus = verify("creditScore");
                     int ageStatus = verify("age");
                     int balanceStatus = verify("balance");
                         /*
@@ -119,7 +119,7 @@ public class Verifier {
 */
                         try {
 //
-                            String[] finalResponse = new String[]{"user.firstname", "user.lastname", "user.address", "user.username", "user.phone", "Maroc", String.valueOf(ageStatus != 0), String.valueOf(balanceStatus != 0), String.valueOf(creditScoreStatus != 0)};
+                            String[] finalResponse = new String[]{"Yassine", "HOUIZI", "Rabat", "test@test.com", "+212666068102", "Maroc", String.valueOf(ageStatus != 0), String.valueOf(balanceStatus != 0), String.valueOf(creditScoreStatus != 0)};
                             finalResponseEndpoint.webSocketClient.connect();
                             finalResponseEndpoint.latch.await();
                             finalResponseEndpoint.webSocketClient.send(gson.toJson(finalResponse));
@@ -179,8 +179,8 @@ public class Verifier {
     public native int decryptVotingResult(String ClaimPath, String SK_Path, int nbit);
     public VerificationStatus verifyVoting() throws InterruptedException, ParseException, IOException, ClassNotFoundException{
         String path = String.valueOf(MainActivity.getFilesFolder());
-        int x1=2;
-        int y1=2;
+        int x1=1;
+        int y1=1;
         int z1=1;
 
         ClientEndpoint proofEndpoint = new ClientEndpoint();

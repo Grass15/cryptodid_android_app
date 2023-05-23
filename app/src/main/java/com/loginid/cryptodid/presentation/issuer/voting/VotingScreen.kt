@@ -1,7 +1,9 @@
 package com.loginid.cryptodid.presentation.issuer.voting
 
 import android.app.Activity
+import android.os.Build
 import androidx.compose.animation.ExperimentalAnimationApi
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,6 +20,7 @@ import com.loginid.cryptodid.data.local.entity.VCType
 import com.loginid.cryptodid.presentation.MainActivity
 import com.loginid.cryptodid.presentation.MainActivity.Companion.getFilesFolder
 import com.loginid.cryptodid.presentation.home.biometrics.BiometricsAuthenticationProvider
+import com.loginid.cryptodid.presentation.home.biometrics.BiomtricType
 import com.loginid.cryptodid.presentation.home.modalDialogs.ModalDialogs
 import com.loginid.cryptodid.presentation.home.vc.VCViewModel.VCEnteryState
 import com.loginid.cryptodid.presentation.navigation.screens.HomeScreen
@@ -84,6 +87,27 @@ class VotingScreen constructor(
         ) {
             scope.launch {
                   //Here we can make the same thing
+                scannerViewModel.registreVoteScan{
+                    addPrivilege(secretKeyPath, PKPath, cloudKeyPath, cloudDataPath, 1, 1, 1 )
+                    onScanResult(
+                        VCEnteryState(
+                            experationDate = Date(),
+                            issuerName = "Vote",
+                            VCTypeText = "vote",
+                            VCTitle = "Privilege",
+                            VCContentOverview = "none",
+                            VCTypeEnum = VCType.PRIVILEGE,
+                            VCAttribute = it
+                        )
+                    )
+                    //  delay(1000)
+                    navController.navigate(HomeScreen.MainHomeScreen.route){
+                        popUpTo(HomeScreen.MainHomeScreen.route){
+                            inclusive = true
+                        }
+                    }
+
+                }
             }
         }
         }
@@ -102,31 +126,11 @@ class VotingScreen constructor(
 
         //This does not require biometrics
         LaunchedEffect(true){
-            scope.launch {
-
-                //Uncomment the stuff below
-                scannerViewModel.registreVoteScan{
-                    addPrivilege(secretKeyPath, PKPath, cloudKeyPath, cloudDataPath, 2, 2, 1 )
-                    onScanResult(
-                        VCEnteryState(
-                            experationDate = Date(),
-                            issuerName = "Vote",
-                            VCTypeText = "vote",
-                            VCTitle = "Privilege",
-                            VCContentOverview = "none",
-                            VCTypeEnum = VCType.PRIVILEGE,
-                            VCAttribute = it
-                    )
-                    )
-                  //  delay(1000)
-                    navController.navigate(HomeScreen.MainHomeScreen.route){
-                        popUpTo(HomeScreen.MainHomeScreen.route){
-                            inclusive = true
-                        }
-                    }
-
-                }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                biometricAuthenticator.getBiometricAuthenticator(BiomtricType.AUTO)?.authenticate(activity)
             }
+            //Just a personal reminder to handle This before deploying it to play store
+
         }
 
 
