@@ -24,6 +24,7 @@ public class Verifier {
     private ClientEndpoint finalResponseEndpoint = new ClientEndpoint();
     private Gson gson = new Gson();
     public List<Claim> vcs = new ArrayList<Claim>();
+    public List<String> userPres = new ArrayList<>();
 
     public Verifier(){
 
@@ -56,6 +57,11 @@ public class Verifier {
     public void AppendVCs(List<Claim> vcs){
         if(vcs != null)
            this.vcs.addAll(vcs);
+    }
+    public void AddUserPresentation(List<String> data){
+        if(data != null){
+            this.userPres.addAll(data);
+        }
     }
 
     public native int Decrypt(String ClaimPath, String SK_Path);
@@ -118,8 +124,20 @@ public class Verifier {
 
 */
                         try {
+                            String[] tempData = {"","",""};
+                            if(userPres.isEmpty()){
+                                tempData[0] = "FabienK@team.loginid";
+                                tempData[1] = "fabien";
+                                tempData[2] = "korgo";
+                            }else{
+                                int i = 0;
+                                for(String d : this.userPres){
+                                    tempData[i] = d;
+                                    i++;
+                                }
+                            }
 //
-                            String[] finalResponse = new String[]{"Yassine", "HOUIZI", "Rabat", "test@test.com", "+212666068102", "Maroc", String.valueOf(ageStatus != 0), String.valueOf(balanceStatus != 0), String.valueOf(creditScoreStatus != 0)};
+                            String[] finalResponse = new String[]{tempData[1], tempData[2], "Rabat", tempData[0], "+212666068102", "Maroc", String.valueOf(ageStatus != 0), String.valueOf(balanceStatus != 0), String.valueOf(creditScoreStatus != 0)};
                             finalResponseEndpoint.webSocketClient.connect();
                             finalResponseEndpoint.latch.await();
                             finalResponseEndpoint.webSocketClient.send(gson.toJson(finalResponse));

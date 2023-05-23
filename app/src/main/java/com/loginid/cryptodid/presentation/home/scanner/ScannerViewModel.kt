@@ -7,11 +7,14 @@ import androidx.lifecycle.viewModelScope
 import com.loginid.cryptodid.claimVerifier.VerificationStatus
 import com.loginid.cryptodid.model.Claim
 import com.loginid.cryptodid.claimVerifier.Verifier
+import com.loginid.cryptodid.data.repository.UserDataStoreRepository
 import com.loginid.cryptodid.domain.repository.ScannerRepository
+import com.loginid.cryptodid.domain.repository.UserRepository
 import com.loginid.cryptodid.domain.use_case.verify_vc.HouseRentaleVerificationUseCase
 import com.loginid.cryptodid.presentation.home.scanner.ScannerStrategy.Scanner
 import com.loginid.cryptodid.utils.Resource
 import com.loginid.cryptodid.utils.Status
+import com.loginid.cryptodid.utils.UserDataPrefrence
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
@@ -24,7 +27,9 @@ import javax.inject.Inject
 @HiltViewModel
 class ScannerViewModel @Inject constructor(
       private val repository: ScannerRepository,
-      private val houseRentaleVerificationUseCase: HouseRentaleVerificationUseCase
+      private val houseRentaleVerificationUseCase: HouseRentaleVerificationUseCase,
+      private val userRepooitory: UserRepository,
+      private val dataStoreRepository: UserDataStoreRepository,
 ) : ViewModel(),Scanner {
 
     private val _vState = MutableStateFlow(VerificationStatus())
@@ -57,7 +62,16 @@ class ScannerViewModel @Inject constructor(
 
     //Here we should configure our verify method so we can call it right after scanning
     override fun setupVerifier(vc: Claim){
-
+        viewModelScope.launch {
+            dataStoreRepository.readUserDataState().collect{userData ->
+                userData.userName.let {
+                    val data = userRepooitory.getUserByUserName(it)
+                    data.let {
+                        verifier.AddUserPresentation(listOf(it.username,it.firstname,it.lastname))
+                    }
+                }
+            }
+        }
         //bank vc
 //        val fhe = MG_FHE(11, 512)
 //        val issuer1: Issuer =
