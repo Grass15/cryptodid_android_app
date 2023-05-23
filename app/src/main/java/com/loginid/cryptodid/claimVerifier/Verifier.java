@@ -105,7 +105,7 @@ public class Verifier {
                     getcppUrlEndpoint.latch.await();
                     cppVerifierUrl = String.valueOf(getcppUrlEndpoint.response);
                     getcppUrlEndpoint.webSocketClient.close();
-                    int creditScoreStatus = verify("creditscore");
+                    int creditScoreStatus = verify("creditScore");
                     int ageStatus = verify("age");
                     int balanceStatus = verify("balance");
                         /*
