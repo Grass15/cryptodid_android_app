@@ -1,6 +1,7 @@
 package com.loginid.cryptodid.presentation.issuer.voting
 
 import android.app.Activity
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.google.accompanist.pager.ExperimentalPagerApi
 import com.loginid.cryptodid.data.local.entity.VCType
 import com.loginid.cryptodid.presentation.MainActivity
 import com.loginid.cryptodid.presentation.MainActivity.Companion.getFilesFolder
@@ -39,7 +41,7 @@ class VotingScreen constructor(
         y1: Int,
         z1: Int
     ): Int
-
+    @OptIn(ExperimentalAnimationApi::class, ExperimentalPagerApi::class)
     @Composable
     fun AddPrivilegeScreen(
     ){

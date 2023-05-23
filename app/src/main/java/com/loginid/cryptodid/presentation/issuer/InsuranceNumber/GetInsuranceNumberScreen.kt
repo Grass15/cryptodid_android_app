@@ -1,6 +1,7 @@
 package com.loginid.cryptodid.presentation.issuer
 
 import android.util.Log
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,6 +26,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.google.accompanist.pager.ExperimentalPagerApi
 import com.loginid.cryptodid.R
 import com.loginid.cryptodid.data.local.entity.VCType
 import com.loginid.cryptodid.presentation.MainActivity
@@ -39,6 +41,7 @@ import java.util.*
 
 external fun encryptSin(n1: Int, filepath: String?, attribute: String?): Int
 
+@OptIn(ExperimentalAnimationApi::class, ExperimentalPagerApi::class)
 @Composable
 fun InsuranceNumberScreen(navController: NavController) {
 
