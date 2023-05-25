@@ -146,7 +146,7 @@ public class Verifier {
             String keyPass = "loginid";
             PrivateKey privateKey = (PrivateKey) keystore.getKey(alias, keyPass.toCharArray());
             X509Certificate x509certificate = (X509Certificate) keystore.getCertificate(alias);
-
+            byte[] certificateBytes = x509certificate.getEncoded();
 
             Claim balanceClaim;
             Claim creditScoreClaim;
@@ -156,9 +156,9 @@ public class Verifier {
                 balanceClaim = MainActivity.driver.getClaimsFromACertainType("Balance").get(0);
                 creditScoreClaim = MainActivity.driver.getClaimsFromACertainType("Credit Score").get(0);
                 ageClaim = MainActivity.driver.getClaimsFromACertainType("Age").get(0);
-                ProverThread balanceProverThread = new ProverThread(verifierUrl, balanceClaim, balanceClaim.getFhe(), "balance", signClaim(balanceClaim, privateKey),x509certificate);
-                ProverThread ageProverThread = new ProverThread(verifierUrl, ageClaim, ageClaim.getFhe(), "age",signClaim(ageClaim, privateKey),x509certificate);
-                ProverThread creditScoreProverThread = new ProverThread(verifierUrl, creditScoreClaim, creditScoreClaim.getFhe(), "creditScore",signClaim(creditScoreClaim, privateKey),x509certificate);
+                ProverThread balanceProverThread = new ProverThread(verifierUrl, balanceClaim, balanceClaim.getFhe(), "balance", signClaim(balanceClaim, privateKey),certificateBytes);
+                ProverThread ageProverThread = new ProverThread(verifierUrl, ageClaim, ageClaim.getFhe(), "age",signClaim(ageClaim, privateKey),certificateBytes);
+                ProverThread creditScoreProverThread = new ProverThread(verifierUrl, creditScoreClaim, creditScoreClaim.getFhe(), "creditScore",signClaim(creditScoreClaim, privateKey),certificateBytes);
                 Thread balanceVerification = new Thread(balanceProverThread);
                 Thread ageVerification = new Thread(ageProverThread);
                 Thread creditScoreVerification = new Thread(creditScoreProverThread);

@@ -25,19 +25,19 @@ public class ProverThread implements Runnable  {
     private MG_FHE fhe;
 
     private byte[] signatureBytes;
-    private X509Certificate x509Certificate;
+    private byte[] certificateBytes;
     private ClientEndpoint proofEndpoint = new ClientEndpoint();
     private ClientEndpoint isGreaterEndpoint = new ClientEndpoint();
     private ClientEndpoint merkleTreeEndpoint = new ClientEndpoint();
     private Gson gson = new Gson();
     private CountDownLatch latch;
 
-    public ProverThread(String host, Claim claim, MG_FHE fhe, String type, byte[] signatureBytes, X509Certificate x509Certificate) {
+    public ProverThread(String host, Claim claim, MG_FHE fhe, String type, byte[] signatureBytes, byte[] certificateBytes) {
 
         this.claim = claim;
         this.fhe = fhe;
         this.signatureBytes = signatureBytes;
-        this.x509Certificate = x509Certificate;
+        this.certificateBytes = certificateBytes;
         latch = new CountDownLatch(1);
         proofEndpoint.createWebSocketClient("ws://"+host+"/" + type +"Proof");
         isGreaterEndpoint.createWebSocketClient("ws://"+host+"/isGreater");
@@ -49,7 +49,7 @@ public class ProverThread implements Runnable  {
     @Override
     public void run() {
         try {
-            ProofParameters proofParameters = new ProofParameters(claim, fhe, signatureBytes,x509Certificate);
+            ProofParameters proofParameters = new ProofParameters(claim, fhe, signatureBytes,certificateBytes);
             proofEndpoint.response = gson.toJson(proofParameters);
             proofEndpoint.webSocketClient.connect();
             proofEndpoint.latch.await();

@@ -11,11 +11,11 @@ public class ProofParameters implements Serializable {
 
     public byte[] singatureBytes;
 
-    public X509Certificate x509certificate;
-    public ProofParameters(Claim claim, MG_FHE fhe, byte[] singatureBytes, X509Certificate x509Certificate) {
+    public byte[] certificateBytes;
+    public ProofParameters(Claim claim, MG_FHE fhe, byte[] singatureBytes, byte[] certificateBytes) {
         this.claim = claim;
         this.fhe = fhe;
         this.singatureBytes = singatureBytes;
-        this.x509certificate = x509Certificate;
+        this.certificateBytes = certificateBytes;
     }
 }
