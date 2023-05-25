@@ -18,6 +18,11 @@ import com.loginid.cryptodid.claimFetcher.Fetcher;
 import com.loginid.cryptodid.claimVerifier.Verifier;
 
 import java.io.IOException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.text.ParseException;
 
 /**
@@ -66,9 +71,19 @@ public class TransactionMenuFragment extends BottomSheetDialogFragment {
             @Override
             public void onClick(View view) {
                 try {
-                    verifier.verifyClaim();
+                    verifier.verify();
                 } catch (InterruptedException | ParseException | IOException |
                          ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                } catch (UnrecoverableKeyException e) {
+                    throw new RuntimeException(e);
+                } catch (CertificateException e) {
+                    throw new RuntimeException(e);
+                } catch (KeyStoreException e) {
+                    throw new RuntimeException(e);
+                } catch (NoSuchAlgorithmException e) {
+                    throw new RuntimeException(e);
+                } catch (NoSuchProviderException e) {
                     throw new RuntimeException(e);
                 }
             }

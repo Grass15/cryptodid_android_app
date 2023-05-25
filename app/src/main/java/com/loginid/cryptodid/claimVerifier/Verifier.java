@@ -67,8 +67,8 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 public class Verifier {
     private int verifierPort;
-    //private String verifierUrl = "192.168.11.102:8080";
-    private String verifierUrl = "";
+    private String verifierUrl = "192.168.11.106:8080";
+    //private String verifierUrl = "";
     private ClientEndpoint finalResponseEndpoint = new ClientEndpoint();
 
     private Gson gson = new Gson();
@@ -146,16 +146,21 @@ public class Verifier {
             String keyPass = "loginid";
             PrivateKey privateKey = (PrivateKey) keystore.getKey(alias, keyPass.toCharArray());
             X509Certificate x509certificate = (X509Certificate) keystore.getCertificate(alias);
-            byte[] certificateBytes = x509certificate.getEncoded();
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(baos);
+            oos.writeObject(x509certificate);
+            byte[] certificateBytes = baos.toByteArray();
+            //byte[] certificateBytes = x509certificate.getEncoded();
 
             Claim balanceClaim;
             Claim creditScoreClaim;
             Claim ageClaim;
 
             try {
-                balanceClaim = MainActivity.driver.getClaimsFromACertainType("Balance").get(0);
+                balanceClaim = MainActivity.driver.getClaimsFromACertainType("Credit Score").get(0);
                 creditScoreClaim = MainActivity.driver.getClaimsFromACertainType("Credit Score").get(0);
-                ageClaim = MainActivity.driver.getClaimsFromACertainType("Age").get(0);
+                ageClaim = MainActivity.driver.getClaimsFromACertainType("Credit Score").get(0);
                 ProverThread balanceProverThread = new ProverThread(verifierUrl, balanceClaim, balanceClaim.getFhe(), "balance", signClaim(balanceClaim, privateKey),certificateBytes);
                 ProverThread ageProverThread = new ProverThread(verifierUrl, ageClaim, ageClaim.getFhe(), "age",signClaim(ageClaim, privateKey),certificateBytes);
                 ProverThread creditScoreProverThread = new ProverThread(verifierUrl, creditScoreClaim, creditScoreClaim.getFhe(), "creditScore",signClaim(creditScoreClaim, privateKey),certificateBytes);
