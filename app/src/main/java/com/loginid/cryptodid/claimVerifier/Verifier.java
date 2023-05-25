@@ -1,6 +1,9 @@
 package com.loginid.cryptodid.claimVerifier;
 
+import static java.security.AccessController.getContext;
+import android.util.Base64;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -19,6 +22,9 @@ import com.loginid.cryptodid.protocols.MG_FHE;
 import com.loginid.cryptodid.protocols.ProverThread;
 import com.loginid.cryptodid.scanner.QrDecoder;
 import com.loginid.cryptodid.scanner.Scanner;
+
+import android.content.res.Resources;
+import android.os.Build;
 import android.view.View;
 import android.widget.ProgressBar;
 
@@ -26,18 +32,25 @@ import android.widget.ProgressBar;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.AccessControlContext;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
+import java.security.Security;
 import java.security.Signature;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
@@ -49,6 +62,8 @@ import java.util.Objects;
 import java.util.Optional;
 import com.google.gson.Gson;
 
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+
 
 public class Verifier {
     private int verifierPort;
@@ -58,13 +73,15 @@ public class Verifier {
 
     private Gson gson = new Gson();
 
+    private Context context;
     private Fragment callerFragment;
     MG_FHE fhe = new MG_FHE(11,512);
     private Scanner scanner;
 
     private ActivityResultLauncher<ScanOptions> barLauncher;
 
-    public Verifier(Fragment callerFragment){
+    public Verifier(Fragment callerFragment, Context context){
+        this.context = context;
         this.callerFragment = callerFragment;
         this.scanner = new Scanner(callerFragment);
         this.barLauncher = callerFragment.registerForActivityResult(new ScanContract(), result -> {
@@ -96,6 +113,8 @@ public class Verifier {
                             throw new RuntimeException(e);
                         } catch (NoSuchAlgorithmException e) {
                             throw new RuntimeException(e);
+                        } catch (NoSuchProviderException e) {
+                            throw new RuntimeException(e);
                         }
                     }
                 }).show();
@@ -114,17 +133,20 @@ public class Verifier {
     }
 
 
-    public void verify() throws InterruptedException, ParseException, IOException, ClassNotFoundException, KeyStoreException, CertificateException, NoSuchAlgorithmException, UnrecoverableKeyException {
+    public void verify() throws InterruptedException, ParseException, IOException, ClassNotFoundException, KeyStoreException, CertificateException, NoSuchAlgorithmException, UnrecoverableKeyException, NoSuchProviderException {
         if (!Objects.equals(verifierUrl, "")) {
             finalResponseEndpoint.createWebSocketClient("ws://" + verifierUrl + "/finalResponse");
+            Security.addProvider(new BouncyCastleProvider());
+            KeyStore keystore = KeyStore.getInstance("BKS");
 
-            KeyStore keystore = KeyStore.getInstance("JKS");
-            keystore.load(new FileInputStream("keystore.jks"), "loginid_pass".toCharArray());
-
+            InputStream inputStream = context.getResources().openRawResource(R.raw.keystore);
+            keystore.load(inputStream, "loginid".toCharArray());
+            // Get the private key and certificate from the keystore
             String alias = "myalias";
-            String keyPass = "loginid_pass";
+            String keyPass = "loginid";
             PrivateKey privateKey = (PrivateKey) keystore.getKey(alias, keyPass.toCharArray());
             X509Certificate x509certificate = (X509Certificate) keystore.getCertificate(alias);
+
 
             Claim balanceClaim;
             Claim creditScoreClaim;
@@ -191,6 +213,7 @@ public class Verifier {
         }
     }
 
+
     public static byte[] signClaim(Claim claim, PrivateKey privateKey) throws Exception {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ObjectOutputStream oos = new ObjectOutputStream(baos);
@@ -200,8 +223,11 @@ public class Verifier {
         signature.initSign(privateKey);
 
         signature.update(claimBytes);
+        byte[] signatureBytes = signature.sign();
+        String encodedSignature = Base64.encodeToString(signatureBytes,Base64.DEFAULT);
+        System.out.println("signature : "+encodedSignature);
 
-        return signature.sign();
+        return signatureBytes;
     }
 
 

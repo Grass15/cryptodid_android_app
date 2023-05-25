@@ -7,12 +7,12 @@
         <option name="testRunner" value="GRADLE" />
         <option name="distributionType" value="DEFAULT_WRAPPED" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="gradleHome" value="C:/Gradle" />
+        <option name="gradleJvm" value="15" />
         <option name="modules">
           <set>
-            <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/LibUtils" />
-            <option value="$PROJECT_DIR$/app" />
+            <option value="/private/var/root/StudioProjects/cryptodid_android_app" />
+            <option value="/private/var/root/StudioProjects/cryptodid_android_app/LibUtils" />
+            <option value="/private/var/root/StudioProjects/cryptodid_android_app/app" />
           </set>
         </option>
       </GradleProjectSettings>

@@ -43,7 +43,7 @@ public class TransactionMenuFragment extends BottomSheetDialogFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         fetcher = new Fetcher(this);
-        verifier = new Verifier(this);
+        verifier = new Verifier(this, this.getContext());
     }
 
     @Override

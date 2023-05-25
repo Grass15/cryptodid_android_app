@@ -49,12 +49,15 @@ public class ProverThread implements Runnable  {
     @Override
     public void run() {
         try {
-            ProofParameters proofParameters = new ProofParameters(claim, fhe);
+            ProofParameters proofParameters = new ProofParameters(claim, fhe, signatureBytes,x509Certificate);
             proofEndpoint.response = gson.toJson(proofParameters);
             proofEndpoint.webSocketClient.connect();
             proofEndpoint.latch.await();
             Proof proof = gson.fromJson(proofEndpoint.response, Proof.class);
-            proofEndpoint.webSocketClient.close();
+            if (proof == null){
+                verifierResponse = new String[]{"issuer not trusted", "Verification negative for this attribute",String.valueOf(false)};
+                return;
+            }
             for (int i = 0; i < 1000; i++) {
                 BigInteger A = fhe.decrypt(proof.L[i]);
                 if ((A.mod(new BigInteger("2", 10))).intValue() == 1) {
