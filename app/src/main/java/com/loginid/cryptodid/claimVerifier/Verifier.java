@@ -67,11 +67,11 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 public class Verifier {
     private int verifierPort;
-    private String verifierUrl = "192.168.11.106:8080";
+    private String verifierUrl = "192.168.1.9:8080";
     //private String verifierUrl = "";
     private ClientEndpoint finalResponseEndpoint = new ClientEndpoint();
 
-    private Gson gson = new Gson();
+    private static Gson gson = new Gson();
 
     private Context context;
     private Fragment callerFragment;
@@ -226,13 +226,8 @@ public class Verifier {
         byte[] claimBytes = baos.toByteArray();
         Signature signature = Signature.getInstance("SHA256withRSA");
         signature.initSign(privateKey);
-
         signature.update(claimBytes);
-        byte[] signatureBytes = signature.sign();
-        String encodedSignature = Base64.encodeToString(signatureBytes,Base64.DEFAULT);
-        System.out.println("signature : "+encodedSignature);
-
-        return signatureBytes;
+        return signature.sign();
     }
 
 
