@@ -67,7 +67,7 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 public class Verifier {
     private int verifierPort;
-    private String verifierUrl = "192.168.11.106:8080";
+    private String verifierUrl = "192.168.0.100:8080";
     //private String verifierUrl = "";
     private ClientEndpoint finalResponseEndpoint = new ClientEndpoint();
 
