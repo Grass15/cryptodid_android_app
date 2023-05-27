@@ -165,6 +165,7 @@ dependencies {
     //Swiper
    // implementation "me.saket.swipe:swipe:1.1.1"
 
+
     //microblink
     implementation("com.microblink:blinkid:5.19.0@aar") {
         transitive = true

@@ -370,6 +370,7 @@ fun RegisterScreen(
         }
         Status.FAILLED -> {
             Log.d("Auth", "Failled")
+
             Toast.makeText(context,"Error while trying to save",Toast.LENGTH_SHORT).show()
             viewModel.resetStatus()
         }

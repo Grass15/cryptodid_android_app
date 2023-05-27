@@ -1,11 +1,11 @@
 package com.loginid.cryptodid.claimVerifier;
 
-import androidx.annotation.OptIn;
-import androidx.compose.animation.ExperimentalAnimationApi;
+
 
 import com.google.gson.Gson;
 import com.loginid.cryptodid.presentation.MainActivity;
 
+import org.apache.commons.io.FileUtils;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
@@ -19,9 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import org.apache.commons.io.FileUtils;
 import javax.websocket.OnMessage;
-import javax.websocket.Session;
 
 
 public class ClientEndpoint {

@@ -1,6 +1,5 @@
 package com.loginid.cryptodid.claimVerifier;
 
-import androidx.appcompat.app.AlertDialog;
 
 import com.google.gson.Gson;
 import com.loginid.cryptodid.presentation.MainActivity;

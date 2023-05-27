@@ -12,7 +12,6 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven { url 'https://maven.microblink.com' }
-
     }
 }
 rootProject.name = "Cryptodid"
