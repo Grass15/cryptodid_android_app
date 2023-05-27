@@ -28,6 +28,6 @@ interface UserRepository {
 
     suspend fun getUserByUserName(username: String): UserEntity
 
-    suspend fun getVCByTitle(userId: String,vcTitle: String): VCEntity
+    fun getVCByTitle(userId: String,vcTitle: String): Flow<List<VCEntity>>
     fun getVCsByType(userId: String, vcType: VCType): Flow<List<VCEntity>>
 }

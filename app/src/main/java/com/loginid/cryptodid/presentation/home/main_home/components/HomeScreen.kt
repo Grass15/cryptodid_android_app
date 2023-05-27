@@ -156,6 +156,7 @@ Scaffold(
                  },
                  onSearchClicked = {
                      Log.d("Searched Text", it)
+                     vcViewModel.searchByTitle(it)
                  },
                  onSearchTriggered = {
                      appBarViewModel.updateSearchWidgetState(newValue = SearchWidgetState.OPENED)
