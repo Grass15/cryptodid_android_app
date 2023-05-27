@@ -5,7 +5,18 @@ import com.loginid.cryptodid.model.Claim;
 import com.loginid.cryptodid.presentation.MainActivity;
 import com.loginid.cryptodid.utils.Status;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.Signature;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,31 +28,32 @@ public class Verifier {
     private ClientEndpoint getcppUrlEndpoint = new ClientEndpoint();
     private String cppVerifierUrl = "";
     private String javaVerifierUrl = "";
-    private String url = "";
+    //private String url = "";
     private Claim vc;
     private ClientEndpoint finalResponseEndpoint = new ClientEndpoint();
     private Gson gson = new Gson();
     public List<Claim> vcs = new ArrayList<Claim>();
     public List<String> userPres = new ArrayList<>();
+    private final String filesFolderPath = String.valueOf(MainActivity.getFilesFolder());
 
     public Verifier(){
 
     }
-    public Verifier(String url) {
-        this.url = url;
-    }
+//    public Verifier(String url) {
+//        this.url = url;
+//    }
+//
+//    public Verifier(String url, List<Claim> vcs) {
+//        this.url = url;
+//        this.vcs = vcs;
+//    }
 
-    public Verifier(String url, List<Claim> vcs) {
-        this.url = url;
-        this.vcs = vcs;
-    }
-
-    public Verifier(String url, Claim vc) {
-        this.url = url;
-        this.vc = vc;
-    }
+//    public Verifier(String url, Claim vc) {
+//        this.url = url;
+//        this.vc = vc;
+//    }
     public void setUrl(String url) {
-        this.url = url;
+        this.javaVerifierUrl = url;
     }
 
     public void setVc(Claim vc) {
@@ -65,8 +77,6 @@ public class Verifier {
     public native int Decrypt(String ClaimPath, String SK_Path);
 
     public int verify(String attribute) throws InterruptedException, ParseException, IOException, ClassNotFoundException {
-        String path = String.valueOf(MainActivity.getFilesFolder());
-
         int response;
         ClientEndpoint proofEndpoint = new ClientEndpoint();
         proofEndpoint.createWebSocketClient("ws://" + cppVerifierUrl);
@@ -74,19 +84,33 @@ public class Verifier {
         proofEndpoint.latch.await();
         proofEndpoint.latch = new CountDownLatch(1);
         proofEndpoint.webSocketClient.send(attribute);
-        proofEndpoint.sendFile(path+"/"+attribute+"Cloud.key", attribute+ "Cloud.key");
-        proofEndpoint.sendFile(path+"/"+attribute+"Cloud.data", attribute+ "Cloud.data");
-        proofEndpoint.sendFile(path+"/"+attribute+"PK.key", attribute+ "PK.key");
+        proofEndpoint.sendFile(filesFolderPath+"/"+attribute+"Cloud.key", attribute+ "Cloud.key");
+        proofEndpoint.sendFile(filesFolderPath+"/"+attribute+"Cloud.data", attribute+ "Cloud.data");
+        proofEndpoint.sendFile(filesFolderPath+"/"+attribute+"PK.key", attribute+ "PK.key");
         proofEndpoint.latch.await();
         System.out.println("signal");
         if (Objects.equals(attribute, "sin")){
-            response = decryptAccessControlResult(path+"/Answer.data", path+"/"+attribute+"Keyset.key");
+            response = decryptAccessControlResult(filesFolderPath+"/Answer.data", filesFolderPath+"/"+attribute+"Keyset.key");
         }else{
-            response = Decrypt(path+"/Answer.data", path+"/"+attribute+"Keyset.key");
+            response = Decrypt(filesFolderPath+"/Answer.data", filesFolderPath+"/"+attribute+"Keyset.key");
         }
         proofEndpoint.webSocketClient.close();
         System.out.println(attribute + ": " + response);
         return response;
+    }
+
+    public String verifySignature(byte[] signatureBytes, X509Certificate x509Certificate, String vcEncryptionFileName) throws InterruptedException, ParseException, IOException, ClassNotFoundException {
+        String response;
+        ClientEndpoint signatureVerificationEndpoint = new ClientEndpoint();
+        signatureVerificationEndpoint.createWebSocketClient("ws://" + this.javaVerifierUrl);
+        signatureVerificationEndpoint.createWebSocketClient("ws://" + cppVerifierUrl);
+        signatureVerificationEndpoint.webSocketClient.connect();
+        signatureVerificationEndpoint.latch.await();
+        signatureVerificationEndpoint.latch = new CountDownLatch(1);
+        signatureVerificationEndpoint.webSocketClient.send(vcEncryptionFileName);
+        signatureVerificationEndpoint.sendFile(filesFolderPath+"/"+vcEncryptionFileName, vcEncryptionFileName);
+        return signatureVerificationEndpoint.response;
+
     }
     public String getResultText(boolean status){
         if(status){
@@ -96,14 +120,22 @@ public class Verifier {
         }
     }
 
-    public VerificationStatus verifyVCsRentalHouse()  throws InterruptedException, ParseException, IOException, ClassNotFoundException{
+    public VerificationStatus verifyVCsRentalHouse() throws IOException, KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException, CertificateException {
       //  return CompletableFuture.runAsync(() -> {
             //if (!vcs.isEmpty()) {
 
-                if (!Objects.equals(this.url, "")) {
+                if (!Objects.equals(this.javaVerifierUrl, "")) {
+                    KeyStore keystore = KeyStore.getInstance("JKS");
+                    keystore.load(new FileInputStream("keystore.jks"), "loginid_pass".toCharArray());
+
+                    String alias = "myalias";
+                    String keyPass = "loginid_pass";
+                    PrivateKey privateKey = (PrivateKey) keystore.getKey(alias, keyPass.toCharArray());
+                    X509Certificate x509certificate = (X509Certificate) keystore.getCertificate(alias);
+
                     try{
-                    finalResponseEndpoint.createWebSocketClient("ws://" + this.url + "/finalResponse");
-                    getcppUrlEndpoint.createWebSocketClient("ws://" + this.url + "/cppUrl");
+                    finalResponseEndpoint.createWebSocketClient("ws://" + this.javaVerifierUrl + "/finalResponse");
+                    getcppUrlEndpoint.createWebSocketClient("ws://" + this.javaVerifierUrl + "/cppUrl");
                     getcppUrlEndpoint.latch = new CountDownLatch(2);
                     getcppUrlEndpoint.webSocketClient.connect();
                     getcppUrlEndpoint.latch.await();
@@ -165,16 +197,16 @@ public class Verifier {
 
     public native int decryptAccessControlResult(String ClaimPath, String SK_Path);
     public VerificationStatus accessControl()  throws InterruptedException, ParseException, IOException, ClassNotFoundException{
-        if (!Objects.equals(this.url, "")) {
+        if (!Objects.equals(this.javaVerifierUrl, "")) {
             try{
-                getcppUrlEndpoint.createWebSocketClient("ws://" + this.url + "/cppUrl");
+                getcppUrlEndpoint.createWebSocketClient("ws://" + this.javaVerifierUrl + "/cppUrl");
                 getcppUrlEndpoint.latch = new CountDownLatch(2);
                 getcppUrlEndpoint.webSocketClient.connect();
                 getcppUrlEndpoint.latch.await();
                 cppVerifierUrl = String.valueOf(getcppUrlEndpoint.response);
                 getcppUrlEndpoint.webSocketClient.close();
                 int sinStatus = verify("sin");
-                finalResponseEndpoint.createWebSocketClient("ws://" + this.url + "/response");
+                finalResponseEndpoint.createWebSocketClient("ws://" + this.javaVerifierUrl + "/response");
                 finalResponseEndpoint.webSocketClient.connect();
                 finalResponseEndpoint.latch.await();
                 finalResponseEndpoint.latch = new CountDownLatch(1);
@@ -194,28 +226,28 @@ public class Verifier {
 
     public native int decryptVotingResult(String ClaimPath, String SK_Path, int nbit);
     public VerificationStatus verifyVoting() throws InterruptedException, ParseException, IOException, ClassNotFoundException{
-        String path = String.valueOf(MainActivity.getFilesFolder());
+
         int x1=1;
         int y1=1;
         int z1=1;
 
         ClientEndpoint proofEndpoint = new ClientEndpoint();
-        proofEndpoint.createWebSocketClient("ws://" + this.url);
+        proofEndpoint.createWebSocketClient("ws://" + this.javaVerifierUrl);
         //proofEndpoint.latch.await();
         proofEndpoint.webSocketClient.connect();
         proofEndpoint.latch.await();
         proofEndpoint.latch = new CountDownLatch(1);
         proofEndpoint.pos = 0;
         proofEndpoint.webSocketClient.send("VOTING");
-        proofEndpoint.sendFile(path + "/CK.key", "CK.key");
-        proofEndpoint.sendFile(path + "/CD.data", "CD.data");
-        proofEndpoint.sendFile(path + "/PK.key", "PK.key");
+        proofEndpoint.sendFile(filesFolderPath + "/CK.key", "CK.key");
+        proofEndpoint.sendFile(filesFolderPath + "/CD.data", "CD.data");
+        proofEndpoint.sendFile(filesFolderPath + "/PK.key", "PK.key");
         int A = (x1*x1*x1) + (y1*y1*y1) + (z1*z1*z1);
         proofEndpoint.webSocketClient.send(String.valueOf(A));
         //proofEndpoint.webSocketClient.send("DONE");
         proofEndpoint.latch.await();
-        int r = decryptVotingResult(path+"/vot_answer.data", path+"/SK.key",1);
-        int n = decryptVotingResult(path+"/H_NULL.data", path+"/SK.key",4);
+        int r = decryptVotingResult(filesFolderPath+"/vot_answer.data", filesFolderPath+"/SK.key",1);
+        int n = decryptVotingResult(filesFolderPath+"/H_NULL.data", filesFolderPath+"/SK.key",4);
         System.out.println("r:"+r);
         System.out.println("null:"+n);
         proofEndpoint.webSocketClient.send(String.valueOf(r));
@@ -227,7 +259,20 @@ public class Verifier {
 
 
     public String toString(){
-        return "" + this.url + " | " + this.vc.toString();
+        return "" + this.javaVerifierUrl + " | " + this.vc.toString();
+    }
+
+    public static byte[] signClaim(Claim claim, PrivateKey privateKey) throws Exception {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(baos);
+        oos.writeObject(claim);
+        byte[] claimBytes = baos.toByteArray();
+        Signature signature = Signature.getInstance("SHA256withRSA");
+        signature.initSign(privateKey);
+
+        signature.update(claimBytes);
+
+        return signature.sign();
     }
 }
 

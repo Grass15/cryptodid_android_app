@@ -28,6 +28,7 @@ public class ClientEndpoint {
     List<Byte> fileByte=new ArrayList<Byte>();
     private Gson gson = new Gson();
     public int pos = -1;
+    private final String filesFolderPath = String.valueOf(MainActivity.getFilesFolder());
 
 
     public WebSocketClient createWebSocketClient(String url){
@@ -51,19 +52,19 @@ public class ClientEndpoint {
             }
 
 
-            @OnMessage(maxMessageSize = 15000000)
+            @OnMessage(maxMessageSize = 16000000)
             public void onMessage(ByteBuffer buffer) {
                 byte[] answer_data = new byte[buffer.remaining()];
                 buffer.get(answer_data);
                 try {
                     if(pos == 0) {
-                        FileUtils.writeByteArrayToFile(new File(MainActivity.getFilesFolder() + "/" + "vot_answer.data"), answer_data);
+                        FileUtils.writeByteArrayToFile(new File(filesFolderPath + "/" + "vot_answer.data"), answer_data);
                         pos += 1;
                     }
                     else if(pos == 1) {
-                        FileUtils.writeByteArrayToFile(new File(MainActivity.getFilesFolder() + "/" + "H_NULL.data"), answer_data);
+                        FileUtils.writeByteArrayToFile(new File(filesFolderPath + "/" + "H_NULL.data"), answer_data);
                     } else {
-                        FileUtils.writeByteArrayToFile(new File(MainActivity.getFilesFolder()+"/"+"Answer.data"), answer_data);
+                        FileUtils.writeByteArrayToFile(new File(filesFolderPath+"/"+"Answer.data"), answer_data);
                     }
 
                 } catch (IOException e) {
@@ -104,12 +105,11 @@ public class ClientEndpoint {
         byte[] bytes = FileUtils.readFileToByteArray(file);
         int from, to;
         from = 0;
-
-        to = 8192;
+        to = 16000000;
         while (bytes.length > to){
             webSocketClient.send(Arrays.copyOfRange(bytes, from, to));
             from = to;
-            to += 8192;
+            to += 16000000;
         }
         webSocketClient.send(Arrays.copyOfRange(bytes, from, bytes.length));
         webSocketClient.send(name);
