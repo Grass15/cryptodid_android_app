@@ -1,5 +1,6 @@
 package com.loginid.cryptodid.claimVerifier;
 
+import static java.security.AccessController.checkPermission;
 import static java.security.AccessController.getContext;
 import android.util.Base64;
 import android.app.ProgressDialog;
@@ -57,6 +58,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -67,11 +69,15 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 public class Verifier {
     private int verifierPort;
+/*<<<<<<< HEAD*/
     private String verifierUrl = "192.168.0.100:8080";
+
+
+/*>>>>>>> 96fa5574ec3e0a092c2cd07ab93b77a8a0581011*/
     //private String verifierUrl = "";
     private ClientEndpoint finalResponseEndpoint = new ClientEndpoint();
 
-    private Gson gson = new Gson();
+    private static Gson gson = new Gson();
 
     private Context context;
     private Fragment callerFragment;
@@ -158,12 +164,13 @@ public class Verifier {
             Claim ageClaim;
 
             try {
-                balanceClaim = MainActivity.driver.getClaimsFromACertainType("Credit Score").get(0);
+                balanceClaim = MainActivity.driver.getClaimsFromACertainType("Balance").get(0);
                 creditScoreClaim = MainActivity.driver.getClaimsFromACertainType("Credit Score").get(0);
-                ageClaim = MainActivity.driver.getClaimsFromACertainType("Credit Score").get(0);
+                ageClaim = MainActivity.driver.getClaimsFromACertainType("Age").get(0);
                 ProverThread balanceProverThread = new ProverThread(verifierUrl, balanceClaim, balanceClaim.getFhe(), "balance", signClaim(balanceClaim, privateKey),certificateBytes);
                 ProverThread ageProverThread = new ProverThread(verifierUrl, ageClaim, ageClaim.getFhe(), "age",signClaim(ageClaim, privateKey),certificateBytes);
                 ProverThread creditScoreProverThread = new ProverThread(verifierUrl, creditScoreClaim, creditScoreClaim.getFhe(), "creditScore",signClaim(creditScoreClaim, privateKey),certificateBytes);
+
                 Thread balanceVerification = new Thread(balanceProverThread);
                 Thread ageVerification = new Thread(ageProverThread);
                 Thread creditScoreVerification = new Thread(creditScoreProverThread);
@@ -226,12 +233,9 @@ public class Verifier {
         byte[] claimBytes = baos.toByteArray();
         Signature signature = Signature.getInstance("SHA256withRSA");
         signature.initSign(privateKey);
-
         signature.update(claimBytes);
         byte[] signatureBytes = signature.sign();
-        String encodedSignature = Base64.encodeToString(signatureBytes,Base64.DEFAULT);
-        System.out.println("signature : "+encodedSignature);
-
+        System.out.println("signature of : "+ claim.getType()+ " is : " + Arrays.toString(signatureBytes));
         return signatureBytes;
     }
 
