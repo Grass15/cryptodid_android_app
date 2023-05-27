@@ -1,21 +1,37 @@
 plugins {
+
     id 'com.android.application'
-    id 'androidx.navigation.safeargs'
-    id  'kotlin-android'
+    id 'org.jetbrains.kotlin.android'
+    id 'dagger.hilt.android.plugin'
+    id 'kotlin-kapt'
+//  id 'kotlinx-serialization'
+    id 'org.jetbrains.kotlin.plugin.serialization'
+    id 'org.jetbrains.dokka'
 }
 
 android {
+
+
     namespace 'com.loginid.cryptodid'
+
     compileSdk 33
 
     defaultConfig {
+
         applicationId "com.loginid.cryptodid"
-        minSdk 24
+        minSdk 25
         targetSdk 33
         versionCode 1
         versionName "1.0"
-
+        ndk{
+            moduleName "tfhe"
+        }
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        vectorDrawables {
+            useSupportLibrary true
+        }
+
     }
 
     buildTypes {
@@ -24,65 +40,178 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    buildFeatures {
+        compose true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion '1.1.1'
+    }
+    externalNativeBuild {
+        cmake {
+            path file('src/main/cpp/CMakeLists.txt')
+            version '3.22.1'
+        }
+
+        buildFeatures {
+            viewBinding true
+        }
+    }
+
+    ndkVersion '23.1.7779620'
+
+    packagingOptions {
+
+        resources {
+            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+            excludes += 'resources.arsc'
+            excludes += 'AndroidManifest.xml'
+        }
+    }
+
 }
 
 dependencies {
-    def nav_version = "2.5.3"
-    def lifecycle_version = "2.5.1"
-    def core_version = "1.6.0"
-    implementation "org.java-websocket:Java-WebSocket:1.5.1"
-    implementation 'org.apache.tomcat.embed:tomcat-embed-websocket:8.0.28'
-    implementation "org.slf4j:slf4j-api:2.0.6"
-    implementation "org.slf4j:slf4j-simple:2.0.6"
 
+    implementation 'androidx.core:core-ktx:1.9.0'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.5.1'
+    implementation 'androidx.activity:activity-compose:1.6.1'
+    implementation "androidx.compose.ui:ui:$compose_ui_version"
+    implementation "androidx.compose.ui:ui-tooling-preview:$compose_ui_version"
+    implementation 'androidx.compose.material:material:1.3.1'
 
+    // Retrofit2
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
 
-    implementation "androidx.core:core:$core_version"
-
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation "androidx.biometric:biometric:1.1.0"
-    implementation 'com.google.android.material:material:1.8.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'androidx.navigation:navigation-fragment:2.5.3'
-
-    implementation 'com.google.android.material:material:1.8.0'
-    implementation 'com.journeyapps:zxing-android-embedded:4.3.0'
-    implementation "androidx.recyclerview:recyclerview:1.2.1"
-    // For control over item selection of both touch and mouse driven selection
-    implementation "androidx.recyclerview:recyclerview-selection:1.1.0"
+    // Coil
+    implementation("io.coil-kt:coil-compose:1.4.0")
 
     // ViewModel
-    implementation "androidx.lifecycle:lifecycle-viewmodel:$lifecycle_version"
-    // LiveData
-    implementation "androidx.lifecycle:lifecycle-livedata:$lifecycle_version"
-    // Lifecycles only (without ViewModel or LiveData)
-    implementation "androidx.lifecycle:lifecycle-runtime:$lifecycle_version"
-    // Saved state module for ViewModel
-    implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycle_version"
-    // Annotation processor
-    annotationProcessor "androidx.lifecycle:lifecycle-compiler:$lifecycle_version"
-    implementation "androidx.navigation:navigation-fragment:$nav_version"
-    implementation "androidx.navigation:navigation-ui:$nav_version"
-    implementation "androidx.navigation:navigation-dynamic-features-fragment:$nav_version"
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
+    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1"
+
+
+    // Dagger Hilt
+    implementation "com.google.dagger:hilt-android:2.43.2"
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.4.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    kapt "com.google.dagger:hilt-android-compiler:2.43.2"
+    //implementation "androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03"
+    kapt "androidx.hilt:hilt-compiler:1.0.0"
+    implementation 'androidx.hilt:hilt-navigation-compose:1.0.0-alpha03'
+
+
+    // Test
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.4'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
+    androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_ui_version"
+    debugImplementation "androidx.compose.ui:ui-tooling:$compose_ui_version"
+    debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_ui_version"
+    implementation "androidx.compose.material:material-icons-extended:$compose_ui_version"
+
+    //Navigation
+    def nav_version = "2.5.3"
+
+    // Kotlin
+    implementation("androidx.navigation:navigation-fragment-ktx:$nav_version")
+    implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
+
+    // Feature module Support
+    implementation("androidx.navigation:navigation-dynamic-features-fragment:$nav_version")
+
     // Testing Navigation
-    androidTestImplementation "androidx.navigation:navigation-testing:$nav_version"
+    androidTestImplementation("androidx.navigation:navigation-testing:$nav_version")
+
     // Jetpack Compose Integration
-    implementation "androidx.navigation:navigation-compose:$nav_version"
-    implementation "androidx.core:core-ktx:1.7.0"
+    implementation("androidx.navigation:navigation-compose:$nav_version")
+
+    // Compose dependencies
+    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha07"
+    implementation "androidx.navigation:navigation-compose:2.4.0-alpha08"
+    implementation "com.google.accompanist:accompanist-flowlayout:0.17.0"
+
+    // Room
+    implementation "androidx.room:room-runtime:2.3.0"
+    kapt "androidx.room:room-compiler:2.3.0"
+    implementation "androidx.room:room-ktx:2.3.0"
+
+    //Seialization
+    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0'
+    // implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0'
+
+
+    // Splash API
+    implementation 'androidx.core:core-splashscreen:1.0.0-beta01'
+
+    // Pager and Indicators - Accompanist
+    implementation "com.google.accompanist:accompanist-pager:$accompanist_version"
+    implementation "com.google.accompanist:accompanist-pager-indicators:$accompanist_version"
+
+    // DataStore Preferences
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+
+    //Swiper
+    // implementation "me.saket.swipe:swipe:1.1.1"
+
+    //microblink
+    implementation("com.microblink:blinkid:5.19.0@aar") {
+        transitive = true
+    }
+
+    // CameraX
+    implementation "androidx.camera:camera-camera2:1.0.2"
+    implementation "androidx.camera:camera-lifecycle:1.0.2"
+    implementation "androidx.camera:camera-view:1.0.0-alpha31"
+
+    // Zxing
+    implementation 'com.google.zxing:core:3.3.3'
+
+    //bar code scanner
+    implementation 'com.google.android.gms:play-services-code-scanner:16.0.0-beta3'
+
+    //permission requester
+    implementation "com.google.accompanist:accompanist-permissions:0.21.1-beta"
+
+    //biometrics
+    // implementation "androidx.biometric:biometric:1.1.0"
+    implementation("androidx.biometric:biometric:1.2.0-alpha05")
+
+    //MicroBlink
+    implementation('com.microblink:blinkid:6.1.2@aar') {
+        transitive = true
+    }
+
+
+    //Plaid
     implementation "io.reactivex.rxjava3:rxandroid:3.0.0"
     implementation 'com.squareup.retrofit2:adapter-rxjava3:2.9.0'
     implementation "com.squareup.retrofit2:retrofit:2.9.0"
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
     implementation 'com.google.code.gson:gson:2.9.0'
     implementation "com.plaid.link:sdk-core:3.10.1"
-    implementation("com.microblink:blinkid:5.19.0@aar") {
-        transitive = true
-    }
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+
+    //Websockets
+    implementation "org.java-websocket:Java-WebSocket:1.5.1"
+    implementation 'org.apache.tomcat.embed:tomcat-embed-websocket:8.0.28'
+    implementation "org.slf4j:slf4j-api:2.0.6"
+    implementation "org.slf4j:slf4j-simple:2.0.6"
+
+    //Filess
+    implementation 'commons-io:commons-io:2.7'
+
+    //Browsing
+    implementation 'androidx.webkit:webkit:1.6.0-alpha01'
+
 }

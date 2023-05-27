@@ -1,169 +1,233 @@
 package com.loginid.cryptodid.claimVerifier;
 
-import android.app.ProgressDialog;
-import android.content.DialogInterface;
-
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.Fragment;
-
-import com.journeyapps.barcodescanner.ScanContract;
-import com.journeyapps.barcodescanner.ScanOptions;
-import com.loginid.cryptodid.DbDriver;
-import com.loginid.cryptodid.MainActivity;
-import com.loginid.cryptodid.R;
+import com.google.gson.Gson;
 import com.loginid.cryptodid.model.Claim;
-import com.loginid.cryptodid.model.User;
-import com.loginid.cryptodid.protocols.Issuer;
-import com.loginid.cryptodid.protocols.MG_FHE;
-import com.loginid.cryptodid.protocols.ProverThread;
-import com.loginid.cryptodid.scanner.QrDecoder;
-import com.loginid.cryptodid.scanner.Scanner;
-import android.view.View;
-import android.widget.ProgressBar;
+import com.loginid.cryptodid.presentation.MainActivity;
+import com.loginid.cryptodid.utils.Status;
 
-
-
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.net.Socket;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
-import com.google.gson.Gson;
-
+import java.util.concurrent.CountDownLatch;
 
 public class Verifier {
-    private int verifierPort;
-    //private String verifierUrl = "192.168.11.102:8080";
-    private String verifierUrl = "";
+
+    private ClientEndpoint getcppUrlEndpoint = new ClientEndpoint();
+    private String cppVerifierUrl = "";
+    private String javaVerifierUrl = "";
+    private String url = "";
+    private Claim vc;
     private ClientEndpoint finalResponseEndpoint = new ClientEndpoint();
-
     private Gson gson = new Gson();
+    public List<Claim> vcs = new ArrayList<Claim>();
+    public List<String> userPres = new ArrayList<>();
 
-    private Fragment callerFragment;
-    MG_FHE fhe = new MG_FHE(11,512);
-    private Scanner scanner;
+    public Verifier(){
 
-    private ActivityResultLauncher<ScanOptions> barLauncher;
-
-    public Verifier(Fragment callerFragment){
-        this.callerFragment = callerFragment;
-        this.scanner = new Scanner(callerFragment);
-        this.barLauncher = callerFragment.registerForActivityResult(new ScanContract(), result -> {
-            if (result != null && result.getContents() != null) {
-                this.verifierUrl = result.getContents();
-                AlertDialog.Builder builder = new AlertDialog.Builder(this.callerFragment.getView().getContext());
-                builder.setTitle("Authorisation Required");
-                builder.setMessage("Do you agree to share these information:\nFirstname, Lastname, Address, phone, email?");
-                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
-                    }
-                });
-                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
-                        try {
-                            verify();
-                        } catch (InterruptedException | ParseException | IOException |
-                                 ClassNotFoundException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                }).show();
-            }
-        });
     }
-    public void verifyClaim() throws InterruptedException, ParseException, IOException, ClassNotFoundException {
-        Thread scan = new Thread() {
-            public void run() {
-                scanner.scanCode();
-            }
-        };
-        scan.start();
-        scan.join();
-        this.barLauncher.launch(scanner.options);
+    public Verifier(String url) {
+        this.url = url;
     }
 
+    public Verifier(String url, List<Claim> vcs) {
+        this.url = url;
+        this.vcs = vcs;
+    }
 
-    public void verify() throws InterruptedException, ParseException, IOException, ClassNotFoundException {
-        if (!Objects.equals(verifierUrl, "")) {
-            finalResponseEndpoint.createWebSocketClient("ws://" + verifierUrl + "/finalResponse");
-            Claim balanceClaim;
-            Claim creditScoreClaim;
-            Claim ageClaim;
-            try {
-                balanceClaim = MainActivity.driver.getClaimsFromACertainType("Balance").get(0);
-                creditScoreClaim = MainActivity.driver.getClaimsFromACertainType("Credit Score").get(0);
-                ageClaim = MainActivity.driver.getClaimsFromACertainType("Age").get(0);
-                ProverThread balanceProverThread = new ProverThread(verifierUrl, balanceClaim, balanceClaim.getFhe(), "balance");
-                ProverThread ageProverThread = new ProverThread(verifierUrl, ageClaim, ageClaim.getFhe(), "age");
-                ProverThread creditScoreProverThread = new ProverThread(verifierUrl, creditScoreClaim, creditScoreClaim.getFhe(), "creditScore");
-                Thread balanceVerification = new Thread(balanceProverThread);
-                Thread ageVerification = new Thread(ageProverThread);
-                Thread creditScoreVerification = new Thread(creditScoreProverThread);
-                balanceVerification.start();
-                ageVerification.start();
-                creditScoreVerification.start();
-                balanceVerification.join();
-                ageVerification.join();
-                creditScoreVerification.join();
-                AlertDialog.Builder builder = new AlertDialog.Builder(this.callerFragment.getView().getContext());
-                builder.setTitle("Verification Status");
-                try {
-//                    builder.setMessage("Something went wrong");
-                    builder.setMessage(balanceProverThread.getVerifierStatus() + "\nBalance: " + balanceProverThread.getVerifierResponse()[1] + "\n\nCredit Score: " + creditScoreProverThread.getVerifierResponse()[1] + "\n\nAge: " + ageProverThread.getVerifierResponse()[1]);
-                    User user = MainActivity.driver.getUser();
-                    String[] finalResponse = new String[]{user.firstname, user.lastname, user.address, user.username, user.phone, "Maroc", ageProverThread.getVerifierResponse()[2], balanceProverThread.getVerifierResponse()[2], creditScoreProverThread.getVerifierResponse()[2]};
-                    finalResponseEndpoint.response = gson.toJson(finalResponse);
-                    finalResponseEndpoint.webSocketClient.connect();
-                    finalResponseEndpoint.webSocketClient.close();
-                } catch (Exception e) {
-                    builder.setMessage("Something went wrong");
-                }
-                //builder.setMessage(balanceProverThread.getVerifierStatus()+"\n"+balanceProverThread.getVerifierResponse()[1]);
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
-                    }
-                }).show();
+    public Verifier(String url, Claim vc) {
+        this.url = url;
+        this.vc = vc;
+    }
+    public void setUrl(String url) {
+        this.url = url;
+    }
 
-            } catch (Exception e) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(this.callerFragment.getView().getContext());
-                builder.setTitle("Missing verifiable credential");
-                builder.setMessage("At least One verifiable credential are missing");
-                builder.setPositiveButton("Close", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
-                    }
-                }).show();
-            }
-        }else{
-            AlertDialog.Builder builder = new AlertDialog.Builder(this.callerFragment.getView().getContext());
-            builder.setTitle("Error");
-            builder.setMessage("Please Ensure you scanned the good QR ");
-            builder.setPositiveButton("Close", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    dialogInterface.dismiss();
-                }
-            }).show();
+    public void setVc(Claim vc) {
+        this.vc = vc;
+    }
+
+    public void AppendVC(Claim vc){
+        this.vcs.add(vc);
+    }
+
+    public void AppendVCs(List<Claim> vcs){
+        if(vcs != null)
+           this.vcs.addAll(vcs);
+    }
+    public void AddUserPresentation(List<String> data){
+        if(data != null){
+            this.userPres.addAll(data);
         }
     }
 
+    public native int Decrypt(String ClaimPath, String SK_Path);
+
+    public int verify(String attribute) throws InterruptedException, ParseException, IOException, ClassNotFoundException {
+        String path = String.valueOf(MainActivity.getFilesFolder());
+
+        int response;
+        ClientEndpoint proofEndpoint = new ClientEndpoint();
+        proofEndpoint.createWebSocketClient("ws://" + cppVerifierUrl);
+        proofEndpoint.webSocketClient.connect();
+        proofEndpoint.latch.await();
+        proofEndpoint.latch = new CountDownLatch(1);
+        proofEndpoint.webSocketClient.send(attribute);
+        proofEndpoint.sendFile(path+"/"+attribute+"Cloud.key", attribute+ "Cloud.key");
+        proofEndpoint.sendFile(path+"/"+attribute+"Cloud.data", attribute+ "Cloud.data");
+        proofEndpoint.sendFile(path+"/"+attribute+"PK.key", attribute+ "PK.key");
+        proofEndpoint.latch.await();
+        System.out.println("signal");
+        if (Objects.equals(attribute, "sin")){
+            response = decryptAccessControlResult(path+"/Answer.data", path+"/"+attribute+"Keyset.key");
+        }else{
+            response = Decrypt(path+"/Answer.data", path+"/"+attribute+"Keyset.key");
+        }
+        proofEndpoint.webSocketClient.close();
+        System.out.println(attribute + ": " + response);
+        return response;
+    }
+    public String getResultText(boolean status){
+        if(status){
+            return "Verification positive for this attribute";
+        }else{
+            return "Verification negative for this attribute";
+        }
+    }
+
+    public VerificationStatus verifyVCsRentalHouse()  throws InterruptedException, ParseException, IOException, ClassNotFoundException{
+      //  return CompletableFuture.runAsync(() -> {
+            //if (!vcs.isEmpty()) {
+
+                if (!Objects.equals(this.url, "")) {
+                    try{
+                    finalResponseEndpoint.createWebSocketClient("ws://" + this.url + "/finalResponse");
+                    getcppUrlEndpoint.createWebSocketClient("ws://" + this.url + "/cppUrl");
+                    getcppUrlEndpoint.latch = new CountDownLatch(2);
+                    getcppUrlEndpoint.webSocketClient.connect();
+                    getcppUrlEndpoint.latch.await();
+                    cppVerifierUrl = String.valueOf(getcppUrlEndpoint.response);
+                    getcppUrlEndpoint.webSocketClient.close();
+                    int creditScoreStatus = verify("creditScore");
+                    int ageStatus = verify("age");
+                    int balanceStatus = verify("balance");
+                        /*
 
 
+                        CompletableFuture<Void> balanceVerification = CompletableFuture.runAsync(balanceProverThread);
+                        CompletableFuture<Void> ageVerification = CompletableFuture.runAsync(ageProverThread);
+                        CompletableFuture<Void> creditScoreVerification = CompletableFuture.runAsync(creditScoreProverThread);
+                        CompletableFuture.allOf(balanceVerification, ageVerification, creditScoreVerification).join();
 
+*/
+                        try {
+                            String[] tempData = {"","",""};
+                            if(userPres.isEmpty()){
+                                tempData[0] = "FabienK@team.loginid";
+                                tempData[1] = "fabien";
+                                tempData[2] = "korgo";
+                            }else{
+                                int i = 0;
+                                for(String d : this.userPres){
+                                    tempData[i] = d;
+                                    i++;
+                                }
+                            }
+//
+                            String[] finalResponse = new String[]{tempData[1], tempData[2], "Rabat", tempData[0], "+212666068102", "Maroc", String.valueOf(ageStatus != 0), String.valueOf(balanceStatus != 0), String.valueOf(creditScoreStatus != 0)};
+                            finalResponseEndpoint.webSocketClient.connect();
+                            finalResponseEndpoint.latch.await();
+                            finalResponseEndpoint.webSocketClient.send(gson.toJson(finalResponse));
+                            finalResponseEndpoint.webSocketClient.close();
+                            return new VerificationStatus("VERIFIED WITH SUCCESS", Status.SUCCESS);
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            return new VerificationStatus("OOOPS SOMETHING WENT WRONG WHILE VERIFICATION", Status.ERROR);
+                        }finally {
+                            finalResponseEndpoint.webSocketClient.close();
+
+                        }
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return new VerificationStatus("OOOPS SOMETHING WENT WRONG WHILE VERIFICATION", Status.ERROR);
+                    }
+                } else {
+                    return new VerificationStatus("PLEASE VERIFY THE QR CODE", Status.ERROR);
+                }
+//            }else{
+//                return new VerificationStatus("AT LEAST ONE VC", Status.ERROR);
+//            }
+      //  });
+    }
+
+    public native int decryptAccessControlResult(String ClaimPath, String SK_Path);
+    public VerificationStatus accessControl()  throws InterruptedException, ParseException, IOException, ClassNotFoundException{
+        if (!Objects.equals(this.url, "")) {
+            try{
+                getcppUrlEndpoint.createWebSocketClient("ws://" + this.url + "/cppUrl");
+                getcppUrlEndpoint.latch = new CountDownLatch(2);
+                getcppUrlEndpoint.webSocketClient.connect();
+                getcppUrlEndpoint.latch.await();
+                cppVerifierUrl = String.valueOf(getcppUrlEndpoint.response);
+                getcppUrlEndpoint.webSocketClient.close();
+                int sinStatus = verify("sin");
+                finalResponseEndpoint.createWebSocketClient("ws://" + this.url + "/response");
+                finalResponseEndpoint.webSocketClient.connect();
+                finalResponseEndpoint.latch.await();
+                finalResponseEndpoint.latch = new CountDownLatch(1);
+                finalResponseEndpoint.webSocketClient.send(gson.toJson(sinStatus));
+                finalResponseEndpoint.latch.await();
+                String[] finalResponse = gson.fromJson(finalResponseEndpoint.response, String[].class);
+                finalResponseEndpoint.webSocketClient.close();
+                return new VerificationStatus(finalResponse[0] + " " + finalResponse[1], Status.SUCCESS);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return new VerificationStatus("OOOPS SOMETHING WENT WRONG WHILE VERIFICATION", Status.ERROR);
+            }
+        } else {
+            return new VerificationStatus("PLEASE VERIFY THE QR CODE", Status.ERROR);
+        }
+    }
+
+    public native int decryptVotingResult(String ClaimPath, String SK_Path, int nbit);
+    public VerificationStatus verifyVoting() throws InterruptedException, ParseException, IOException, ClassNotFoundException{
+        String path = String.valueOf(MainActivity.getFilesFolder());
+        int x1=1;
+        int y1=1;
+        int z1=1;
+
+        ClientEndpoint proofEndpoint = new ClientEndpoint();
+        proofEndpoint.createWebSocketClient("ws://" + this.url);
+        //proofEndpoint.latch.await();
+        proofEndpoint.webSocketClient.connect();
+        proofEndpoint.latch.await();
+        proofEndpoint.latch = new CountDownLatch(1);
+        proofEndpoint.pos = 0;
+        proofEndpoint.webSocketClient.send("VOTING");
+        proofEndpoint.sendFile(path + "/CK.key", "CK.key");
+        proofEndpoint.sendFile(path + "/CD.data", "CD.data");
+        proofEndpoint.sendFile(path + "/PK.key", "PK.key");
+        int A = (x1*x1*x1) + (y1*y1*y1) + (z1*z1*z1);
+        proofEndpoint.webSocketClient.send(String.valueOf(A));
+        //proofEndpoint.webSocketClient.send("DONE");
+        proofEndpoint.latch.await();
+        int r = decryptVotingResult(path+"/vot_answer.data", path+"/SK.key",1);
+        int n = decryptVotingResult(path+"/H_NULL.data", path+"/SK.key",4);
+        System.out.println("r:"+r);
+        System.out.println("null:"+n);
+        proofEndpoint.webSocketClient.send(String.valueOf(r));
+        proofEndpoint.webSocketClient.send(String.valueOf(n));
+
+        proofEndpoint.webSocketClient.close();
+           return new VerificationStatus("Verified with success", Status.SUCCESS);
+    }
+
+
+    public String toString(){
+        return "" + this.url + " | " + this.vc.toString();
+    }
 }
+
