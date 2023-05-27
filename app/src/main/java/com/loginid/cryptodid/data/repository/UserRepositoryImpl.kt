@@ -79,7 +79,7 @@ class UserRepositoryImpl @Inject constructor(
         return  vcDao.getUserByUserName(username)
     }
 
-    override suspend fun getVCByTitle(userId: String, vcTitle: String): VCEntity {
+    override fun getVCByTitle(userId: String, vcTitle: String): Flow<List<VCEntity>> {
         return vcDao.getVCByTitle(userId,vcTitle)
     }
 

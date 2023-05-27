@@ -92,7 +92,7 @@ interface VCDao {
      * @param vcTitle the title of the VC to retrieve
      * @return a VCEntity object matching the specified title, or null if not found
      */
-    @Query("SELECT * FROM $VC_TABLE_NAME WHERE claimOwner = :userId AND vcTitle LIKE :vcTitle LIMIT 1")
-    suspend fun getVCByTitle(userId: String,vcTitle: String): VCEntity
+    @Query("SELECT * FROM $VC_TABLE_NAME WHERE claimOwner = :userId AND vcTitle LIKE :vcTitle || '%'")
+    fun getVCByTitle(userId: String,vcTitle: String): Flow<List<VCEntity>>
 
 }

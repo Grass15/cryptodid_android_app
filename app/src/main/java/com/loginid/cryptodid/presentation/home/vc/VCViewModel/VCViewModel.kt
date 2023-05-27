@@ -9,6 +9,7 @@ import com.loginid.cryptodid.data.repository.UserDataStoreRepository
 import com.loginid.cryptodid.domain.use_case.get_vc.GetVCUseCase
 import com.loginid.cryptodid.domain.use_case.remove_vc.RemoveVCUseCase
 import com.loginid.cryptodid.domain.use_case.save_vc.SaveVCUseCase
+import com.loginid.cryptodid.domain.use_case.search_vc.SearchByTitleUseCase
 import com.loginid.cryptodid.domain.use_case.search_vc.SearchByTypeUseCase
 import com.loginid.cryptodid.utils.Resource
 import com.loginid.cryptodid.utils.Status
@@ -29,7 +30,8 @@ class VCViewModel @Inject constructor(
     private val removeVCUseCase: RemoveVCUseCase,
     private val saveVCUseCase: SaveVCUseCase,
     private val userDataStoreRepository: UserDataStoreRepository,
-    private val searchByTypeUseCase: SearchByTypeUseCase
+    private val searchByTypeUseCase: SearchByTypeUseCase,
+    private val searchByTitleUseCase: SearchByTitleUseCase
 ): ViewModel() {
     private val _VCEnteryState = MutableStateFlow(VCEnteryState())
     private val _status = MutableStateFlow(Status.NO_ACTION)
@@ -185,6 +187,40 @@ class VCViewModel @Inject constructor(
             }
         }.launchIn(viewModelScope)
         }
+    fun searchByTitle(vcTitle: String){
+        searchByTitleUseCase(userId = _userDataPrefs.value!!.userId, vcTitle = vcTitle).onEach {result ->
+            when(result){
+                is Resource.Error -> {
+                    _status.value = Status.ERROR
+                }
+                is Resource.Loading -> {
+                    _status.value = Status.LOADING
+                }
+                is Resource.Success -> {
+                    _status.value = Status.SUCCESS
+
+                    val vcdataDisplayStates: List<VCDataDisplayState?>? = result.data?.let {
+                        it.map {
+                            it.vc?.let { it1 ->
+                                VCDataDisplayState(
+                                    experationDate = it1.expirationDate ?: null,
+                                    issuerName = it1.issuerName.toString(),
+                                    VCTypeText = it1.type.toString(),
+                                    VCTypeEnum = it.vcType,
+                                    VCTitle = it1.title.toString(),
+                                    VCContentOverview = it1.content.toString(),
+                                    VCID = it.id,
+                                    rawVC = it1
+                                )
+                            }
+
+                        }
+                    }
+                    _vcDataDisplayState.value = vcdataDisplayStates?: emptyList()
+                }
+            }
+        }.launchIn(viewModelScope)
+    }
 
 
     //MultipleDelete
@@ -200,7 +236,7 @@ class VCViewModel @Inject constructor(
 
     }
 
-    fun searchByTitle(vcTitle: String){
+    fun searchByTitle1(vcTitle: String){
 
         _searchQuery.value = vcTitle
         searchJob?.cancel()
