@@ -1,8 +1,9 @@
 package com.loginid.cryptodid.claimVerifier;
 
+
 import com.google.gson.Gson;
-import com.loginid.cryptodid.model.Claim;
 import com.loginid.cryptodid.presentation.MainActivity;
+import com.loginid.cryptodid.model.Claim;
 import com.loginid.cryptodid.utils.Status;
 
 import java.io.IOException;

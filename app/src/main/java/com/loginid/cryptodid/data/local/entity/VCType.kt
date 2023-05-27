@@ -9,4 +9,11 @@ enum class VCType {
     INSURANCE_NUMBER,
     DRIVER_LICENCE,
     PRIVILEGE,
+    SALARY,
+    PHONE_NUMBER,
+    ADDRESS,
+    PROVINCE,
+    COUNTRY,
+    EMAIL,
+    DATE_OF_BIRTH,
 }

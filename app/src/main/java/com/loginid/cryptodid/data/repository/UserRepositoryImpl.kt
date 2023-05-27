@@ -36,6 +36,14 @@ class UserRepositoryImpl @Inject constructor(
         return vcDao.insertVC(vc)
     }
 
+    override suspend fun getVCByType(type: VCType): VCEntity? {
+        return vcDao.getVCByType(type)
+    }
+
+    override suspend fun updateVC(vcEntity: VCEntity) {
+        return vcDao.updateVC(vcEntity)
+    }
+
     /**
      * Deleting a vc
      * @param vcID
