@@ -13,6 +13,10 @@ interface UserRepository {
 
     suspend fun insertVC(vc: VCEntity)
 
+    suspend fun getVCByType(type: VCType): VCEntity?
+
+    suspend fun updateVC(vcEntity: VCEntity)
+
     suspend fun deleteVCById(claimId: String)
 
     fun getUserWithVCs(userId: String): Flow<UserAndVC>
@@ -24,6 +28,6 @@ interface UserRepository {
 
     suspend fun getUserByUserName(username: String): UserEntity
 
-    suspend fun getVCByTitle(userId: String,vcTitle: String): VCEntity
+    fun getVCByTitle(userId: String,vcTitle: String): Flow<List<VCEntity>>
     fun getVCsByType(userId: String, vcType: VCType): Flow<List<VCEntity>>
 }

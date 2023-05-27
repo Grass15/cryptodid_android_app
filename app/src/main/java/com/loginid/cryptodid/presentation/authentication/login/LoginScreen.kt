@@ -1,6 +1,7 @@
 package com.loginid.cryptodid.presentation.authentication.login
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,6 +24,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
@@ -55,6 +57,7 @@ fun LoginScreen(
     viewModel: LoginScreenViewModelBase,
     currentState: LoginDataState
 ) {
+         val context = LocalContext.current
 
         //communicating with the viewModel
         // val currentState by viewModel.state.collectAsState()
@@ -235,7 +238,9 @@ fun LoginScreen(
 
         when (currentState.status) {
             Status.ERROR -> {
-                Log.d("Auth", "errror")
+                Log.d("Auth", "error")
+                Toast.makeText(context,"Oops something went wrong",Toast.LENGTH_SHORT).show()
+                viewModel.reSetStatus()
             }
             Status.SUCCESS -> {
                 Log.d("Auth", "Success")
@@ -244,7 +249,9 @@ fun LoginScreen(
                 navController.navigate(HomeScreen.MainHomeScreen.route)
             }
             Status.FAILLED -> {
-                Log.d("Auth", "Failled")
+                Log.d("Auth", "Failed")
+                Toast.makeText(context,"incorrect username or password",Toast.LENGTH_SHORT).show()
+                viewModel.reSetStatus()
             }
             Status.LOADING -> {
                 Log.d("Auth", "Loading")

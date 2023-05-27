@@ -3,6 +3,12 @@ package com.loginid.cryptodid.protocols;
 import com.loginid.cryptodid.model.Claim;
 
 import java.io.Serializable;
+import java.math.BigInteger;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Calendar;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;

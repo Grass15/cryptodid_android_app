@@ -1,5 +1,7 @@
 package com.loginid.cryptodid.claimVerifier;
 
+
+
 import com.google.gson.Gson;
 import com.loginid.cryptodid.presentation.MainActivity;
 
@@ -17,7 +19,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-
 import javax.websocket.OnMessage;
 
 

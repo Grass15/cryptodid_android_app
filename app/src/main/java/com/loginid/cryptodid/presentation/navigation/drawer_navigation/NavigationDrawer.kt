@@ -70,7 +70,7 @@ fun FullDrawer(vcViewModel: VCViewModel = hiltViewModel(),onItemClick: (Navigati
             ){
                 Icon(imageVector = Icons.Filled.Sync, contentDescription = "Synchronize account")
                 Spacer(modifier = Modifier.width(16.dp))
-                Text(text = "Sync you account",modifier = Modifier.weight(1f), style = TextStyle(fontSize = 18.sp))
+                Text(text = "Sync your account",modifier = Modifier.weight(1f), style = TextStyle(fontSize = 18.sp))
                 /*
                 LinearProgressIndicator(
                 progress = 0.5f, // Set the progress to 50%
