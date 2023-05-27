@@ -1,6 +1,7 @@
 package com.loginid.cryptodid.presentation.authentication.register
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -22,6 +23,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -54,6 +56,7 @@ fun RegisterScreen(
     currentState: RegisterDataState
 ) {
 
+    val context = LocalContext.current
     //communicating with the viewModel
     // val currentState by viewModel.state.collectAsState()
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -357,6 +360,8 @@ fun RegisterScreen(
         Status.ERROR -> {
             Log.d("Auth", "errror")
             Log.d("Auth", currentState.userId + " | " + currentState.repassword)
+            Toast.makeText(context,"Oops something went wrong", Toast.LENGTH_SHORT).show()
+            viewModel.resetStatus()
         }
         Status.SUCCESS -> {
             Log.d("Auth", "Success")
@@ -365,6 +370,8 @@ fun RegisterScreen(
         }
         Status.FAILLED -> {
             Log.d("Auth", "Failled")
+            Toast.makeText(context,"Error while trying to save",Toast.LENGTH_SHORT).show()
+            viewModel.resetStatus()
         }
         Status.LOADING -> {
             Log.d("Auth", "Loading")

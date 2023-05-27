@@ -43,7 +43,7 @@ class FaceIDAuthenticator constructor(val context: Context,val onBiometricFaille
                 arrayOf(Manifest.permission.USE_BIOMETRIC),
                 1
             )
-            Log.d("FaceAuthenticator", "Fingerprint authentication permission not enabled")
+            Log.d("FaceAuthenticator", "FaceID authentication permission not enabled")
             onBiometricFailled(BiometricsSupportState(
                 false,
                 "Fingerprint authentication permission not enabled"
@@ -73,7 +73,7 @@ class FaceIDAuthenticator constructor(val context: Context,val onBiometricFaille
         val biometricPrompt = BiometricPrompt
             .Builder(context)
             .setTitle("Allow Face Authentication")
-            .setSubtitle("You will no longer need username and password during login")
+            .setSubtitle("In order to verify/pull a vc you should verify your identity")
             .setDescription("We use face authentication to protect your data")
             .setNegativeButton("Not Now", activity.mainExecutor) { _, _ ->
                 Log.d("FaceAuthenticator", "Authentication cancelled")

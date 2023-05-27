@@ -13,6 +13,9 @@ interface UserRepository {
 
     suspend fun insertVC(vc: VCEntity)
 
+    suspend fun getVCByType(type: VCType): VCEntity?
+
+    suspend fun updateVC(vcEntity: VCEntity)
     suspend fun deleteVCById(claimId: String)
 
     fun getUserWithVCs(userId: String): Flow<UserAndVC>

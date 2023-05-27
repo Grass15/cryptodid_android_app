@@ -2,6 +2,7 @@ package com.loginid.cryptodid.domain.use_case.save_vc
 
 import android.database.sqlite.SQLiteException
 import androidx.compose.animation.ExperimentalAnimationApi
+import com.google.accompanist.pager.ExperimentalPagerApi
 import com.loginid.cryptodid.data.local.entity.VCEntity
 import com.loginid.cryptodid.data.local.entity.VCType
 import com.loginid.cryptodid.domain.repository.UserRepository
@@ -21,8 +22,18 @@ class SaveVCUseCase @Inject constructor(
     operator fun invoke(vcID: String,vcContent: VCEnteryState,ownerID: String,vcType: VCType,vcTitle: String): Flow<Resource<Boolean>> = flow {
         try {
             emit(Resource.Loading<Boolean>())
+            var id = vcID
             val VC = prepareVC(vcContent = vcContent)
-            repository.insertVC(VCEntity(id = vcID,vc = VC, claimOwner = ownerID,vcType = vcType,vcTitle = vcTitle))
+            //Checking if a vc with the same vcType already exist in our database
+            val existingVC = repository.getVCByType(vcType)
+            if (existingVC != null) {
+                // Update the existing VC entity
+                id = existingVC.id // Preserve the existing primary key
+                repository.updateVC(VCEntity(id = id,vc = VC, claimOwner = ownerID,vcType = vcType,vcTitle = vcTitle))
+            } else {
+                // Insert the new VC entity
+                repository.insertVC(VCEntity(id = id,vc = VC, claimOwner = ownerID,vcType = vcType,vcTitle = vcTitle))
+            }
             emit(Resource.Success<Boolean>(true))
 
         }catch (e: SQLiteException){
@@ -31,6 +42,7 @@ class SaveVCUseCase @Inject constructor(
     }
     external fun TFHE(n1: Int, filepath: String?, attribute: String?): Int
 
+    @OptIn(ExperimentalAnimationApi::class, ExperimentalPagerApi::class)
     private fun prepareVC(vcContent: VCEnteryState): Claim {
         val issuer: Issuer =
             Issuer()

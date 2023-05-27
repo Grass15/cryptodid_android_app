@@ -75,6 +75,7 @@ Scaffold(
                                 val regex = "\\d+".toRegex()
                                 val name = if(uri.getQueryParameter("Name").toString().startsWith(socialInss)) "SIN" else uri.getQueryParameter("Name")
                                 val value = regex.find(uri.getQueryParameter("Value").toString())
+                                val vctype = uri.getQueryParameter("Type").toString()?:"DEFAULT"
                                 val issuer = uri.getQueryParameter("IssuerName")
                                 value?.value?.toIntOrNull().let {
                                     it!!.let { it1->
@@ -88,6 +89,7 @@ Scaffold(
                                             temp = "creditScore"
                                         }
                                         println(temp)
+                                        Log.d("VCType",vctype)
                                         vcViewModel.saveVC(
                                             VCEnteryState(
                                                 experationDate = Date(),
@@ -95,7 +97,7 @@ Scaffold(
                                                 VCTypeText = temp,
                                                 VCTitle = name.toString().trim(),
                                                 VCContentOverview = "none",
-                                                VCTypeEnum = VCType.BANK,
+                                                VCTypeEnum = VCType.valueOf(vctype),
                                                 VCAttribute = it1
                                             )
                                         )

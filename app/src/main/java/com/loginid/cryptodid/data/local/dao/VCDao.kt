@@ -31,6 +31,11 @@ interface VCDao {
      */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertVC(vc: VCEntity)
+    @Query("SELECT * FROM $VC_TABLE_NAME WHERE vcType = :type")
+    suspend fun getVCByType(type: VCType): VCEntity?
+
+    @Update
+    suspend fun updateVC(vcEntity: VCEntity)
 
     /**
      * deleting a VC can be done in 2 ways :

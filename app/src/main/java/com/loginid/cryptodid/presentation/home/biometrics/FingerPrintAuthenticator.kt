@@ -33,7 +33,7 @@ class FingerPrintAuthenticator(val context: Context, val onBiometricFailled : (B
                 BiometricPrompt
                     .Builder(context)
                     .setTitle("Allow Biometric Authentication")
-                    .setSubtitle("You will no longer need username and password during login")
+                    .setSubtitle("In order to verify/pull a vc you should verify your identity")
                     .setDescription("We use biometric authentication to protect your data")
                     .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG)
                     .setNegativeButton("Not Now", activity.mainExecutor) { _, _ ->
@@ -44,7 +44,7 @@ class FingerPrintAuthenticator(val context: Context, val onBiometricFailled : (B
                 BiometricPrompt
                     .Builder(context)
                     .setTitle("Allow Biometric Authentication")
-                    .setSubtitle("You will no longer need username and password during login")
+                    .setSubtitle("In order to verify/pull a vc you should verify your identity")
                     .setDescription("We use biometric authentication to protect your data")
                     .setNegativeButton("Not Now", activity.mainExecutor) { _, _ ->
                         notifyUser("Authentication cancelled")
