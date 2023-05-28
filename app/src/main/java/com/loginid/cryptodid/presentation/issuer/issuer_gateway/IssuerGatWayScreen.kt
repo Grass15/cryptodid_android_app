@@ -42,7 +42,7 @@ fun issuerGateWay(
     val reachedDesiredPage = remember { mutableStateOf(false) }
 
     val url by remember {
-        mutableStateOf("https://mostafa-hmoura.github.io/issuer-gateway/")
+        mutableStateOf("https://issuer-gateway-production.up.railway.app/")
     }
 Scaffold(
     topBar = {
@@ -68,7 +68,7 @@ Scaffold(
                 webViewClient = object : WebViewClient() {
                     override fun onPageFinished(view: WebView?, url: String?) {
 
-                        if (url?.startsWith("https://mostafa-hmoura.github.io/issuer-gateway/final.html") == true) {
+                        if (url?.startsWith("https://issuer-gateway-production.up.railway.app/issuer-gateway/final") == true) {
                             try{
                                 val socialInss = "Social Insurance"
                                 val uri = Uri.parse(url)

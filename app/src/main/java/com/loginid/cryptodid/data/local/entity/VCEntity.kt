@@ -17,7 +17,8 @@ data class VCEntity(
     val vc: Claim? = null,
     val claimOwner: String,
     val vcType: VCType? = VCType.DEFAULT,
-    val vcTitle: String? = "RANDOM_VC"
+    val vcTitle: String? = "RANDOM_VC",
+    val version: Int = 0
 )
 
 class Claim_TypeConverter {
