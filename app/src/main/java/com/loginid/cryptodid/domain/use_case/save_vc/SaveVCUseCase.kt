@@ -23,13 +23,15 @@ class SaveVCUseCase @Inject constructor(
         try {
             emit(Resource.Loading<Boolean>())
             var id = vcID
+            var vcVersion = 0
             val VC = prepareVC(vcContent = vcContent)
             //Checking if a vc with the same vcType already exist in our database
             val existingVC = repository.getVCByType(vcType)
             if (existingVC != null) {
                 // Update the existing VC entity
                 id = existingVC.id // Preserve the existing primary key
-                repository.updateVC(VCEntity(id = id,vc = VC, claimOwner = ownerID,vcType = vcType,vcTitle = vcTitle))
+                vcVersion = existingVC.version + 1
+                repository.updateVC(VCEntity(id = id,vc = VC, claimOwner = ownerID,vcType = vcType,vcTitle = vcTitle, version = vcVersion))
             } else {
                 // Insert the new VC entity
                 repository.insertVC(VCEntity(id = id,vc = VC, claimOwner = ownerID,vcType = vcType,vcTitle = vcTitle))
