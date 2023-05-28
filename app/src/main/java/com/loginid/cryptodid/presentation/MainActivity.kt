@@ -1,6 +1,8 @@
 package com.loginid.cryptodid.presentation
 
 import android.Manifest
+import android.annotation.SuppressLint
+import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -50,6 +52,7 @@ class MainActivity : ComponentActivity() {
             PackageManager.PERMISSION_GRANTED
         )
         path = filesDir
+        context = this.baseContext
       installSplashScreen().setKeepOnScreenCondition{
           !splashViewModel.isLoading.value
       }
@@ -85,9 +88,15 @@ class MainActivity : ComponentActivity() {
             System.loadLibrary("tfhemain")
         }
         var path: File? = null
+
+        var context: Context? = null
         @JvmStatic
         fun  getFilesFolder(): File? {
             return MainActivity.path;
+        }
+        @JvmStatic
+        fun  getActivityContext(): Context? {
+            return MainActivity.context;
         }
     }
 }

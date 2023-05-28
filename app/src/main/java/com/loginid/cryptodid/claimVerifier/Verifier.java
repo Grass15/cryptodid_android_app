@@ -2,18 +2,26 @@ package com.loginid.cryptodid.claimVerifier;
 
 
 import com.google.gson.Gson;
+import com.loginid.cryptodid.R;
+import com.loginid.cryptodid.model.SignatureVerificationParameters;
 import com.loginid.cryptodid.presentation.MainActivity;
 import com.loginid.cryptodid.model.Claim;
 import com.loginid.cryptodid.utils.Status;
 
+import org.apache.commons.io.FileUtils;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
+import java.security.Security;
 import java.security.Signature;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
@@ -36,9 +44,27 @@ public class Verifier {
     public List<Claim> vcs = new ArrayList<Claim>();
     public List<String> userPres = new ArrayList<>();
     private final String filesFolderPath = String.valueOf(MainActivity.getFilesFolder());
+    X509Certificate x509certificate;
+    byte[] certificateBytes;
+    PrivateKey privateKey;
 
-    public Verifier(){
 
+    public Verifier(
+    ) throws KeyStoreException, CertificateException, IOException, NoSuchAlgorithmException, UnrecoverableKeyException {
+        Security.addProvider(new BouncyCastleProvider());
+        KeyStore keystore = KeyStore.getInstance("BKS");
+
+        InputStream inputStream = MainActivity.getActivityContext().getResources().openRawResource(R.raw.keystore);
+        keystore.load(inputStream, "loginid".toCharArray());
+        // Get the private key and certificate from the keystore
+        String alias = "myalias";
+        String keyPass = "loginid";
+        privateKey = (PrivateKey) keystore.getKey(alias, keyPass.toCharArray());
+        x509certificate = (X509Certificate) keystore.getCertificate(alias);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(baos);
+        oos.writeObject(x509certificate);
+        certificateBytes = baos.toByteArray();
     }
 //    public Verifier(String url) {
 //        this.url = url;
@@ -77,39 +103,46 @@ public class Verifier {
 
     public native int Decrypt(String ClaimPath, String SK_Path);
 
-    public int verify(String attribute) throws InterruptedException, ParseException, IOException, ClassNotFoundException {
+    public int verify(String attribute) throws Exception {
         int response;
         ClientEndpoint proofEndpoint = new ClientEndpoint();
-        proofEndpoint.createWebSocketClient("ws://" + cppVerifierUrl);
-        proofEndpoint.webSocketClient.connect();
-        proofEndpoint.latch.await();
-        proofEndpoint.latch = new CountDownLatch(1);
-        proofEndpoint.webSocketClient.send(attribute);
-        proofEndpoint.sendFile(filesFolderPath+"/"+attribute+"Cloud.key", attribute+ "Cloud.key");
-        proofEndpoint.sendFile(filesFolderPath+"/"+attribute+"Cloud.data", attribute+ "Cloud.data");
-        proofEndpoint.sendFile(filesFolderPath+"/"+attribute+"PK.key", attribute+ "PK.key");
-        proofEndpoint.latch.await();
-        System.out.println("signal");
-        if (Objects.equals(attribute, "sin")){
-            response = decryptAccessControlResult(filesFolderPath+"/Answer.data", filesFolderPath+"/"+attribute+"Keyset.key");
-        }else{
-            response = Decrypt(filesFolderPath+"/Answer.data", filesFolderPath+"/"+attribute+"Keyset.key");
-        }
-        proofEndpoint.webSocketClient.close();
-        System.out.println(attribute + ": " + response);
-        return response;
+        System.out.println("Status: "+verifySignature(filesFolderPath+"/"+attribute+"Cloud.data"));
+//        proofEndpoint.createWebSocketClient("ws://" + cppVerifierUrl);
+//        proofEndpoint.webSocketClient.connect();
+//        proofEndpoint.latch.await();
+//        proofEndpoint.latch = new CountDownLatch(1);
+//        proofEndpoint.webSocketClient.send(attribute);
+//        proofEndpoint.sendFile(filesFolderPath+"/"+attribute+"Cloud.key", attribute+ "Cloud.key");
+//        proofEndpoint.sendFile(filesFolderPath+"/"+attribute+"Cloud.data", attribute+ "Cloud.data");
+//        proofEndpoint.sendFile(filesFolderPath+"/"+attribute+"PK.key", attribute+ "PK.key");
+//        proofEndpoint.latch.await();
+//        System.out.println("signal");
+//        if (Objects.equals(attribute, "sin")){
+//            response = decryptAccessControlResult(filesFolderPath+"/Answer.data", filesFolderPath+"/"+attribute+"Keyset.key");
+//        }else{
+//            response = Decrypt(filesFolderPath+"/Answer.data", filesFolderPath+"/"+attribute+"Keyset.key");
+//        }
+//        proofEndpoint.webSocketClient.close();
+//        System.out.println(attribute + ": " + response);
+//        return response;
+        return 0;
     }
 
-    public String verifySignature(byte[] signatureBytes, X509Certificate x509Certificate, String vcEncryptionFileName) throws InterruptedException, ParseException, IOException, ClassNotFoundException {
-        String response;
+    public String verifySignature(String vcEncryptionFileName) throws Exception {
+        File vcEncryptedFile = new File(vcEncryptionFileName);
+        byte[] vcEncryptedData = FileUtils.readFileToByteArray(vcEncryptedFile);
+        SignatureVerificationParameters signatureVerificationParameters= new SignatureVerificationParameters(vcEncryptedData, signClaim(vcEncryptedData, privateKey), certificateBytes);
         ClientEndpoint signatureVerificationEndpoint = new ClientEndpoint();
-        signatureVerificationEndpoint.createWebSocketClient("ws://" + this.javaVerifierUrl);
-        signatureVerificationEndpoint.createWebSocketClient("ws://" + cppVerifierUrl);
+        signatureVerificationEndpoint.createWebSocketClient("ws://" + this.javaVerifierUrl + "/signature");
+        //signatureVerificationEndpoint.createWebSocketClient("ws://" + cppVerifierUrl);
         signatureVerificationEndpoint.webSocketClient.connect();
         signatureVerificationEndpoint.latch.await();
         signatureVerificationEndpoint.latch = new CountDownLatch(1);
-        signatureVerificationEndpoint.webSocketClient.send(vcEncryptionFileName);
-        signatureVerificationEndpoint.sendFile(filesFolderPath+"/"+vcEncryptionFileName, vcEncryptionFileName);
+        System.out.println(gson.toJson(signatureVerificationParameters));
+        signatureVerificationEndpoint.webSocketClient.send(gson.toJson(signatureVerificationParameters));
+        signatureVerificationEndpoint.latch.await();
+        signatureVerificationEndpoint.webSocketClient.close();
+        //signatureVerificationEndpoint.sendFile(filesFolderPath+"/"+vcEncryptionFileName, vcEncryptionFileName);
         return signatureVerificationEndpoint.response;
 
     }
@@ -126,24 +159,17 @@ public class Verifier {
             //if (!vcs.isEmpty()) {
 
                 if (!Objects.equals(this.javaVerifierUrl, "")) {
-                    KeyStore keystore = KeyStore.getInstance("JKS");
-                    keystore.load(new FileInputStream("keystore.jks"), "loginid_pass".toCharArray());
-
-                    String alias = "myalias";
-                    String keyPass = "loginid_pass";
-                    PrivateKey privateKey = (PrivateKey) keystore.getKey(alias, keyPass.toCharArray());
-                    X509Certificate x509certificate = (X509Certificate) keystore.getCertificate(alias);
 
                     try{
-                    finalResponseEndpoint.createWebSocketClient("ws://" + this.javaVerifierUrl + "/finalResponse");
-                    getcppUrlEndpoint.createWebSocketClient("ws://" + this.javaVerifierUrl + "/cppUrl");
-                    getcppUrlEndpoint.latch = new CountDownLatch(2);
-                    getcppUrlEndpoint.webSocketClient.connect();
-                    getcppUrlEndpoint.latch.await();
-                    cppVerifierUrl = String.valueOf(getcppUrlEndpoint.response);
-                    getcppUrlEndpoint.webSocketClient.close();
-                    int creditScoreStatus = verify("creditScore");
-                    int ageStatus = verify("age");
+//                    finalResponseEndpoint.createWebSocketClient("ws://" + this.javaVerifierUrl + "/finalResponse");
+//                    getcppUrlEndpoint.createWebSocketClient("ws://" + this.javaVerifierUrl + "/cppUrl");
+//                    getcppUrlEndpoint.latch = new CountDownLatch(2);
+//                    getcppUrlEndpoint.webSocketClient.connect();
+//                    getcppUrlEndpoint.latch.await();
+//                    cppVerifierUrl = String.valueOf(getcppUrlEndpoint.response);
+//                    getcppUrlEndpoint.webSocketClient.close();
+                    //int creditScoreStatus = verify("creditScore");
+                    //int ageStatus = verify("age");
                     int balanceStatus = verify("balance");
                         /*
 
@@ -154,34 +180,35 @@ public class Verifier {
                         CompletableFuture.allOf(balanceVerification, ageVerification, creditScoreVerification).join();
 
 */
-                        try {
-                            String[] tempData = {"","",""};
-                            if(userPres.isEmpty()){
-                                tempData[0] = "FabienK@team.loginid";
-                                tempData[1] = "fabien";
-                                tempData[2] = "korgo";
-                            }else{
-                                int i = 0;
-                                for(String d : this.userPres){
-                                    tempData[i] = d;
-                                    i++;
-                                }
-                            }
+//                        try {
+//                            String[] tempData = {"","",""};
+//                            if(userPres.isEmpty()){
+//                                tempData[0] = "FabienK@team.loginid";
+//                                tempData[1] = "fabien";
+//                                tempData[2] = "korgo";
+//                            }else{
+//                                int i = 0;
+//                                for(String d : this.userPres){
+//                                    tempData[i] = d;
+//                                    i++;
+//                                }
+//                            }
+////
+//                            String[] finalResponse = new String[]{tempData[1], tempData[2], "Rabat", tempData[0], "+212666068102", "Maroc", String.valueOf(ageStatus != 0), String.valueOf(balanceStatus != 0), String.valueOf(creditScoreStatus != 0)};
+//                            finalResponseEndpoint.webSocketClient.connect();
+//                            finalResponseEndpoint.latch.await();
+//                            finalResponseEndpoint.webSocketClient.send(gson.toJson(finalResponse));
+//                            finalResponseEndpoint.webSocketClient.close();
+//                            return new VerificationStatus("VERIFIED WITH SUCCESS", Status.SUCCESS);
 //
-                            String[] finalResponse = new String[]{tempData[1], tempData[2], "Rabat", tempData[0], "+212666068102", "Maroc", String.valueOf(ageStatus != 0), String.valueOf(balanceStatus != 0), String.valueOf(creditScoreStatus != 0)};
-                            finalResponseEndpoint.webSocketClient.connect();
-                            finalResponseEndpoint.latch.await();
-                            finalResponseEndpoint.webSocketClient.send(gson.toJson(finalResponse));
-                            finalResponseEndpoint.webSocketClient.close();
-                            return new VerificationStatus("VERIFIED WITH SUCCESS", Status.SUCCESS);
-
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            return new VerificationStatus("OOOPS SOMETHING WENT WRONG WHILE VERIFICATION", Status.ERROR);
-                        }finally {
-                            finalResponseEndpoint.webSocketClient.close();
-
-                        }
+//                        } catch (Exception e) {
+//                            e.printStackTrace();
+//                            return new VerificationStatus("OOOPS SOMETHING WENT WRONG WHILE VERIFICATION", Status.ERROR);
+//                        }finally {
+//                            finalResponseEndpoint.webSocketClient.close();
+//
+//                        }
+                        return new VerificationStatus("VERIFIED WITH SUCCESS", Status.SUCCESS);
 
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -263,16 +290,10 @@ public class Verifier {
         return "" + this.javaVerifierUrl + " | " + this.vc.toString();
     }
 
-    public static byte[] signClaim(Claim claim, PrivateKey privateKey) throws Exception {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ObjectOutputStream oos = new ObjectOutputStream(baos);
-        oos.writeObject(claim);
-        byte[] claimBytes = baos.toByteArray();
+    public static byte[] signClaim(byte[] vcEncryptedData, PrivateKey privateKey) throws Exception {
         Signature signature = Signature.getInstance("SHA256withRSA");
         signature.initSign(privateKey);
-
-        signature.update(claimBytes);
-
+        signature.update(vcEncryptedData);
         return signature.sign();
     }
 }
