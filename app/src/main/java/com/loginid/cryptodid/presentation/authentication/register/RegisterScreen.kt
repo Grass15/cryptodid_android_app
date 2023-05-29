@@ -360,6 +360,8 @@ fun RegisterScreen(
         Status.ERROR -> {
             Log.d("Auth", "errror")
             Log.d("Auth", currentState.userId + " | " + currentState.repassword)
+            Log.d("Auth", currentState.username + " | " + currentState.password)
+            Log.d("Auth", currentState.firstname + " | " + currentState.lastname)
             Toast.makeText(context,"Oops something went wrong", Toast.LENGTH_SHORT).show()
             viewModel.resetStatus()
         }

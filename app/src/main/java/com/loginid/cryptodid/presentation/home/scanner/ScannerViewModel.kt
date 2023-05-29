@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.loginid.cryptodid.claimVerifier.VerificationStatus
 import com.loginid.cryptodid.model.Claim
 import com.loginid.cryptodid.claimVerifier.Verifier
+import com.loginid.cryptodid.data.local.entity.VCType
 import com.loginid.cryptodid.data.repository.UserDataStoreRepository
 import com.loginid.cryptodid.domain.repository.ScannerRepository
 import com.loginid.cryptodid.domain.repository.UserRepository
@@ -64,15 +65,21 @@ class ScannerViewModel @Inject constructor(
 
     //Here we should configure our verify method so we can call it right after scanning
     override fun setupVerifier(vc: Claim){
+
         viewModelScope.launch {
             dataStoreRepository.readUserDataState().collect{userData ->
                 userData.userName.let {
                     val data = userRepooitory.getUserByUserName(it)
                     data.let {
                         verifier.AddUserPresentation(listOf(it.username,it.firstname,it.lastname))
+                        verifier.AppendVC("creditScore", userRepooitory.getVCByType(VCType.CREDIT_SCORE)?.vc)
+                        verifier.AppendVC("age", userRepooitory.getVCByType(VCType.DATE_OF_BIRTH)?.vc)
+                        verifier.AppendVC("balance", userRepooitory.getVCByType(VCType.BANK)?.vc)
                     }
                 }
             }
+
+
         }
         //bank vc
 //        val fhe = MG_FHE(11, 512)

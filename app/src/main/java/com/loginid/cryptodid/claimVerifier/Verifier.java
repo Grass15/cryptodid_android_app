@@ -3,6 +3,7 @@ package com.loginid.cryptodid.claimVerifier;
 
 import com.google.gson.Gson;
 import com.loginid.cryptodid.R;
+import com.loginid.cryptodid.data.local.entity.VCEntity;
 import com.loginid.cryptodid.model.SignatureVerificationParameters;
 import com.loginid.cryptodid.presentation.MainActivity;
 import com.loginid.cryptodid.model.Claim;
@@ -28,6 +29,8 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
@@ -41,7 +44,8 @@ public class Verifier {
     private Claim vc;
     private ClientEndpoint finalResponseEndpoint = new ClientEndpoint();
     private Gson gson = new Gson();
-    public List<Claim> vcs = new ArrayList<Claim>();
+    //public List<Claim> vcs = new ArrayList<Claim>();
+    Dictionary<String, VCEntity> vcs= new Hashtable<>();
     public List<String> userPres = new ArrayList<>();
     private final String filesFolderPath = String.valueOf(MainActivity.getFilesFolder());
     X509Certificate x509certificate;
@@ -87,14 +91,14 @@ public class Verifier {
         this.vc = vc;
     }
 
-    public void AppendVC(Claim vc){
-        this.vcs.add(vc);
+    public void AppendVC(String type, VCEntity vc){
+        this.vcs.put(type, vc);
     }
 
-    public void AppendVCs(List<Claim> vcs){
-        if(vcs != null)
-           this.vcs.addAll(vcs);
-    }
+//    public void AppendVCs(List<Claim> vcs){
+//        if(vcs != null)
+//           this.vcs.addAll(vcs);
+//    }
     public void AddUserPresentation(List<String> data){
         if(data != null){
             this.userPres.addAll(data);
@@ -103,39 +107,39 @@ public class Verifier {
 
     public native int Decrypt(String ClaimPath, String SK_Path);
 
-    public int verify(String attribute) throws Exception {
+    public int verify(VCEntity vc) throws Exception {
         int response = 0;
         ClientEndpoint proofEndpoint = new ClientEndpoint();
-        cppVerifierUrl = verifySignatureAndGetCppUrl(filesFolderPath+"/"+attribute+"Cloud.data");
+        cppVerifierUrl = verifySignatureAndGetCppUrl(vc);
+        String type = Objects.requireNonNull(vc.getVc()).getType();
 
         if(!Objects.equals(cppVerifierUrl, "") && cppVerifierUrl != null){
             proofEndpoint.createWebSocketClient("ws://" + cppVerifierUrl);
             proofEndpoint.webSocketClient.connect();
             proofEndpoint.latch.await();
             proofEndpoint.latch = new CountDownLatch(1);
-            proofEndpoint.webSocketClient.send(attribute);
-            proofEndpoint.sendFile(filesFolderPath+"/"+attribute+"Cloud.key", attribute+ "Cloud.key");
-            proofEndpoint.sendFile(filesFolderPath+"/"+attribute+"Cloud.data", attribute+ "Cloud.data");
-            proofEndpoint.sendFile(filesFolderPath+"/"+attribute+"PK.key", attribute+ "PK.key");
+            proofEndpoint.webSocketClient.send(type);
+            proofEndpoint.sendFile(filesFolderPath+"/"+type+"Cloud.key", type+ "Cloud.key");
+            proofEndpoint.sendFile(filesFolderPath+"/"+type+"Cloud.data", type+ "Cloud.data");
+            proofEndpoint.sendFile(filesFolderPath+"/"+type+"PK.key", type+ "PK.key");
             proofEndpoint.latch.await();
             System.out.println("signal");
-            if (Objects.equals(attribute, "sin")){
-                response = decryptAccessControlResult(filesFolderPath+"/Answer.data", filesFolderPath+"/"+attribute+"Keyset.key");
+            if (Objects.equals(type, "sin")){
+                response = decryptAccessControlResult(filesFolderPath+"/Answer.data", filesFolderPath+"/"+type+"Keyset.key");
             }else{
-                response = Decrypt(filesFolderPath+"/Answer.data", filesFolderPath+"/"+attribute+"Keyset.key");
+                response = Decrypt(filesFolderPath+"/Answer.data", filesFolderPath+"/"+type+"Keyset.key");
             }
             proofEndpoint.webSocketClient.close();
-            System.out.println(attribute + ": " + response);
+            System.out.println(type + ": " + response);
         }else {
             System.out.println("Signature verification failed");
         }
         return response;
     }
 
-    public String verifySignatureAndGetCppUrl(String vcEncryptionFilePath) throws Exception {
-        File vcEncryptedFile = new File(vcEncryptionFilePath);
-        byte[] vcEncryptedData = FileUtils.readFileToByteArray(vcEncryptedFile);
-        SignatureVerificationParameters signatureVerificationParameters= new SignatureVerificationParameters(vcEncryptedData, signClaim(vcEncryptedData, privateKey), certificateBytes);
+    public String verifySignatureAndGetCppUrl(VCEntity vc) throws Exception {
+        Claim vcData = vc.getVc();
+        SignatureVerificationParameters signatureVerificationParameters= new SignatureVerificationParameters(vcData.getEncryptedAttribute(), vcData.getSignature(), certificateBytes, vcData.getRevocationNonce(), vc.getVersion());
         ClientEndpoint signatureVerificationEndpoint = new ClientEndpoint();
         signatureVerificationEndpoint.createWebSocketClient("ws://" + this.javaVerifierUrl + "/signature");
         //signatureVerificationEndpoint.createWebSocketClient("ws://" + cppVerifierUrl);
@@ -159,7 +163,7 @@ public class Verifier {
 
     public VerificationStatus verifyVCsRentalHouse() throws IOException, KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException, CertificateException {
       //  return CompletableFuture.runAsync(() -> {
-            //if (!vcs.isEmpty()) {
+            if (!vcs.isEmpty()) {
 
                 if (!Objects.equals(this.javaVerifierUrl, "")) {
 
@@ -171,9 +175,9 @@ public class Verifier {
                     getcppUrlEndpoint.latch.await();
                     cppVerifierUrl = String.valueOf(getcppUrlEndpoint.response);
                     getcppUrlEndpoint.webSocketClient.close();
-                    int creditScoreStatus = verify("creditScore");
-                    int ageStatus = verify("age");
-                    int balanceStatus = verify("balance");
+                    int creditScoreStatus = verify(vcs.get("creditScore") );
+                    int ageStatus = verify(vcs.get("age"));
+                    int balanceStatus = verify(vcs.get("balance"));
                         /*
 
 
@@ -219,9 +223,9 @@ public class Verifier {
                 } else {
                     return new VerificationStatus("PLEASE VERIFY THE QR CODE", Status.ERROR);
                 }
-//            }else{
-//                return new VerificationStatus("AT LEAST ONE VC", Status.ERROR);
-//            }
+            }else{
+               return new VerificationStatus("AT LEAST ONE VC", Status.ERROR);
+           }
       //  });
     }
 
@@ -235,7 +239,7 @@ public class Verifier {
                 getcppUrlEndpoint.latch.await();
                 cppVerifierUrl = String.valueOf(getcppUrlEndpoint.response);
                 getcppUrlEndpoint.webSocketClient.close();
-                int sinStatus = verify("sin");
+                int sinStatus = verify(vcs.get("sin"));
                 finalResponseEndpoint.createWebSocketClient("ws://" + this.javaVerifierUrl + "/response");
                 finalResponseEndpoint.webSocketClient.connect();
                 finalResponseEndpoint.latch.await();

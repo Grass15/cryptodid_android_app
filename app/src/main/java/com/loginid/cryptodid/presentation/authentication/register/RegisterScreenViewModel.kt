@@ -45,9 +45,13 @@ class RegisterScreenViewModel @Inject constructor(
                     val repassword = state.value.repassword
 
                     if(username.isBlank() || firstName.isBlank() || lastName.isBlank() || password.isBlank() || repassword.isBlank()){
+                         println("One Blank")
                          return
                     }
-                    if(password != repassword) return
+                    if(password != repassword){
+                         println("ps & reps diff")
+                         return
+                    }
 
                     _state.update { it.copy(
                          userId = UUID.randomUUID().toString()

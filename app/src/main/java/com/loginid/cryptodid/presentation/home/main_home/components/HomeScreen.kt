@@ -20,7 +20,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.loginid.cryptodid.data.local.entity.VCType
-import com.loginid.cryptodid.presentation.MainActivity.Companion.getFilesFolder
 import com.loginid.cryptodid.presentation.home.biometrics.BiometricsAuthenticationProvider
 import com.loginid.cryptodid.presentation.home.biometrics.BiomtricType
 import com.loginid.cryptodid.presentation.home.modalDialogs.ModalDialogs
@@ -30,12 +29,14 @@ import com.loginid.cryptodid.presentation.home.vc.VCViewModel.VCViewModel
 import com.loginid.cryptodid.presentation.navigation.bottom_navigation.BottomSheetNavBodyItems
 import com.loginid.cryptodid.presentation.navigation.bottom_navigation.BottomSheetNavigation
 import com.loginid.cryptodid.presentation.navigation.drawer_navigation.*
-import com.loginid.cryptodid.presentation.navigation.screens.IssuerScreen
 import com.loginid.cryptodid.presentation.theme.CardForGround
 import com.loginid.cryptodid.presentation.theme.HomeBackGround
 import com.loginid.cryptodid.presentation.theme.OpsIcons
 import com.loginid.cryptodid.utils.Status
 import kotlinx.coroutines.launch
+import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
 
 
 @RequiresApi(Build.VERSION_CODES.P)
@@ -136,6 +137,8 @@ Scaffold(
 
     floatingActionButton = {
         FloatingActionButton(onClick = {
+
+
             showPrompt = true
         }, backgroundColor = MaterialTheme.colors.OpsIcons) {
           Icon(imageVector = Icons.Default.Add, contentDescription = "Adding a new VC")
@@ -262,6 +265,9 @@ Scaffold(
                 biometricAuthenticator.getBiometricAuthenticator(BiomtricType.AUTO)?.authenticate(activity)
             }
             //Just a personal reminder to handle This before deploying it to play store
+            scope.launch {
+                modalSheetState.show()
+            }
             showPrompt = false
         }
     }
@@ -345,4 +351,15 @@ fun MainAppBar(
             }
         }
     }
+}
+
+fun postRequest(url: String, json: String) {
+    val client = OkHttpClient()
+    val JSON = "application/json".toMediaType()
+    val body: RequestBody = json.toRequestBody(JSON)
+    val request = Request.Builder()
+        .method("POST", body)
+        .url(url)
+        .build()
+    client.newCall(request).execute().use { response -> println(response.body!!.string()) }
 }

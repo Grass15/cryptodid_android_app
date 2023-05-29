@@ -4,35 +4,25 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class Claim implements Serializable {
-
-    String title;
-    int id;
     String type;
     String issuerName;
-    String content;
+    byte[] signature;
+    byte[] revocationNonce;
+    byte[] encryptedAttribute;
     Date expirationDate;
     Date issuingDate;
-    String attributeName;
+    int id;
+    String title;
+    String content;
 
 
-    public Claim(String title, String type, String issuerName, String content, String attributeName) {
+    public Claim(String title, String type, String content, String issuerName, byte[] encryptedAttribute, byte[] signature) {
         this.title = title;
         this.type = type;
-        this.issuerName = issuerName;
         this.content = content;
-        this.attributeName = attributeName;
-    }
-    public int getId() {
-        return id;
-    }
-    public void setId(int id) {
-        this.id = id;
-    }
-    public String getAttributeName() {
-        return attributeName;
-    }
-    public void setAttributeName(String attributeName) {
-        this.attributeName = attributeName;
+        this.issuerName = issuerName;
+        this.encryptedAttribute = encryptedAttribute;
+        this.signature = signature;
     }
 
     public Date getIssuingDate() {
@@ -50,21 +40,39 @@ public class Claim implements Serializable {
         this.issuingDate = date;
     }
 
-    public String getTitle() {
-        return title;
+    public byte[] getEncryptedAttribute() {
+        return encryptedAttribute;
     }
+
     public String getType() {
         return type;
     }
-    public String getIssuerName() {
-        return issuerName;
-    }
+
     public String getContent() {
         return content;
     }
 
-    @Override
-    public String toString() {
-        return super.toString() + this.issuerName + this.type + this.id;
+    public String getIssuerName() {
+        return issuerName;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public byte[] getRevocationNonce() {
+        return revocationNonce;
+    }
+
+    public void setRevocationNonce(byte[] revocationNonce) {
+        this.revocationNonce = revocationNonce;
+    }
+
+    public byte[] getSignature() {
+        return signature;
     }
 }
