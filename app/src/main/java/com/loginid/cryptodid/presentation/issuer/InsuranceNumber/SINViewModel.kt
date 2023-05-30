@@ -36,7 +36,8 @@ class SINViewModel @Inject constructor(
     private val _vState = MutableStateFlow(VerificationStatus())
     private val _state = MutableStateFlow(ScannerState())
     val state = _state.asStateFlow()
-    val vState = _vState.asStateFlow(
+    val vState = _vState.asStateFlow()
+
     val verifier: Verifier =
         Verifier()
 
