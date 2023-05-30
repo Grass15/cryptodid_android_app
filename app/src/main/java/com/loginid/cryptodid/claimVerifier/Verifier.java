@@ -1,6 +1,8 @@
 package com.loginid.cryptodid.claimVerifier;
 
 
+import androidx.compose.animation.ExperimentalAnimationApi;
+
 import com.google.gson.Gson;
 import com.loginid.cryptodid.R;
 import com.loginid.cryptodid.data.local.entity.VCEntity;
@@ -33,6 +35,7 @@ import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 
 
+@ExperimentalAnimationApi
 public class Verifier {
 
     private ClientEndpoint getcppUrlEndpoint = new ClientEndpoint();
