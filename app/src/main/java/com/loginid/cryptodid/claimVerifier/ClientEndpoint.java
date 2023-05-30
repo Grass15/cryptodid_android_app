@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 import javax.websocket.OnMessage;
 
 
-@ExperimentalAnimationApi
+
 public class ClientEndpoint {
     public String response;
     public CountDownLatch latch = new CountDownLatch(1);

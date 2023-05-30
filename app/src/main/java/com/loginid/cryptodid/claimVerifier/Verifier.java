@@ -35,7 +35,7 @@ import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 
 
-@ExperimentalAnimationApi
+
 public class Verifier {
 
     private ClientEndpoint getcppUrlEndpoint = new ClientEndpoint();
