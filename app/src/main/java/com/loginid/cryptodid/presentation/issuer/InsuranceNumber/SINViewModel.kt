@@ -5,7 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.loginid.cryptodid.claimVerifier.VerificationStatus
 import com.loginid.cryptodid.claimVerifier.Verifier
+import com.loginid.cryptodid.data.local.entity.VCType
 import com.loginid.cryptodid.domain.repository.ScannerRepository
+import com.loginid.cryptodid.domain.repository.UserRepository
 import com.loginid.cryptodid.domain.use_case.verify_vc.AccessControlUseCase
 import com.loginid.cryptodid.domain.use_case.verify_vc.HouseRentaleVerificationUseCase
 import com.loginid.cryptodid.domain.use_case.verify_vc.privilege.VotingUseCase
@@ -27,6 +29,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SINViewModel @Inject constructor(
     private val repository: ScannerRepository,
+    private val userRepository: UserRepository,
     private val accessControlUseCase: AccessControlUseCase
 ) : ViewModel(),Scanner {
 
@@ -60,6 +63,10 @@ class SINViewModel @Inject constructor(
 
     //Here we should configure our verify method so we can call it right after scanning
     override fun setupVerifier(vc: Claim){
+
+        viewModelScope.launch {
+            verifier.AppendVC("sin", userRepository.getVCByType(VCType.INSURANCE_NUMBER))
+        }
 
         //bank vc
 //        val fhe = MG_FHE(11, 512)
