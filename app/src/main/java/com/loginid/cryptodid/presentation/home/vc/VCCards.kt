@@ -268,14 +268,14 @@ fun VCCard(
         LaunchedEffect(showPrompt,scanner) {
             biometricAuthenticator.getBiometricAuthenticator(BiomtricType.AUTO)?.authenticate(activity)
            // showPrompt = false
-            scope.launch {
-                //scannerViewModel.startScanning()
-                // voteViewModel.verifyVoteScan()
-                // scanner.startScanning()
-                delay(500)
-                scanner.startScanning()
-                showPrompt = false
-            }
+//            scope.launch {
+//                //scannerViewModel.startScanning()
+//                // voteViewModel.verifyVoteScan()
+//                // scanner.startScanning()
+//                delay(500)
+//                scanner.startScanning()
+//                showPrompt = false
+//            }
 
         }
 
