@@ -48,18 +48,18 @@ class ScannerViewModel @Inject constructor(
     override fun startScanning(){
         resetStatus()
         viewModelScope.launch {
-//            verifier.setUrl("192.168.11.105:8080")
-//            startVerification(verifier)
-            repository.startScanning().collect{data ->
-                if(!data.isNullOrBlank()){
-                    _state.update { it.copy(
-                        details = data
-                    ) }
-                    //adding url
-                    verifier.setUrl(data)
-                    startVerification(verifier)
-                }
-            }
+            verifier.setUrl("192.168.1.15:8080")
+            startVerification(verifier)
+//            repository.startScanning().collect{data ->
+//                if(!data.isNullOrBlank()){
+//                    _state.update { it.copy(
+//                        details = data
+//                    ) }
+//                    //adding url
+//                    verifier.setUrl(data)
+//                    startVerification(verifier)
+//                }
+//            }
         }
     }
 
@@ -72,9 +72,9 @@ class ScannerViewModel @Inject constructor(
                     val data = userRepooitory.getUserByUserName(it)
                     data.let {
                         verifier.AddUserPresentation(listOf(it.username,it.firstname,it.lastname))
-                        verifier.AppendVC("creditScore", userRepooitory.getVCByType(VCType.CREDIT_SCORE)?.vc)
-                        verifier.AppendVC("age", userRepooitory.getVCByType(VCType.DATE_OF_BIRTH)?.vc)
-                        verifier.AppendVC("balance", userRepooitory.getVCByType(VCType.BANK)?.vc)
+                        verifier.AppendVC("creditScore", userRepooitory.getVCByType(VCType.CREDIT_SCORE))
+                        verifier.AppendVC("age", userRepooitory.getVCByType(VCType.DATE_OF_BIRTH))
+                        verifier.AppendVC("balance", userRepooitory.getVCByType(VCType.BANK))
                     }
                 }
             }

@@ -90,7 +90,7 @@ class MainActivity : ComponentActivity() {
         var path: File? = null
 
         var context: Context? = null
-        var blockChainApi: String = "http://192.168.11.105:3000"
+        var blockChainApi: String = "https://weak-red-termite-cape.cyclic.app/"
         @JvmStatic
         fun  getFilesFolder(): File? {
             return MainActivity.path;
