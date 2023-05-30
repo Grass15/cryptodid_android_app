@@ -9,12 +9,9 @@ import com.loginid.cryptodid.presentation.MainActivity;
 import com.loginid.cryptodid.model.Claim;
 import com.loginid.cryptodid.utils.Status;
 
-import org.apache.commons.io.FileUtils;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
@@ -34,6 +31,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
+
 
 public class Verifier {
 

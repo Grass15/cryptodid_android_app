@@ -106,12 +106,11 @@ public class ClientEndpoint {
         byte[] bytes = FileUtils.readFileToByteArray(file);
         int from, to;
         from = 0;
-//        to = 16000000;
-        to = 8192;
+        to = 16000000;
         while (bytes.length > to){
             webSocketClient.send(Arrays.copyOfRange(bytes, from, to));
             from = to;
-            to += 8192;
+            to += 16000000;
         }
         webSocketClient.send(Arrays.copyOfRange(bytes, from, bytes.length));
         System.out.println(name);
