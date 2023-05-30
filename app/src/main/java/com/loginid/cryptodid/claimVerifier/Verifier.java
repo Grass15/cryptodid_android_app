@@ -241,7 +241,7 @@ public class Verifier {
                 cppVerifierUrl = String.valueOf(getcppUrlEndpoint.response);
                 getcppUrlEndpoint.webSocketClient.close();
                 int sinStatus = verify(vcs.get("sin"));
-                finalResponseEndpoint.createWebSocketClient("ws://" + this.javaVerifierUrl + "/response");
+                finalResponseEndpoint.createWebSocketClient("ws://" + this.javaVerifierUrl + "/sinResponse");
                 finalResponseEndpoint.webSocketClient.connect();
                 finalResponseEndpoint.latch.await();
                 finalResponseEndpoint.latch = new CountDownLatch(1);
